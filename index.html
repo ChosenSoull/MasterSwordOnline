@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta name="csrf-token" content="{{csrfToken}}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кликер меча</title>
+    <link rel="icon" type="image/png" href="Textures/Favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="Textures/Favicon/favicon.svg" />
+    <link rel="shortcut icon" href="Textures/Favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="Textures/Favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="Textures/Favicon/site.webmanifest" />
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Zametka_Parletter', sans-serif;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            /* Safari */
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* IE 10+ */
+            user-select: none;
+            /* Стандарт */
+        }
+
+        .bg {
+            background-image: url('Textures/background.jpg');
+            background-size: cover;
+            background-position: center;
+            width: 100%;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            transition: transform 0.2s ease-out;
+        }
+
+        .bg.scaled {
+            transform: scale(1.01);
+        }
+
+        @font-face {
+            font-family: 'Zametka_Parletter';
+            src: url('fonts/zametka_parletter-webfont.woff2') format('woff2'),
+                url('fonts/zametka_parletter-webfont.woff') format('woff'),
+                url('fonts/myfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .main-container {
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            /* Changed to align with the new layout */
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 50%;
+        }
+
+        .count {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            position: absolute;
+            /* Абсолютное позиционирование */
+            top: -60%;
+            /* Отступ сверху */
+            left: 50%;
+            /* Центрирование по горизонтали */
+            transform: translateX(-50%);
+            /* Точное центрирование */
+            z-index: 3;
+            /* Поверх меча и искр */
+            color: white;
+            font-size: 42px;
+            text-shadow: 2px 2px 4px #000000;
+            /* Добавляем тень для лучшей читаемости */
+        }
+
+        .coin-icon {
+            width: 40px;
+            /* Размер изображения */
+            height: 40px;
+            margin-right: 5px;
+            /* Отступ между изображением и текстом */
+        }
+
+        .image-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .image {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            user-select: none;
+            -webkit-user-select: none;
+            /* Для старых версий Safari */
+            -moz-user-select: none;
+            /* Для Firefox */
+            -ms-user-select: none;
+            will-change: transform;
+            transition: transform 0.1s ease-in-out;
+            z-index: 2;
+        }
+
+        .image:active {
+            will-change: transform;
+            transform: scale(0.9);
+        }
+
+        .image.pressed {
+            /* Новый класс для анимации */
+            will-change: transform;
+            transform: scale(0.9);
+        }
+
+        .image.blocked {
+            content: url("Textures/1lvllock.png");
+            position: absolute;
+            /* Чтобы псевдоэлемент накладывался на изображение */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* Отключаем обработку событий мыши */
+            user-select: none;
+            -webkit-user-select: none;
+            /* Для старых версий Safari */
+            -moz-user-select: none;
+            /* Для Firefox */
+            -ms-user-select: none;
+        }
+
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 4;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .loading-logo {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .loading-bar-container {
+            width: 300px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    #ff0000 0%,
+                    #ff7f00 17%,
+                    #ffff00 33%,
+                    #00ff00 50%,
+                    #0000ff 67%,
+                    #4b0082 83%,
+                    #8f00ff 100%);
+            transition: width 0.3s ease-in-out;
+            animation: rainbow-move 2s linear infinite;
+        }
+
+        @keyframes rainbow-move {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Volume Controls */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(to right, #ffffff 0%, #ffffff 100%);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #ffffff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .volume-toggle {
+            background: none;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .volume-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .volume-toggle.muted {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        /* Spark Effect */
+        .spark {
+            position: absolute;
+            pointer-events: none;
+            background: #ffd700;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: spark-fade 0.5s ease-out forwards;
+            z-index: 1;
+        }
+
+        @keyframes spark-fade {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0);
+            }
+        }
+
+        /* Graphics Quality Selector */
+        .graphics-quality {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quality-option {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quality-option.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Panel Styles */
+        .panel {
+            position: fixed;
+            right: 1rem;
+            top: 1rem;
+            width: calc(50% - 2rem);
+            height: calc(100vh - 2rem);
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 2px solid white;
+            border-radius: 20px;
+            color: white;
+            padding: 2rem;
+            box-sizing: border-box;
+            z-index: 3;
+            overflow: auto;
+            /* Позволяет скролл */
+            overscroll-behavior: contain;
+            scrollbar-width: none;
+            /* Для Firefox */
+            -ms-overflow-style: none;
+            /* Для Internet Explorer и Edge */
+        }
+
+        .panel::-webkit-scrollbar {
+            display: none;
+            /* Для Chrome, Safari и Opera */
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .panel:not(.active) {
+            animation-name: slideOut;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: none;
+        }
+
+        #overlay.active {
+            display: block;
+        }
+
+
+        .panel h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            position: fixed;
+            bottom: 1rem;
+            left: 25%;
+            transform: translateX(-50%);
+            width: auto;
+            background-color: #000;
+            border: 2px solid white;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 3;
+        }
+
+        .navbar a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: x-small;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon {
+            width: 35px;
+            /* Размер иконок */
+            height: 35px;
+            margin-bottom: 0px;
+            /* Отступ между иконкой и текстом */
+            z-index: 4;
+        }
+
+        /* Error Message Styles */
+        #error-message {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1rem 2rem;
+            border: 2px solid white;
+            border-radius: 10px;
+            z-index: 5;
+            visibility: hidden;
+            animation: none;
+            /* Отключаем анимацию по умолчанию */
+        }
+
+        #spark-layer {
+            position: absolute;
+            /* Важно для позиционирования относительно контейнера */
+            top: 0;
+            left: 0;
+            width: 100%;
+            /* Занимает всю ширину контейнера */
+            height: 100%;
+            /* Занимает всю высоту контейнера */
+            z-index: 1;
+            /* Под мечом */
+            pointer-events: none;
+            /* Чтобы клики проходили сквозь слой */
+        }
+
+        .account-panel {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            display: flex;
+            align-items: center;
+            background-color: #000;
+            border: 2px solid white;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            z-index: 3;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            /* Позволяем содержимому выходить за пределы панели */
+        }
+
+        .avatar-frame {
+            position: relative;
+            width: 4rem;
+            /* Устанавливаем размер рамки */
+            height: 4rem;
+            /* Устанавливаем размер рамки */
+            margin-right: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 3rem;
+            /* Фиксированный размер аватарки */
+            height: 3rem;
+            /* Фиксированный размер аватарки */
+            object-fit: cover;
+            border-radius: 50%;
+            /* Делаем аватарку круглой */
+            z-index: 0;
+            /* Аватарка под рамкой */
+        }
+
+        .frame {
+            position: absolute;
+            /* Смещаем вправо на ширину отступа + половина ширины рамки */
+            max-width: 8rem;
+            max-height: 8rem;
+            /* Размер рамки больше, чем у аватарки */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Делаем рамку круглой */
+            z-index: 3;
+            /* Убедитесь, что z-index достаточно высокий */
+            pointer-events: none;
+            /* Отключаем взаимодействие с рамкой */
+        }
+
+
+        .account-info {
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+
+        .account-name {
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .account-id {
+            font-size: 0.875rem;
+            margin: 0;
+            opacity: 0.7;
+        }
+
+        .panel-content h2,
+        .panel-content h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+
+        .panel-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .panel-content ul li {
+            margin-bottom: 10px;
+        }
+
+        .improvement-item {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 5px;
+            /* Уменьшить padding */
+            margin-bottom: 5px;
+            /* Уменьшить margin */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            justify-content: space-between;
+            min-width: 0;
+            /* Позволяет тексту сжиматься */
+        }
+
+        .improvement-item:hover {
+            background-color: #555;
+        }
+
+        .improvement-icon {
+            width: 60px;
+            height: 60px;
+            margin-right: 5px;
+            /* Уменьшить margin */
+        }
+
+        .improvement-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            /* Уменьшить промежутки между элементами */
+        }
+
+        .improvement-name {
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(0.8rem, 1.0rem, 1.3rem);
+            /* Используем clamp для динамического изменения размера текста */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+            /* Позволяет тексту уменьшаться */
+        }
+
+        .improvement-level {
+            color: #aaa;
+            margin-left: 5px;
+            font-size: clamp(0.6rem, 0.8vmax, 1.2rem);
+            /* Используем clamp для динамического изменения размера текста */
+            white-space: nowrap;
+            /* Запрещаем перенос текста */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+            /* Позволяет тексту уменьшаться */
+        }
+
+        .improvement-bonus,
+        .improvement-cost {
+            color: #aaa;
+            font-size: 0.8rem;
+            /* Уменьшить размер шрифта */
+            margin: 0;
+            /* Уменьшить отступы */
+        }
+
+        .upgrades-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 5px;
+            /* Уменьшить промежутки между элементами */
+        }
+
+        /*Не путать Potion используеться для bar-а снизу слева а potions для магазина улучшений*/
+        .potion-bar {
+            position: fixed;
+            overflow-y: auto;
+            top: 8rem;
+            bottom: 1rem;
+            /* Положение в нижнем углу */
+            left: 1rem;
+            /* Положение в левом углу */
+            background-color: #000;
+            border: 2px solid white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            /* Вертикальная ориентация */
+            align-items: center;
+            /* Центрирование содержимого по горизонтали */
+            z-index: 1;
+            padding: 0.5rem;
+            width: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: none;
+            /* Для Firefox */
+            -ms-overflow-style: none;
+            /* Ширина по содержимому */
+        }
+
+        .potion-bar::-webkit-scrollbar {
+            display: none;
+            /* Для Chrome, Safari и Opera */
+        }
+
+        .potion-item {
+            position: relative;
+            color: white;
+            margin: 10px 0;
+            /* Отступы между элементами по вертикали */
+            cursor: pointer;
+        }
+
+        .potion-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            z-index: 4;
+        }
+
+        .potion-icon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ability-element {
+            position: relative;
+            display: inline-block;
+        }
+
+        .ability-element img {
+            display: block;
+        }
+
+        .ability-timer {
+            position: absolute;
+            top: 5px;
+            /* Увеличил отступ, чтобы таймер был выше */
+            left: 50%;
+            /* Центрирование по горизонтали */
+            transform: translateX(-50%);
+            /* Точное центрирование */
+            color: #fff;
+            padding: 5px;
+            text-align: center;
+            pointer-events: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            z-index: 5;
+        }
+
+        .activated-ability .potion-icon {
+            transform: scale(1.2);
+            /* Увеличение до 120% */
+        }
+
+        .potions-item {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 5px;
+            /* Уменьшить padding */
+            margin-bottom: 5px;
+            /* Уменьшить margin */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            justify-content: space-between;
+            min-width: 0;
+            /* Позволяет тексту сжиматься */
+        }
+
+        .potions-item:hover {
+            background-color: #555;
+        }
+
+        .potions-icon {
+            width: 60px;
+            height: 60px;
+            margin-right: 5px;
+            /* Уменьшить margin */
+        }
+
+        .potions-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            /* Уменьшить промежутки между элементами */
+        }
+
+        .potions-name {
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(0.8rem, 1.0rem, 1.3rem);
+            /* Используем clamp для динамического изменения размера текста */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+            /* Позволяет тексту уменьшаться */
+        }
+
+        .potions-level {
+            color: #aaa;
+            margin-left: 5px;
+            font-size: clamp(0.6rem, 0.8vmax, 1.2rem);
+            /* Используем clamp для динамического изменения размера текста */
+            white-space: nowrap;
+            /* Запрещаем перенос текста */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+            /* Позволяет тексту уменьшаться */
+        }
+
+        .potions-cost {
+            color: #aaa;
+            font-size: 0.8rem;
+            /* Уменьшить размер шрифта */
+            margin: 0;
+            /* Уменьшить отступы */
+        }
+
+        .message-container {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            z-index: 10;
+            display: none;
+            /* Скрываем по умолчанию */
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .panel {
+                left: 50%;
+                bottom: 0;
+                transform: translateX(-50%) translateY(100%);
+                width: 100%;
+                max-width: 475px;
+                height: calc(100vh - 1px);
+                border-radius: 10px 10px 0 0;
+                box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.3);
+                position: fixed;
+                box-sizing: border-box;
+                z-index: 2;
+                overflow-y: auto;
+                animation-duration: 0.3s;
+                animation-timing-function: ease-out;
+                animation-fill-mode: forwards;
+                transform: translate3d(0, 0, 0);
+                overscroll-behavior: contain;
+            }
+
+            .panel.active {
+                animation-name: slideIn;
+                display: block;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(-50%) translateY(100%);
+                }
+
+                to {
+                    transform: translateX(-50%) translateY(0);
+                }
+            }
+
+            @keyframes slideOut {
+                from {
+                    transform: translateX(-50%) translateY(0);
+                }
+
+                to {
+                    transform: translateX(-50%) translateY(100%);
+                }
+            }
+
+            .panel:not(.active) {
+                animation-name: slideOut;
+                display: block;
+            }
+
+            .panel-content {
+                padding-bottom: 60px;
+                overflow-y: auto;
+            }
+
+            #error-message {
+                z-index: 1;
+                position: fixed;
+                left: 50%;
+                width: 90%;
+                bottom: 2rem;
+                right: 2rem;
+                background-color: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 1rem 2rem;
+                border: 2px solid white;
+                border-radius: 10px;
+                visibility: hidden;
+                animation: none;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                /* Отключаем анимацию по умолчанию */
+            }
+
+            .navbar {
+                left: 50%;
+                width: 90%;
+                bottom: 1rem;
+            }
+
+            .potion-bar {
+                left: 1.3rem;
+                bottom: 6rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .main-container {
+                width: 50%;
+            }
+
+            .panel {
+                width: 50%;
+                transform: translateX(100%);
+                /* Перемещение элемента вне области видимости */
+                transition: transform 0.5s ease-in-out;
+                /* Начальное положение вне области видимости */
+            }
+
+            .panel.active {
+                transform: translateX(0);
+                /* Анимация появления */
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                }
+
+                to {
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                }
+
+                to {
+                    transform: translateX(100%);
+                }
+            }
+
+            .panel:not(.active) {
+                transform: translateX(130%);
+                animation-name: slideOut;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loadingScreen">
+        <img src="Textures/logo.png" alt="Logo" class="loading-logo">
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+        <span id="loadingText">Loading...</span>
+        <button id="loadingMusicButton">Включить музыку</button>
+    </div>
+
+    <div id="error-message"> Произошла ошибка подключения. Пожалуйста, подождите включения
+        серверов! </div>
+
+    <div class="bg"></div>
+
+    <div class="main-container">
+        <div id="message-container" class="message-container"></div>
+        <div class="count">
+            <img src="Textures/Coin.png" alt="Монетка" class="coin-icon">
+            <span id="count">0</span>
+        </div>
+        <div class="image-container" onclick="clickSword()">
+            <img id="sword" src="Textures/1lvl.png" class="image">
+            <div id="spark-layer"></div>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    <div id="account-panel" class="account-panel" onclick="showPanel('profile-section', event)">
+        <div class="avatar-frame">
+            <img src="server/public/uploads/default_avatar.png" Avatar class="avatar">
+            <img src="server/public/progress/6.png" class="frame">
+        </div>
+        <div class="account-info">
+            <p class="account-name">Имя аккаунта</p>
+            <p class="account-id">ID:123456</p>
+        </div>
+    </div>
+
+    </div>
+    <div id="profile-section" class="panel">
+        <div class="panel-content">
+            <h2>Профиль</h2>
+            <!-- Profile content -->
+        </div>
+    </div>
+
+    <div id="improvements-section" class="panel">
+        <div class="panel-content">
+            <h2>Улучшения</h2>
+            <div id="improvements-list">
+                <h3>Броня и оружие</h3>
+                <div class="upgrades-container">
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Шлем</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Тело</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 200</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Штаны</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 150</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Ботинки</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Щит</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 200</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Меч (После сюжетки)</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 250</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="upgrades-container">
+                    <h4>Улучшение героя</h4>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Интелект</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Храбрость</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Стойкость</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Уверенность</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Сила</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Жизнь</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-icon">[Иконка]</div>
+                        <div class="improvement-details">
+                            <div class="improvement-name">Реакция</div>
+                            <div class="improvement-bonus">+1.25 (Всего: 0)</div>
+                            <div class="improvement-cost">Стоимость: 100</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h3>Зелья</h3>
+            <div id="potions-container">
+                <div class="potions-item">
+                    <div class="potions-icon">[Иконка]</div>
+                    <div class="potions-details">
+                        <div class="potions-name">Ускорения</div>
+                        <div class="potions-cost">Стоимость: 100</div>
+                    </div>
+                </div>
+                <div class="potions-item">
+                    <div class="potions-icon">[Иконка]</div>
+                    <div class="potions-details">
+                        <div class="potions-name">Сопротивление магии</div>
+                        <div class="potions-cost">Стоимость: 100</div>
+                    </div>
+                </div>
+                <div class="potions-item">
+                    <div class="potions-icon">[Иконка]</div>
+                    <div class="potions-details">
+                        <div class="potions-name">Телепортация</div>
+                        <div class="potions-cost">Стоимость: 100</div>
+                    </div>
+                </div>
+                <div class="potions-item">
+                    <div class="potions-icon">[Иконка]</div>
+                    <div class="potions-details">
+                        <div class="potions-name">Невидимость</div>
+                        <div class="potions-cost">Стоимость: 100</div>
+                    </div>
+                </div>
+                <div class="potions-item">
+                    <div class="potions-icon">[Иконка]</div>
+                    <div class="potions-details">
+                        <div class="potions-name">Режим берсерка</div>
+                        <div class="potions-cost">Стоимость: 100</div>
+                    </div>
+                </div>
+                <div class="potions-item">
+                    <div class="potions-icon">[Иконка]</div>
+                    <div class="potions-details">
+                        <div class="potions-name">Исцеление</div>
+                        <div class="potions-cost">Стоимость: 100</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </ul>
+    </div>
+
+    <div id="leaders-section" class="panel">
+        <div class="panel-content">
+            <h2>Списки лидеров</h2>
+            <!-- Leaders content -->
+        </div>
+    </div>
+    <div id="shop-section" class="panel">w
+        <div class="panel-content">
+            <h2>Магазин</h2>
+            <!-- Shop content -->
+        </div>
+    </div>
+    <div id="settings-section" class="panel">
+        <div class="panel-content">
+            <h2>Настройки</h2>
+            <div class="settings-group">
+                <h3>Музыка</h3>
+                <div class="volume-control">
+                    <button class="volume-toggle" id="musicToggle">♪</button>
+                    <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="100">
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Звуковые эффекты</h3>
+                <div class="volume-control">
+                    <button class="volume-toggle" id="sfxToggle">♪</button>
+                    <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="100">
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Качество графики</h3>
+                <div class="graphics-quality">
+                    <button class="quality-option" data-quality="potato">Картофельное</button>
+                    <button class="quality-option" data-quality="low">Низкое</button>
+                    <button class="quality-option active" data-quality="medium">Среднее</button>
+                    <button class="quality-option" data-quality="high">Максимальное</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <a href="#" onclick="showPanel('improvements-section', event)" class="nav-link">
+            <img src="Textures/Icons/Amplification.png" alt="Улучшения" class="icon">
+            Улучшения
+        </a>
+        <a href="#" onclick="showPanel('leaders-section', event)" class="nav-link">
+            <img src="Textures/Icons/Liders.png" alt="Лидеры" class="icon">
+            Лидеры
+        </a>
+        <a href="#" onclick="showPanel('shop-section', event)" class="nav-link">
+            <img src="Textures/Icons/Shop.png" alt="Магазин" class="icon">
+            Магазин
+        </a>
+        <a href="#" onclick="showPanel('settings-section', event)" class="nav-link">
+            <img src="Textures/Icons/Settings.png" alt="Настройки" class="icon">
+            Настройки
+        </a>
+    </div>
+
+    <div id="potion-list"></div>
+    <div class="potion-bar">
+    </div>
+
+    <audio id="gameMusic" loop preload="auto">
+        <source src="Returning Home.mp3" type="audio/mpeg">
+        Ваш браузер не поддерживает элемент audio.
+    </audio>
+
+    <audio id="clickSound" preload="auto">
+        <source src="soundclick.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        function formatNumber(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(2) + 'млрд'; // Для чисел больше или равных миллиарду
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + 'млн'; // Для чисел больше или равных миллиону
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(2) + 'тыс'; // Для чисел больше или равных тысяче
+            } else {
+                return Math.floor(num).toString(); // Для чисел меньше тысячи отображаем как целое
+            }
+        }
+
+        function updateCount(count) {
+            if (isNaN(count)) {
+                console.error("Ошибка: count не является числом");
+                return;
+            }
+            document.getElementById('count').innerText = formatNumber(Number(count));
+        }
+
+        let errorMessageTimeout; // Переменная для хранения ID таймаута
+
+        function showErrorMessage() {
+            const errorMessage = document.getElementById('error-message');
+
+            // Очищаем предыдущий таймаут, если есть
+            clearTimeout(errorMessageTimeout);
+
+            // Сбрасываем стили и убираем класс hide (это важно!)
+            errorMessage.style.opacity = 0;
+            errorMessage.style.transform = 'translateY(100%)';
+            errorMessage.style.transition = 'none'; // Убираем transition чтобы не было рывков
+
+            errorMessage.classList.remove('hide');
+
+            // Показываем сообщение с небольшой задержкой для плавности
+            setTimeout(() => {
+                errorMessage.style.transition = 'transform 0.5s ease, opacity 0.5s ease'; // Включаем transition только перед анимацией
+                errorMessage.style.visibility = 'visible';
+                errorMessage.style.opacity = 1;
+                errorMessage.style.transform = 'translateY(0)';
+
+                // Устанавливаем таймаут для скрытия
+                errorMessageTimeout = setTimeout(() => {
+                    errorMessage.style.transform = 'translateY(0)';
+                    errorMessage.style.opacity = 1;
+
+                    setTimeout(() => {
+                        errorMessage.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+                        errorMessage.style.transform = 'translateX(500px)';
+                        errorMessage.style.opacity = 0;
+                        setTimeout(() => {
+                            errorMessage.style.visibility = 'hidden';
+                            errorMessage.style.transition = 'none';
+                            errorMessage.style.transform = 'translateY(100%)';
+                        }, 500);
+                    }, 10);
+                }, 3000);
+            }, 10);
+        }
+
+        function checkDDNSConnection() {
+            fetch('http://gameswords.ddns.net/')
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Ошибка подключения к DDNS');
+                        showErrorMessage();
+                    } else {
+                        console.log('Подключение к DDNS установлено');
+                        // Можно добавить скрытие сообщения, если соединение восстановилось
+                        const errorMessage = document.getElementById('error-message');
+                        errorMessage.classList.remove('show');
+                        errorMessage.classList.add('hide');
+                        clearTimeout(errorMessageTimeout); // Очищаем таймаут, если он есть
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка подключения к DDNS', error);
+                    showErrorMessage();
+                });
+        }
+
+        setInterval(checkDDNSConnection, 5000);
+
+        const countElement = document.getElementById('count');
+        const image = document.querySelector('.image');
+        const clickSound = document.getElementById("clickSound");
+        const SERVER_URL = 'http://gameswords.ddns.net';
+        let currentCount = 0;
+
+        document.addEventListener('keydown', function (event) {
+            if (event.code === 'Space') {
+                image.classList.add('pressed');
+                setTimeout(() => {
+                    image.classList.remove('pressed');
+                }, 100);
+                image.click();
+                event.preventDefault();
+            }
+        });
+
+        function updateClickCount(newCount) {
+            currentCount = newCount;
+            updateCount(currentCount);
+        }
+
+        function getClickCount() {
+            fetch(`${SERVER_URL}/clicks`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.clickCount !== undefined) {
+                        updateClickCount(data.clickCount);
+                    }
+                })
+                .catch(error => console.error('Ошибка получения количества кликов:', error));
+        }
+
+        // Пример добавления таймера к элементу с id "ability-timer"
+        function startAbilityTimer(element, duration) {
+            let remainingTime = duration;
+            const timerElement = element.querySelector('.ability-timer');
+            const intervalId = setInterval(() => {
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                remainingTime--;
+
+                if (remainingTime < 0) {
+                    clearInterval(intervalId);
+                    // Код для окончания действия способности
+                    element.classList.remove('activated-ability');
+                    timerElement.remove();
+                }
+            }, 1000);
+        }
+
+        let clickCountPerSecond = 0;
+        let lastSecondStartTime = Date.now();
+        const blockDurations = [20000, 300000, 900000, 1800000, 3600000, 21600000];
+        const maxClicksPerSecond = 15;
+        let isBlocked = false;
+        let blockStartTime = 0;
+        let blockDuration = 20000; // Начальная блокировка 20 секунд
+        let lastBlockTime = 0; // Время последней блокировки
+        const escalationTime = 1200000; // 20 минут в миллисекундах
+        let blockLevel = 0; // Уровень блокировки (0, 1, 2, 3, 4, 5)
+        let clickBonus = 1;
+
+        const improvements = {
+            "armorAndWeapons": [
+                { name: "Шлем", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/helmet-icon.png" },
+                { name: "Тело", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/body-icon.png" },
+                { name: "Штаны", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/pants-icon.png" },
+                { name: "Ботинки", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/boots-icon.png" },
+                { name: "Щит", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/shield-icon.png" },
+                { name: "Меч", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "Textures/sword-icon.png" }
+            ],
+            "heroImprovements": [
+                { name: "Интелект", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/intellect-icon.png" },
+                { name: "Храбрость", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/courage-icon.png" },
+                { name: "Стойкость", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/endurance-icon.png" },
+                { name: "Уверенность", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/confidence-icon.png" },
+                { name: "Сила", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/strength-icon.png" },
+                { name: "Жизнь", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/life-icon.png" },
+                { name: "Реакция", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png" }
+            ],
+            "magic": [
+                { name: "Мана", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "path/to/mana-icon.png" },
+                { name: "Регенерация", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "path/to/regeneration-icon.png" },
+                { name: "Сила", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "path/to/power-icon.png" },
+                { name: "Невосприимчивость к огню", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/fire-resistance-icon.png" },
+                { name: "Основная Магия", level: 0, baseCost: 300, cost: 300, bonus: 0, totalBonus: 0, icon: "path/to/main-magic-icon.png" }, // Не улучшается
+            ]
+        };
+
+        const potions = [
+            { name: "Ускорение", baseCost: 100, cost: 100, icon: "path/to/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false },
+            { name: "Сопротивление магии", baseCost: 200, cost: 200, icon: "path/to/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false },
+            { name: "Телепортация", baseCost: 300, cost: 300, icon: "path/to/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false },
+            { name: "Невидимость", baseCost: 400, cost: 400, icon: "path/to/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false },
+            { name: "Режим берсерка", baseCost: 500, cost: 500, icon: "path/to/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false },
+            { name: "Исцеление", baseCost: 600, cost: 600, icon: "path/to/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false }
+        ];
+
+        const categoryNames = {
+            "armorAndWeapons": "Броня и оружие",
+            "heroImprovements": "Улучшение героя",
+            "magic": "Магия",
+            "potions": "Зелья"
+        };
+
+        function upgrade(item) {
+            if (currentCount >= item.cost && item.name !== "Основная Магия") {
+                currentCount -= item.cost;
+                item.level++;
+                item.cost = Math.ceil(item.baseCost * Math.pow(1.33, item.level));
+
+                // Обновляем бонус с повышением на 1.10
+                item.bonus *= 1.10;
+
+                // Обновляем общий бонус с учетом нового уровня
+                item.totalBonus += item.bonus;
+                clickBonus += item.bonus;
+
+                updateCount(currentCount);
+                displayImprovements();
+            }
+        }
+
+        function buyPotion(potion) {
+            if (currentCount >= potion.cost && !potion.purchased) {
+                currentCount -= potion.cost;
+                potion.purchased = true;
+
+                // Разблокировка способности
+                document.getElementById(potion.unlocksAbility).classList.add('unlocked');
+
+                updateCount(currentCount);
+                displayPotions();
+            }
+        }
+
+        function sellPotion(potion) {
+            if (potion.purchased) {
+                currentCount += potion.cost * 0.5; // Продаем за половину стоимости
+                potion.purchased = false;
+
+                // Блокировка способности
+                document.getElementById(potion.unlocksAbility).classList.remove('unlocked');
+
+                updateCount(currentCount);
+                displayPotions();
+            }
+        }
+
+        let activeAbilities = {};
+        let timers = {};
+
+        function activateAbility(id) {
+            const potion = getPotionById(id);
+            const abilityElement = document.getElementById(id);
+            abilityElement.classList.add('activated-ability');
+
+            let timerElement = abilityElement.querySelector('.ability-timer');
+            if (!timerElement) {
+                timerElement = document.createElement('div');
+                timerElement.classList.add('ability-timer');
+                abilityElement.appendChild(timerElement);
+            }
+
+            if (potion && potion.purchased) {
+                if (activeAbilities[id]) {
+                    console.log(`Способность ${id} уже активирована.`);
+                    return;
+                }
+
+                activeAbilities[id] = true;
+                switch (id) {
+                    case 'IncreasedMovementSpeed':
+                        increaseMovementSpeed();
+                        break;
+                    case 'MagicResistance':
+                        increaseMagicResistance();
+                        break;
+                    case 'Teleport':
+                        teleportPlayer();
+                        break;
+                    case 'Invisibility':
+                        makePlayerInvisible();
+                        break;
+                    case 'Berserk':
+                        activateBerserkMode();
+                        break;
+                    case 'Healing':
+                        healPlayer();
+                        break;
+                    default:
+                        console.log(`Неизвестная способность: ${id}`);
+                }
+                console.log(`Способность ${id} активирована!`);
+                startAbilityTimer(id, potion.duration);
+                setTimeout(() => deactivateAbility(id), potion.duration);
+            } else {
+                console.log(`Способность ${id} не может быть активирована, так как зелье не куплено`);
+            }
+        }
+
+        function startAbilityTimer(id, duration) {
+            const timerElement = document.getElementById(id).querySelector('.ability-timer');
+            let timeRemaining = duration / 1000; // Время в секундах
+
+            if (timers[id]) {
+                clearInterval(timers[id]);
+            }
+
+            timers[id] = setInterval(() => {
+                timerElement.textContent = `${timeRemaining}s`;
+                timeRemaining--;
+
+                if (timeRemaining < 0) {
+                    clearInterval(timers[id]);
+                    startCooldownTimer(id);
+                }
+            }, 1000);
+        }
+
+        function startCooldownTimer(id) {
+            const potion = getPotionById(id);
+            const timerElement = document.getElementById(id).querySelector('.ability-timer');
+            let cooldownRemaining = potion.cooldown / 1000; // Время в секундах
+
+            if (timers[id]) {
+                clearInterval(timers[id]);
+            }
+
+            timers[id] = setInterval(() => {
+                timerElement.textContent = `${cooldownRemaining}s`;
+                cooldownRemaining--;
+
+                if (cooldownRemaining < 0) {
+                    clearInterval(timers[id]);
+                    timerElement.textContent = '';
+                }
+            }, 1000);
+        }
+
+        function deactivateAbility(id) {
+            const abilityElement = document.getElementById(id);
+            abilityElement.classList.remove('activated-ability');
+
+            const potion = getPotionById(id);
+            activeAbilities[id] = false;
+
+            if (potion) {
+                console.log(`Способность ${id} деактивирована.`);
+                setTimeout(() => {
+                    console.log(`Способность ${id} снова доступна.`);
+                    activeAbilities[id] = false;
+                }, potion.cooldown);
+            }
+        }
+
+        function increaseMovementSpeed() {
+            // Логика увеличения скорости передвижения игрока
+            console.log('Скорость передвижения увеличена!');
+        }
+
+        function increaseMagicResistance() {
+            // Логика увеличения сопротивления магии
+            console.log('Сопротивление магии увеличено!');
+        }
+
+        function teleportPlayer() {
+            // Логика телепортации игрока
+            console.log('Игрок телепортирован!');
+        }
+
+        function makePlayerInvisible() {
+            // Логика невидимости игрока
+            console.log('Игрок невидим!');
+        }
+
+        let isBerserkActive = false;
+        let berserkCooldown = false;
+        let originalClickBonus; // Хранить оригинальный clickBonus
+
+        function activateBerserkMode() {
+            const berserkPotion = potions.find(potion => potion.unlocksAbility === 'Berserk');
+            if (!berserkPotion) {
+                console.log('Зелье режима берсерка не найдено.');
+                return;
+            }
+
+            const berserkDuration = berserkPotion.duration;
+            const berserkCooldownTime = berserkPotion.cooldown;
+
+            if (berserkCooldown) {
+                console.log('Режим берсерка находится на перезарядке.');
+                return;
+            }
+
+            if (!isBerserkActive) {
+                isBerserkActive = true;
+                console.log('Режим берсерка активирован! Увеличение урона на 33% на 1 минуту.');
+
+                // Увеличиваем clickBonus на 33%
+                originalClickBonus = clickBonus;
+                clickBonus *= 1.33;
+                // Обновить UI, если необходимо
+
+                // Таймер на 1 минуту для окончания режима берсерка
+                setTimeout(() => {
+                    isBerserkActive = false;
+                    console.log('Режим берсерка закончился. Урон восстановлен до нормального уровня.');
+
+                    // Восстанавливаем обычный clickBonus
+                    clickBonus = originalClickBonus;
+                    // Обновить UI, если необходимо
+
+                    // Устанавливаем перезарядку на 5 минут
+                    berserkCooldown = true;
+                    setTimeout(() => {
+                        berserkCooldown = false;
+                        console.log('Перезарядка режима берсерка закончилась. Способность снова доступна.');
+                    }, berserkCooldownTime); // Используем cooldown из const potions
+                }, berserkDuration); // Используем duration из const potions
+            }
+        }
+
+        function healPlayer() {
+            // Логика исцеления игрока
+            console.log('Игрок исцелен!');
+        }
+
+        function displayPotions() {
+            const potionsContainer = document.getElementById('potions-container');
+            if (potionsContainer) {
+                potionsContainer.innerHTML = ""; // Очистка контейнера зелий
+
+                const categoryContainer = document.createElement('div');
+                categoryContainer.className = 'upgrades-container';
+                potionsContainer.appendChild(categoryContainer);
+
+                potions.forEach(potion => {
+                    const potionItem = document.createElement('div');
+                    potionItem.className = 'potions-item';
+                    if (potion.purchased) {
+                        potionItem.classList.add('locked');
+                    }
+                    potionItem.onclick = () => buyPotion(potion);
+
+                    const potionIcon = document.createElement('div');
+                    potionIcon.className = 'potions-icon';
+                    const iconImg = document.createElement('img');
+                    iconImg.src = potion.icon;
+                    potionIcon.appendChild(iconImg);
+
+                    const potionDetails = document.createElement('div');
+                    potionDetails.className = 'potions-details';
+
+                    const potionName = document.createElement('div');
+                    potionName.className = 'potions-name';
+                    potionName.textContent = potion.name;
+
+                    const potionCost = document.createElement('div');
+                    potionCost.className = 'potions-cost';
+                    potionCost.textContent = `Стоимость: ${formatNumber(potion.cost)}`;
+
+                    potionDetails.appendChild(potionName);
+                    potionDetails.appendChild(potionCost);
+                    potionItem.appendChild(potionIcon);
+                    potionItem.appendChild(potionDetails);
+                    categoryContainer.appendChild(potionItem);
+                });
+            }
+            const potionBar = document.querySelector('.potion-bar');
+            if (potionBar) {
+                const existingPotionElements = {}; // Объект для хранения существующих элементов
+
+                // Собираем ссылки на существующие элементы, используя id способности как ключ
+                potionBar.querySelectorAll('.potion-item').forEach(item => {
+                    existingPotionElements[item.id] = item;
+                });
+
+                const fragment = document.createDocumentFragment();
+
+                potions.forEach(potion => {
+                    let potionElement = existingPotionElements[potion.unlocksAbility];
+
+                    if (!potionElement) {
+                        // Создаем новый элемент, если его нет
+                        potionElement = document.createElement('div');
+                        potionElement.className = 'potion-item';
+                        potionElement.id = potion.unlocksAbility;
+                    }
+
+                    // Создаем или обновляем контейнер иконки
+                    let iconContainer = potionElement.querySelector('.potion-icon-container');
+                    if (!iconContainer) {
+                        iconContainer = document.createElement('div');
+                        iconContainer.className = 'potion-icon-container';
+                        potionElement.appendChild(iconContainer);
+                    }
+
+                    // Создаем или обновляем иконку
+                    let iconImg = iconContainer.querySelector('.potion-icon');
+                    if (!iconImg) {
+                        iconImg = document.createElement('img');
+                        iconImg.className = 'potion-icon';
+                        iconContainer.appendChild(iconImg);
+                        iconImg.onclick = () => activateAbility(potion.unlocksAbility); // Назначаем обработчик только при создании
+                    }
+                    iconImg.src = potion.icon; // Всегда обновляем src иконки
+
+                    // Добавляем элемент в фрагмент (только если он новый)
+                    if (!existingPotionElements[potion.unlocksAbility]) {
+                        fragment.appendChild(potionElement);
+                    }
+                });
+
+                potionBar.appendChild(fragment); // Добавляем фрагмент в DOM (один раз)
+            }
+        }
+
+        function getPotionById(unlocksAbility) {
+            return potions.find(potion => potion.unlocksAbility === unlocksAbility);
+        }
+
+        function displayImprovements() {
+            const improvementsList = document.getElementById('improvements-list');
+            if (!improvementsList) {
+                console.error('Element with ID "improvements-list" not found');
+                return;
+            }
+
+            improvementsList.innerHTML = "";
+
+            for (const category in improvements) {
+                if (improvements.hasOwnProperty(category)) {
+                    const totalCategoryBonus = improvements[category].reduce((sum, item) => sum + item.totalBonus, 0);
+
+                    const categoryHeader = document.createElement('div');
+                    categoryHeader.style.display = 'flex';
+                    categoryHeader.style.justifyContent = 'space-between';
+                    categoryHeader.innerHTML = `<h3>${categoryNames[category]}</h3> <div>Общий бонус: ${formatNumber(totalCategoryBonus)}</div>`;
+                    improvementsList.appendChild(categoryHeader);
+
+                    const categoryContainer = document.createElement('div');
+                    categoryContainer.className = 'upgrades-container';
+                    improvementsList.appendChild(categoryContainer);
+
+                    improvements[category].forEach(item => {
+                        const improvementItem = document.createElement('div');
+                        improvementItem.className = 'improvement-item';
+                        improvementItem.onclick = () => upgrade(item);
+
+                        const icon = document.createElement('img');
+                        icon.src = item.icon;
+                        icon.className = 'improvement-icon';
+
+                        const details = document.createElement('div');
+                        details.className = 'improvement-details';
+
+                        const name = document.createElement('div');
+                        name.className = 'improvement-name';
+                        name.innerHTML = `${item.name} <span class="improvement-level">(Ур: ${item.level})</span>`;
+
+                        const bonus = document.createElement('div');
+                        bonus.className = 'improvement-bonus';
+                        bonus.innerHTML = `+${item.bonus.toFixed(2)} (Всего: ${formatNumber(item.totalBonus)})`;
+
+                        const cost = document.createElement('div');
+                        cost.className = 'improvement-cost';
+                        cost.textContent = `Стоимость: ${formatNumber(item.cost)}`;
+
+                        details.appendChild(name);
+                        details.appendChild(bonus);
+                        details.appendChild(cost);
+                        improvementItem.appendChild(icon);
+                        improvementItem.appendChild(details);
+                        categoryContainer.appendChild(improvementItem);
+                    });
+                }
+            }
+        }
+        displayImprovements();
+        displayPotions();
+
+        let activeSounds = [];
+        let isUpdating = true; // флаг обновления сообщения
+
+        function showMessage(message) {
+            const messageContainer = document.getElementById('message-container');
+            messageContainer.textContent = message;
+            messageContainer.style.display = 'block';
+        }
+
+        function hideMessage() {
+            const messageContainer = document.getElementById('message-container');
+            messageContainer.style.display = 'none';
+        }
+
+        function updateMessage() {
+            const currentTime = Date.now();
+            if (isBlocked) {
+                image.classList.add('blocked');
+                const timeLeft = (blockDuration - (currentTime - blockStartTime)) / 1000;
+                const timeLeftWhole = timeLeft.toString().split('.')[0]; // Извлечение целой части времени
+                if (timeLeft > 0) {
+                    showMessage(`Клики заблокированы! Осталось ${timeLeftWhole} секунд`);
+                } else {
+                    isBlocked = false;
+                    showMessage("Блокировка снята.");
+                    image.classList.remove('blocked');
+                    setTimeout(hideMessage, 3000); // Скрыть сообщение через 3 секунды
+                }
+            } else {
+                hideMessage();
+            }
+        }
+
+        setInterval(updateMessage, 1000); // Обновление сообщения каждую секунду
+
+        function clickSword(event) {
+            const currentTime = Date.now();
+
+            // Проверяем, заблокированы ли клики
+            if (isBlocked) {
+                // Убедимся, что мы не обновляем сообщение при клике, когда блокировка активна
+                return;
+            }
+
+            // Сбрасываем счетчик кликов, если прошла одна секунда
+            if (currentTime - lastSecondStartTime >= 1000) {
+                clickCountPerSecond = 0;
+                lastSecondStartTime = currentTime;
+            }
+
+            // Проверяем, не превышено ли максимальное количество кликов в секунду
+            if (clickCountPerSecond < maxClicksPerSecond) {
+                currentCount += clickBonus; // Увеличиваем количество кликов с учетом бонуса
+                updateCount(currentCount);
+                image.classList.add('active');
+                setTimeout(() => {
+                    image.classList.remove('active');
+                }, 100);
+
+                // Управление воспроизведением звука клика с разрешением трех кликов
+                if (activeSounds.length < 6) {
+                    const soundClone = clickSound.cloneNode(true);
+                    soundClone.volume = clickSound.volume; // Установка громкости
+                    soundClone.muted = clickSound.muted;   // Установка мутирования
+                    soundClone.currentTime = 0;
+                    soundClone.play();
+                    activeSounds.push(soundClone);
+
+                    soundClone.onended = () => {
+                        activeSounds = activeSounds.filter(sound => sound !== soundClone);
+                        soundClone.remove();
+                    };
+                } else {
+                    // Очистка активных звуков после трех кликов
+                    activeSounds.forEach(sound => {
+                        sound.pause();
+                        sound.currentTime = 0;
+                        sound.remove();
+                    });
+                    activeSounds = [];
+                }
+
+                clickCountPerSecond++;
+            } else {
+                showMessage("Слишком высокая скорость кликов! Блокировка.");
+
+                // Проверяем, было ли нарушение за последние 20 минут
+                if (currentTime - lastBlockTime < escalationTime) {
+                    blockLevel = Math.min(blockLevel + 1, blockDurations.length - 1); // Увеличиваем уровень, но не выше максимума
+                    blockDuration = blockDurations[blockLevel];
+                    showMessage(`Уровень блокировки повышен до ${blockLevel + 1}. Длительность: ${(blockDuration / 60000).toFixed(1)} минут`);
+                } else {
+                    blockLevel = 0; // Сбрасываем уровень блокировки, если прошло 20 минут
+                    blockDuration = blockDurations[blockLevel];
+                    showMessage(`Блокировка сброшена до ${blockLevel + 1}. Длительность: ${(blockDuration / 1000).toFixed(1)} секунд`);
+                }
+
+                isBlocked = true;
+                blockStartTime = currentTime;
+                lastBlockTime = currentTime; // Запоминаем время этой блокировки
+            }
+
+            scaleBackground();
+            createSparks(event);
+        }
+        // Получаем начальное количество кликов при загрузке страницы
+        getClickCount();
+        setInterval(getClickCount, 5000);
+
+        function playMusic() {
+            if (!musicPlaying && musicEnabled) {
+                gameMusic.play();
+                musicPlaying = true;
+            }
+        }
+
+        function stopMusic() {
+            if (musicPlaying) {
+                gameMusic.pause();
+                musicPlaying = false;
+            }
+        }
+
+        loadingMusicButton.addEventListener('click', () => {
+            musicEnabled = true;
+            playMusic();
+            loadingScreen.classList.add('hidden');
+        })
+
+        window.addEventListener('load', () => {
+            const loadingBar = document.querySelector('.loading-bar');
+            loadingBar.style.width = '100%';
+
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 2300);
+        });
+
+        const overlay = document.getElementById('overlay');
+        let currentPanel = null;
+
+        function showPanel(panelId, event) {
+            event.preventDefault();
+
+            if (currentPanel && currentPanel !== panelId) {
+                togglePanel(currentPanel);
+            }
+
+            togglePanel(panelId);
+        }
+
+        function togglePanel(panelId) {
+            const panel = document.getElementById(panelId);
+            panel.classList.toggle('active');
+            overlay.classList.toggle('active');
+
+            if (panel.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+                currentPanel = panelId; // Запоминаем ID текущей открытой панели
+                overlay.addEventListener('click', closePanelOutside);
+            } else {
+                document.body.style.overflow = 'auto';
+                currentPanel = null; // Сбрасываем ID
+                overlay.removeEventListener('click', closePanelOutside); // Важно: удаляем обработчик
+            }
+        }
+
+        function closePanelOutside(event) {
+            if (event.target === overlay) { // Проверяем, что клик был именно по оверлею
+                togglePanel(currentPanel); // Закрываем текущую открытую панель
+            }
+        }
+
+        function scaleBackground() {
+            if (graphicsQuality !== 'potato') {
+                const bg = document.querySelector('.bg');
+                bg.classList.add('scaled');
+                setTimeout(() => bg.classList.remove('scaled'), 200);
+            }
+        }
+
+        // Spark effect
+        let graphicsQuality = 'medium';
+        const sparkCounts = {
+            potato: 0,
+            low: 14,
+            medium: 21,
+            high: 28
+        };
+
+        function createSparks(event) {
+            const count = sparkCounts[graphicsQuality];
+            const swordImg = document.getElementById('sword');
+            const sparkLayer = document.getElementById('spark-layer');
+
+            if (!swordImg || !sparkLayer) return;
+
+            const rect = swordImg.getBoundingClientRect();
+            const containerRect = swordImg.parentNode.getBoundingClientRect();
+
+            for (let i = 0; i < count; i++) {
+                // Координаты относительно контейнера!
+                const randomX = rect.left - containerRect.left + Math.random() * rect.width;
+                const randomY = rect.top - containerRect.top + Math.random() * rect.height;
+
+                createSpark(randomX, randomY, sparkLayer);
+            }
+        }
+
+        function createSpark(x, y, sparkLayer) {
+            // ... (код createSpark остается без изменений, он должен добавлять искру в sparkLayer)
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            spark.style.left = x + 'px';
+            spark.style.top = y + 'px';
+            spark.style.width = Math.random() * 8 + 4 + 'px';
+            spark.style.height = spark.style.width;
+
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 50 + 50;
+            const vx = Math.cos(angle) * velocity;
+            const vy = Math.sin(angle) * velocity;
+
+            sparkLayer.appendChild(spark); // Добавляем искру в слой!
+
+            let posX = x;
+            let posY = y;
+            let life = 1;
+
+            function animate() {
+                if (life <= 0) {
+                    spark.remove();
+                    return;
+                }
+
+                posX += vx * 0.016;
+                posY += vy * 0.016;
+                life -= 0.016 * 2;
+
+                spark.style.left = posX + 'px';
+                spark.style.top = posY + 'px';
+                spark.style.opacity = life;
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        // Volume controls
+        const musicVolume = document.getElementById('musicVolume');
+        const sfxVolume = document.getElementById('sfxVolume');
+        const musicToggle = document.getElementById('musicToggle');
+        const sfxToggle = document.getElementById('sfxToggle');
+
+        musicVolume.addEventListener('input', (e) => {
+            const volume = e.target.value / 100;
+            gameMusic.volume = volume;
+        });
+
+        sfxVolume.addEventListener('input', (e) => {
+            const volume = e.target.value / 100;
+            clickSound.volume = volume;
+        });
+
+        musicToggle.addEventListener('click', () => {
+            musicToggle.classList.toggle('muted');
+            if (musicToggle.classList.contains('muted')) {
+                gameMusic.pause();
+            } else {
+                gameMusic.play();
+            }
+        });
+
+        sfxToggle.addEventListener('click', () => {
+            sfxToggle.classList.toggle('muted');
+            clickSound.muted = sfxToggle.classList.contains('muted');
+        });
+
+        // Graphics quality
+        document.querySelectorAll('.quality-option').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelector('.quality-option.active').classList.remove('active');
+                button.classList.add('active');
+                graphicsQuality = button.dataset.quality;
+            });
+        });
+
+    </script>
+</body>
+
+</html>
