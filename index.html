@@ -769,6 +769,38 @@
             /* Скрываем по умолчанию */
         }
 
+        .languageSelectButton {
+            width: 40%;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu {
+            display: flex;
+            /* Включить режим flexbox */
+            flex-wrap: wrap;
+            /* Разрешить перенос элементов на новую строку */
+            justify-content: center;
+            /* Центрировать кнопки по горизонтали */
+        }
+
+        .language-button {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            margin: 5px;
+        }
+
         @media (max-width: 768px) {
             .main-container {
                 position: absolute;
@@ -1076,7 +1108,7 @@
                     </div>
                 </div>
             </div>
-            <h3>Зелья</h3>
+            <h3><span data-i18n="potions"></span></h3>
             <div id="potions-container">
                 <div class="potions-item">
                     <div class="potions-icon">[Иконка]</div>
@@ -1142,36 +1174,47 @@
         <div class="panel-content">
             <h2><span data-i18n="Settings">Настройки</span></h2>
             <div class="settings-group">
-                <h3><span data-i18n="Music">Музыка</span></h3>
-                <div class="volume-control">
-                    <button class="volume-toggle" id="musicToggle">♪</button>
-                    <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="100">
-                </div>
+                <h3><span data-i18n="Lang">Язык</span></h3>
+                <button class="languageSelectButton" id="languageSelectBtn" onclick="showPanel('Lang-section', event)"
+                    data-i18n="SelectLanguage"></button>
             </div>
-            <div class="settings-group">
-                <h3><span data-i18n="SoundEffects">Звуковые эффекты</span></h3>
-                <div class="volume-control">
-                    <button class="volume-toggle" id="sfxToggle">♪</button>
-                    <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="100">
-                </div>
-            </div>
-            <div class="settings-group">
-                <h3><span data-i18n="Graphics-quality">Качество графики</span></h3>
-                <div class="graphics-quality">
-                    <button class="quality-option" data-quality="potato" data-i18n="Potato">Картофельное</button>
-                    <button class="quality-option" data-quality="low" data-i18n="Low">Низкое</button>
-                    <button class="quality-option active" data-quality="medium" data-i18n="Medium">Среднее</button>
-                    <button class="quality-option" data-quality="high" data-i18n="High">Максимальное</button>
-                </div>
-            </div>
-            <h3><span data-i18n="Lang">Язык</span></h3>
-            <select id="languageSelect">
-                <option value="ru">Русский</option>
-                <option value="en">English</option>
-                <option value="uk">Украинська</option>
-                <option value="jp">日本語</option>
-            </select>
         </div>
+        <div class="settings-group">
+            <h3><span data-i18n="Music">Музыка</span></h3>
+            <div class="volume-control">
+                <button class="volume-toggle" id="musicToggle">♪</button>
+                <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="100">
+            </div>
+        </div>
+        <div class="settings-group">
+            <h3><span data-i18n="SoundEffects">Звуковые эффекты</span></h3>
+            <div class="volume-control">
+                <button class="volume-toggle" id="sfxToggle">♪</button>
+                <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="100">
+            </div>
+        </div>
+        <div class="settings-group">
+            <h3><span data-i18n="Graphics-quality">Качество графики</span></h3>
+            <div class="graphics-quality">
+                <button class="quality-option" data-quality="potato" data-i18n="Potato">Картофельное</button>
+                <button class="quality-option" data-quality="low" data-i18n="Low">Низкое</button>
+                <button class="quality-option active" data-quality="medium" data-i18n="Medium">Среднее</button>
+                <button class="quality-option" data-quality="high" data-i18n="High">Максимальное</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div id="Lang-section" class="panel">
+        <div class="panel-content">
+            <h2><span data-i18n="Lang">Язык</span></h2>
+            <div class="menu">
+                <button class="language-button" data-lang="ru">Русский</button>
+                <button class="language-button" data-lang="en">English</button>
+                <button class="language-button" data-lang="uk">Український</button>
+                <button class="language-button" data-lang="jp">日本語</button>
+            </div>
+        </div>
+    </div>
     </div>
     <div class="navbar">
         <a href="#" onclick="showPanel('improvements-section', event)" class="nav-link">
@@ -1208,11 +1251,20 @@
     <script>
         let translations = {}; // Глобальная переменная для переводов
 
-        document.getElementById('languageSelect').addEventListener('change', (event) => {
-            loadTranslations(event.target.value);
+        loadTranslations('ru');
+
+        document.getElementById('languageSelectBtn').addEventListener('click', function () {
+            const langSection = document.getElementById('Lang-section');
+            langSection.classList.toggle('hidden');
         });
 
-        loadTranslations('ru');
+        document.querySelectorAll('#Lang-section .language-button').forEach(function (langOption) {
+            langOption.addEventListener('click', function () {
+                const selectedLang = this.getAttribute('data-lang');
+                loadTranslations(selectedLang);
+                document.getElementById('Lang-section').classList.add('hidden');
+            });
+        });
 
         async function loadTranslations(language) {
             try {
@@ -1229,7 +1281,9 @@
             const elements = document.querySelectorAll('[data-i18n]');
             elements.forEach(element => {
                 const key = element.dataset.i18n;
-                element.textContent = translations[key] || key;
+                if (translations[key] !== undefined) {
+                    element.textContent = translations[key];
+                }
             });
         }
 
@@ -1764,10 +1818,10 @@
 
                     const translatedCategory = translations[categoryNames[category]] || categoryNames[category];
                     categoryHeader.innerHTML = `
-              <h3 data-i18n="${categoryNames[category]}">${translatedCategory}</h3>
-              <div>
-                  <span data-i18n="CategoryTotalBonus">Общий бонус:</span> <span>${formatNumber(totalCategoryBonus)}</span>
-              </div>`;
+                    <h3 data-i18n="${categoryNames[category]}">${translatedCategory}</h3>
+                    <div>
+                    <span data-i18n="CategoryTotalBonus">Общий бонус:</span> <span>${formatNumber(totalCategoryBonus)}</span>
+                    </div>`;
                     improvementsList.appendChild(categoryHeader);
 
                     const categoryContainer = document.createElement('div');

@@ -48,5 +48,6 @@
   "bonus": "ボーナス",
   "totalBonus": "合計",
   "purchased": "購入済み",
-  "CategoryTotalBonus": "一般ボーナス"
+  "CategoryTotalBonus": "一般ボーナス",
+  "SelectLanguage": "言語を選択"
 }
