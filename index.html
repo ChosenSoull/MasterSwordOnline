@@ -5,7 +5,7 @@
     <meta name="csrf-token" content="{{csrfToken}}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кликер меча</title>
+    <title data-i18n="Page-title">Кликер меча</title>
     <link rel="icon" type="image/png" href="Textures/Favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="Textures/Favicon/favicon.svg" />
     <link rel="shortcut icon" href="Textures/Favicon/favicon.ico" />
@@ -919,11 +919,11 @@
         <div class="loading-bar-container">
             <div class="loading-bar"></div>
         </div>
-        <span id="loadingText">Loading...</span>
+        <span id="loadingText" data-i18n="Loading">Загрузка</span>
         <button id="loadingMusicButton">Включить музыку</button>
     </div>
 
-    <div id="error-message"> Произошла ошибка подключения. Пожалуйста, подождите включения
+    <div id="error-message" data-i18n="Error-message"> Произошла ошибка подключения. Пожалуйста, подождите включения
         серверов! </div>
 
     <div class="bg"></div>
@@ -956,14 +956,14 @@
     </div>
     <div id="profile-section" class="panel">
         <div class="panel-content">
-            <h2>Профиль</h2>
+            <h2><span data-i18n="Profile">Профиль</span></h2>
             <!-- Profile content -->
         </div>
     </div>
 
     <div id="improvements-section" class="panel">
         <div class="panel-content">
-            <h2>Улучшения</h2>
+            <h2><span data-i18n="Improvement">Улучшения</span></h2>
             <div id="improvements-list">
                 <h3>Броня и оружие</h3>
                 <div class="upgrades-container">
@@ -1128,61 +1128,67 @@
 
     <div id="leaders-section" class="panel">
         <div class="panel-content">
-            <h2>Списки лидеров</h2>
+            <h2><span data-i18n="Liderslist">Лидеры</span></h2>
             <!-- Leaders content -->
         </div>
     </div>
-    <div id="shop-section" class="panel">w
+    <div id="shop-section" class="panel">
         <div class="panel-content">
-            <h2>Магазин</h2>
+            <h2><span data-i18n="Shop">Магазин</span></h2>
             <!-- Shop content -->
         </div>
     </div>
     <div id="settings-section" class="panel">
         <div class="panel-content">
-            <h2>Настройки</h2>
+            <h2><span data-i18n="Settings">Настройки</span></h2>
             <div class="settings-group">
-                <h3>Музыка</h3>
+                <h3><span data-i18n="Music">Музыка</span></h3>
                 <div class="volume-control">
                     <button class="volume-toggle" id="musicToggle">♪</button>
                     <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="100">
                 </div>
             </div>
             <div class="settings-group">
-                <h3>Звуковые эффекты</h3>
+                <h3><span data-i18n="SoundEffects">Звуковые эффекты</span></h3>
                 <div class="volume-control">
                     <button class="volume-toggle" id="sfxToggle">♪</button>
                     <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="100">
                 </div>
             </div>
             <div class="settings-group">
-                <h3>Качество графики</h3>
+                <h3><span data-i18n="Graphics-quality">Качество графики</span></h3>
                 <div class="graphics-quality">
-                    <button class="quality-option" data-quality="potato">Картофельное</button>
-                    <button class="quality-option" data-quality="low">Низкое</button>
-                    <button class="quality-option active" data-quality="medium">Среднее</button>
-                    <button class="quality-option" data-quality="high">Максимальное</button>
+                    <button class="quality-option" data-quality="potato" data-i18n="Potato">Картофельное</button>
+                    <button class="quality-option" data-quality="low" data-i18n="Low">Низкое</button>
+                    <button class="quality-option active" data-quality="medium" data-i18n="Medium">Среднее</button>
+                    <button class="quality-option" data-quality="high" data-i18n="High">Максимальное</button>
                 </div>
             </div>
+            <h3><span data-i18n="Lang">Язык</span></h3>
+            <select id="languageSelect">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+                <option value="uk">Украинська</option>
+                <option value="jp">日本語</option>
+            </select>
         </div>
     </div>
-
     <div class="navbar">
         <a href="#" onclick="showPanel('improvements-section', event)" class="nav-link">
-            <img src="Textures/Icons/Amplification.png" alt="Улучшения" class="icon">
-            Улучшения
+            <img src="Textures/Icons/Amplification.png" alt="" class="icon">
+            <span data-i18n="Improvement">Улучшения</span>
         </a>
         <a href="#" onclick="showPanel('leaders-section', event)" class="nav-link">
-            <img src="Textures/Icons/Liders.png" alt="Лидеры" class="icon">
-            Лидеры
+            <img src="Textures/Icons/Liders.png" alt="" class="icon">
+            <span data-i18n="Liders">Лидеры</span>
         </a>
         <a href="#" onclick="showPanel('shop-section', event)" class="nav-link">
-            <img src="Textures/Icons/Shop.png" alt="Магазин" class="icon">
-            Магазин
+            <img src="Textures/Icons/Shop.png" alt="" class="icon">
+            <span data-i18n="Shop">Магазин</span>
         </a>
         <a href="#" onclick="showPanel('settings-section', event)" class="nav-link">
-            <img src="Textures/Icons/Settings.png" alt="Настройки" class="icon">
-            Настройки
+            <img src="Textures/Icons/Settings.png" alt="" class="icon">
+            <span data-i18n="Settings">Настройки</span>
         </a>
     </div>
 
@@ -1200,6 +1206,33 @@
     </audio>
 
     <script>
+        let translations = {}; // Глобальная переменная для переводов
+
+        document.getElementById('languageSelect').addEventListener('change', (event) => {
+            loadTranslations(event.target.value);
+        });
+
+        loadTranslations('ru');
+
+        async function loadTranslations(language) {
+            try {
+                const response = await fetch(`locales/${language}.json`);
+                const data = await response.json();
+                translations = data; // Сохраняем переводы в глобальной переменной
+                localize(); // Обновляем интерфейс
+            } catch (error) {
+                console.error('Ошибка при загрузке переводов:', error);
+            }
+        }
+
+        function localize() {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.dataset.i18n;
+                element.textContent = translations[key] || key;
+            });
+        }
+
         function formatNumber(num) {
             if (num >= 1000000000) {
                 return (num / 1000000000).toFixed(2) + 'млрд'; // Для чисел больше или равных миллиарду
@@ -1350,45 +1383,45 @@
 
         const improvements = {
             "armorAndWeapons": [
-                { name: "Шлем", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/helmet-icon.png" },
-                { name: "Тело", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/body-icon.png" },
-                { name: "Штаны", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/pants-icon.png" },
-                { name: "Ботинки", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/boots-icon.png" },
-                { name: "Щит", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/shield-icon.png" },
-                { name: "Меч", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "Textures/sword-icon.png" }
+                { name: "helmet", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/helmet-icon.png" },
+                { name: "body", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/body-icon.png" },
+                { name: "pants", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/pants-icon.png" },
+                { name: "boots", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/boots-icon.png" },
+                { name: "shield", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/shield-icon.png" },
+                { name: "sword", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "Textures/sword-icon.png" }
             ],
             "heroImprovements": [
-                { name: "Интелект", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/intellect-icon.png" },
-                { name: "Храбрость", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/courage-icon.png" },
-                { name: "Стойкость", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/endurance-icon.png" },
-                { name: "Уверенность", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/confidence-icon.png" },
-                { name: "Сила", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/strength-icon.png" },
-                { name: "Жизнь", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/life-icon.png" },
-                { name: "Реакция", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png" }
+                { name: "intellect", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/intellect-icon.png" },
+                { name: "courage", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/courage-icon.png" },
+                { name: "endurance", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/endurance-icon.png" },
+                { name: "confidence", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/confidence-icon.png" },
+                { name: "strength", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/strength-icon.png" },
+                { name: "life", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/life-icon.png" },
+                { name: "reaction", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png" }
             ],
             "magic": [
-                { name: "Мана", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "path/to/mana-icon.png" },
-                { name: "Регенерация", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "path/to/regeneration-icon.png" },
-                { name: "Сила", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "path/to/power-icon.png" },
-                { name: "Невосприимчивость к огню", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/fire-resistance-icon.png" },
-                { name: "Основная Магия", level: 0, baseCost: 300, cost: 300, bonus: 0, totalBonus: 0, icon: "path/to/main-magic-icon.png" }, // Не улучшается
+                { name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "path/to/mana-icon.png" },
+                { name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "path/to/regeneration-icon.png" },
+                { name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "path/to/power-icon.png" },
+                { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/fire-resistance-icon.png" },
+                { name: "mainMagic", level: 0, baseCost: 300, cost: 300, bonus: 0, totalBonus: 0, icon: "path/to/main-magic-icon.png" }
             ]
         };
 
         const potions = [
-            { name: "Ускорение", baseCost: 100, cost: 100, icon: "path/to/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false },
-            { name: "Сопротивление магии", baseCost: 200, cost: 200, icon: "path/to/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false },
-            { name: "Телепортация", baseCost: 300, cost: 300, icon: "path/to/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false },
-            { name: "Невидимость", baseCost: 400, cost: 400, icon: "path/to/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false },
-            { name: "Режим берсерка", baseCost: 500, cost: 500, icon: "path/to/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false },
-            { name: "Исцеление", baseCost: 600, cost: 600, icon: "path/to/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false }
+            { name: "speedPotion", baseCost: 100, cost: 100, icon: "path/to/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false },
+            { name: "magicResistancePotion", baseCost: 200, cost: 200, icon: "path/to/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false },
+            { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "path/to/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false },
+            { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "path/to/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false },
+            { name: "berserkPotion", baseCost: 500, cost: 500, icon: "path/to/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false },
+            { name: "healingPotion", baseCost: 600, cost: 600, icon: "path/to/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false }
         ];
 
         const categoryNames = {
-            "armorAndWeapons": "Броня и оружие",
-            "heroImprovements": "Улучшение героя",
-            "magic": "Магия",
-            "potions": "Зелья"
+            "armorAndWeapons": "armorAndWeapons",
+            "heroImprovements": "heroImprovements",
+            "magic": "magic",
+            "potions": "potions"
         };
 
         function upgrade(item) {
@@ -1616,92 +1649,96 @@
 
         function displayPotions() {
             const potionsContainer = document.getElementById('potions-container');
-            if (potionsContainer) {
-                potionsContainer.innerHTML = ""; // Очистка контейнера зелий
-
-                const categoryContainer = document.createElement('div');
-                categoryContainer.className = 'upgrades-container';
-                potionsContainer.appendChild(categoryContainer);
-
-                potions.forEach(potion => {
-                    const potionItem = document.createElement('div');
-                    potionItem.className = 'potions-item';
-                    if (potion.purchased) {
-                        potionItem.classList.add('locked');
-                    }
-                    potionItem.onclick = () => buyPotion(potion);
-
-                    const potionIcon = document.createElement('div');
-                    potionIcon.className = 'potions-icon';
-                    const iconImg = document.createElement('img');
-                    iconImg.src = potion.icon;
-                    potionIcon.appendChild(iconImg);
-
-                    const potionDetails = document.createElement('div');
-                    potionDetails.className = 'potions-details';
-
-                    const potionName = document.createElement('div');
-                    potionName.className = 'potions-name';
-                    potionName.textContent = potion.name;
-
-                    const potionCost = document.createElement('div');
-                    potionCost.className = 'potions-cost';
-                    potionCost.textContent = `Стоимость: ${formatNumber(potion.cost)}`;
-
-                    potionDetails.appendChild(potionName);
-                    potionDetails.appendChild(potionCost);
-                    potionItem.appendChild(potionIcon);
-                    potionItem.appendChild(potionDetails);
-                    categoryContainer.appendChild(potionItem);
-                });
+            if (!potionsContainer) {
+                console.error('Element with ID "potions-container" not found');
+                return;
             }
-            const potionBar = document.querySelector('.potion-bar');
-            if (potionBar) {
-                const existingPotionElements = {}; // Объект для хранения существующих элементов
 
-                // Собираем ссылки на существующие элементы, используя id способности как ключ
-                potionBar.querySelectorAll('.potion-item').forEach(item => {
-                    existingPotionElements[item.id] = item;
-                });
+            potionsContainer.innerHTML = ""; // Очистка контейнера зелий
 
-                const fragment = document.createDocumentFragment();
+            const categoryContainer = document.createElement('div');
+            categoryContainer.className = 'upgrades-container';
+            potionsContainer.appendChild(categoryContainer);
 
-                potions.forEach(potion => {
-                    let potionElement = existingPotionElements[potion.unlocksAbility];
+            potions.forEach(potion => {
+                const potionItem = document.createElement('div');
+                potionItem.className = 'potions-item';
+                if (potion.purchased) {
+                    potionItem.classList.add('locked');
+                }
+                potionItem.onclick = () => buyPotion(potion);
 
-                    if (!potionElement) {
-                        // Создаем новый элемент, если его нет
-                        potionElement = document.createElement('div');
-                        potionElement.className = 'potion-item';
-                        potionElement.id = potion.unlocksAbility;
-                    }
+                const potionIcon = document.createElement('div');
+                potionIcon.className = 'potions-icon';
+                const iconImg = document.createElement('img');
+                iconImg.src = potion.icon;
+                potionIcon.appendChild(iconImg);
 
-                    // Создаем или обновляем контейнер иконки
-                    let iconContainer = potionElement.querySelector('.potion-icon-container');
-                    if (!iconContainer) {
-                        iconContainer = document.createElement('div');
-                        iconContainer.className = 'potion-icon-container';
-                        potionElement.appendChild(iconContainer);
-                    }
+                const potionDetails = document.createElement('div');
+                potionDetails.className = 'potions-details';
 
-                    // Создаем или обновляем иконку
-                    let iconImg = iconContainer.querySelector('.potion-icon');
-                    if (!iconImg) {
-                        iconImg = document.createElement('img');
-                        iconImg.className = 'potion-icon';
-                        iconContainer.appendChild(iconImg);
-                        iconImg.onclick = () => activateAbility(potion.unlocksAbility); // Назначаем обработчик только при создании
-                    }
-                    iconImg.src = potion.icon; // Всегда обновляем src иконки
+                const potionName = document.createElement('div');
+                potionName.className = 'potions-name';
+                potionName.innerHTML = `<span data-i18n="${potion.name}">${translations[potion.name] || potion.name}</span>`;
 
-                    // Добавляем элемент в фрагмент (только если он новый)
-                    if (!existingPotionElements[potion.unlocksAbility]) {
-                        fragment.appendChild(potionElement);
-                    }
-                });
+                const potionCost = document.createElement('div');
+                potionCost.className = 'potions-cost';
+                potionCost.innerHTML = `<span data-i18n="cost">Стоимость</span>: ${formatNumber(potion.cost)}`;
 
-                potionBar.appendChild(fragment); // Добавляем фрагмент в DOM (один раз)
-            }
+                potionDetails.appendChild(potionName);
+                potionDetails.appendChild(potionCost);
+                potionItem.appendChild(potionIcon);
+                potionItem.appendChild(potionDetails);
+                categoryContainer.appendChild(potionItem);
+            });
+            localize();
+        }
+
+        const potionBar = document.querySelector('.potion-bar');
+        if (potionBar) {
+            const existingPotionElements = {}; // Объект для хранения существующих элементов
+
+            // Собираем ссылки на существующие элементы, используя id способности как ключ
+            potionBar.querySelectorAll('.potion-item').forEach(item => {
+                existingPotionElements[item.id] = item;
+            });
+
+            const fragment = document.createDocumentFragment();
+
+            potions.forEach(potion => {
+                let potionElement = existingPotionElements[potion.unlocksAbility];
+
+                if (!potionElement) {
+                    // Создаем новый элемент, если его нет
+                    potionElement = document.createElement('div');
+                    potionElement.className = 'potion-item';
+                    potionElement.id = potion.unlocksAbility;
+                }
+
+                // Создаем или обновляем контейнер иконки
+                let iconContainer = potionElement.querySelector('.potion-icon-container');
+                if (!iconContainer) {
+                    iconContainer = document.createElement('div');
+                    iconContainer.className = 'potion-icon-container';
+                    potionElement.appendChild(iconContainer);
+                }
+
+                // Создаем или обновляем иконку
+                let iconImg = iconContainer.querySelector('.potion-icon');
+                if (!iconImg) {
+                    iconImg = document.createElement('img');
+                    iconImg.className = 'potion-icon';
+                    iconContainer.appendChild(iconImg);
+                    iconImg.onclick = () => activateAbility(potion.unlocksAbility); // Назначаем обработчик только при создании
+                }
+                iconImg.src = potion.icon; // Всегда обновляем src иконки
+
+                // Добавляем элемент в фрагмент (только если он новый)
+                if (!existingPotionElements[potion.unlocksAbility]) {
+                    fragment.appendChild(potionElement);
+                }
+            });
+            potionBar.appendChild(fragment); // Добавляем фрагмент в DOM (один раз)
         }
 
         function getPotionById(unlocksAbility) {
@@ -1724,7 +1761,13 @@
                     const categoryHeader = document.createElement('div');
                     categoryHeader.style.display = 'flex';
                     categoryHeader.style.justifyContent = 'space-between';
-                    categoryHeader.innerHTML = `<h3>${categoryNames[category]}</h3> <div>Общий бонус: ${formatNumber(totalCategoryBonus)}</div>`;
+
+                    const translatedCategory = translations[categoryNames[category]] || categoryNames[category];
+                    categoryHeader.innerHTML = `
+              <h3 data-i18n="${categoryNames[category]}">${translatedCategory}</h3>
+              <div>
+                  <span data-i18n="CategoryTotalBonus">Общий бонус:</span> <span>${formatNumber(totalCategoryBonus)}</span>
+              </div>`;
                     improvementsList.appendChild(categoryHeader);
 
                     const categoryContainer = document.createElement('div');
@@ -1745,15 +1788,15 @@
 
                         const name = document.createElement('div');
                         name.className = 'improvement-name';
-                        name.innerHTML = `${item.name} <span class="improvement-level">(Ур: ${item.level})</span>`;
+                        name.innerHTML = `<span data-i18n="${item.name}">${translations[item.name] || item.name}</span> <span class="improvement-level"</span><span data-i18n="level"></span>${item.level}`;
 
                         const bonus = document.createElement('div');
                         bonus.className = 'improvement-bonus';
-                        bonus.innerHTML = `+${item.bonus.toFixed(2)} (Всего: ${formatNumber(item.totalBonus)})`;
+                        bonus.innerHTML = `+${item.bonus.toFixed(2)} <span data-i18n="bonus"></span> <span data-i18n="totalBonus"></span>: ${formatNumber(item.totalBonus)}`;
 
                         const cost = document.createElement('div');
                         cost.className = 'improvement-cost';
-                        cost.textContent = `Стоимость: ${formatNumber(item.cost)}`;
+                        cost.innerHTML = `<span data-i18n="cost">Стоимость</span>: ${formatNumber(item.cost)}`;
 
                         details.appendChild(name);
                         details.appendChild(bonus);
@@ -1764,6 +1807,7 @@
                     });
                 }
             }
+            localize();
         }
         displayImprovements();
         displayPotions();
