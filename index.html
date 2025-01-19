@@ -164,7 +164,7 @@
             transition: opacity 0.5s ease-in-out;
         }
 
-        #loadingText{
+        #loadingText {
             color: #ffffff;
             text-shadow: 2px 2px 4px #000000;
         }
@@ -182,7 +182,7 @@
             border-radius: 10px;
             overflow: hidden;
             position: relative;
-            border: 4px solid white;
+            border: 4px solid #93501F;
         }
 
         .loading-bar {
@@ -792,8 +792,6 @@
             /* Включить режим flexbox */
             flex-wrap: wrap;
             /* Разрешить перенос элементов на новую строку */
-            justify-content: center;
-            /* Центрировать кнопки по горизонтали */
         }
 
         .language-button {
@@ -904,6 +902,19 @@
                 left: 1.3rem;
                 bottom: 6rem;
             }
+
+            .language-button {
+                padding: 8px 16px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 4px;
+                color: white;
+                cursor: pointer;
+                transition: all 0.3s;
+                width: 46%;
+                text-align: center;
+                margin: 5px;
+            }
         }
 
         @media (min-width: 769px) {
@@ -947,6 +958,18 @@
             .panel:not(.active) {
                 transform: translateX(130%);
                 animation-name: slideOut;
+            }
+
+            .language-button {
+                padding: 8px 16px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 4px;
+                color: white;
+                cursor: pointer;
+                transition: all 0.3s;
+                width: 31%;
+                text-align: center;
             }
         }
     </style>
@@ -1254,7 +1277,7 @@
     <audio id="clickSound" preload="auto">
         <source src="soundclick.mp3" type="audio/mpeg">
     </audio>
-
+    <script src="hammer.min.js"></script>
     <script>
         let translations = {}; // Глобальная переменная для переводов
 
@@ -1805,6 +1828,18 @@
         function getPotionById(unlocksAbility) {
             return potions.find(potion => potion.unlocksAbility === unlocksAbility);
         }
+
+        const hammertime = new Hammer(potionBar);
+
+        hammertime.on('panleft', function (event) {
+            potionBar.style.transition = 'transform 0.3s ease-out'; 
+            potionBar.style.transform = 'translateX(-120%)';
+        });
+
+        hammertime.on('panright', function (event) {
+            potionBar.style.transition = 'transform 0.3s ease-out'; 
+            potionBar.style.transform = 'translateX(0)';
+        });
 
         function displayImprovements() {
             const improvementsList = document.getElementById('improvements-list');
