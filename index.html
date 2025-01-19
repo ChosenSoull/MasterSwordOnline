@@ -160,7 +160,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 10;
+            z-index: 100;
             transition: opacity 0.5s ease-in-out;
         }
 
@@ -868,17 +868,16 @@
             }
 
             .panel-content {
-                padding-bottom: 60px;
+                padding-bottom: 80px;
                 overflow-y: auto;
             }
 
             #error-message {
-                z-index: 1;
+                z-index: 7;
                 position: fixed;
-                left: 50%;
-                width: 90%;
-                bottom: 2rem;
-                right: 2rem;
+                left: 1.3rem;
+                bottom: 5.5rem;
+                right: 1.3rem;
                 background-color: rgba(0, 0, 0, 0.9);
                 color: white;
                 padding: 1rem 2rem;
@@ -896,6 +895,7 @@
                 left: 50%;
                 width: 90%;
                 bottom: 1rem;
+                z-index: 10;
             }
 
             .potion-bar {
@@ -1202,37 +1202,38 @@
     </div>
     <div id="settings-section" class="panel">
         <div class="panel-content">
-            <h2><span data-i18n="Settings">Настройки</span></h2>
+            <div>
+                <h2><span data-i18n="Settings">Настройки</span></h2>
+                <div class="settings-group">
+                    <h3><span data-i18n="Lang">Язык</span></h3>
+                    <button class="languageSelectButton" id="languageSelectBtn"
+                        onclick="showPanel('Lang-section', event)" data-i18n="SelectLanguage"></button>
+                </div>
+            </div>
             <div class="settings-group">
-                <h3><span data-i18n="Lang">Язык</span></h3>
-                <button class="languageSelectButton" id="languageSelectBtn" onclick="showPanel('Lang-section', event)"
-                    data-i18n="SelectLanguage"></button>
+                <h3><span data-i18n="Music">Музыка</span></h3>
+                <div class="volume-control">
+                    <button class="volume-toggle" id="musicToggle">♪</button>
+                    <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="100">
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3><span data-i18n="SoundEffects">Звуковые эффекты</span></h3>
+                <div class="volume-control">
+                    <button class="volume-toggle" id="sfxToggle">♪</button>
+                    <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="100">
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3><span data-i18n="Graphics-quality">Качество графики</span></h3>
+                <div class="graphics-quality">
+                    <button class="quality-option" data-quality="potato" data-i18n="Potato">Картофельное</button>
+                    <button class="quality-option" data-quality="low" data-i18n="Low">Низкое</button>
+                    <button class="quality-option active" data-quality="medium" data-i18n="Medium">Среднее</button>
+                    <button class="quality-option" data-quality="high" data-i18n="High">Максимальное</button>
+                </div>
             </div>
         </div>
-        <div class="settings-group">
-            <h3><span data-i18n="Music">Музыка</span></h3>
-            <div class="volume-control">
-                <button class="volume-toggle" id="musicToggle">♪</button>
-                <input type="range" class="volume-slider" id="musicVolume" min="0" max="100" value="100">
-            </div>
-        </div>
-        <div class="settings-group">
-            <h3><span data-i18n="SoundEffects">Звуковые эффекты</span></h3>
-            <div class="volume-control">
-                <button class="volume-toggle" id="sfxToggle">♪</button>
-                <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="100">
-            </div>
-        </div>
-        <div class="settings-group">
-            <h3><span data-i18n="Graphics-quality">Качество графики</span></h3>
-            <div class="graphics-quality">
-                <button class="quality-option" data-quality="potato" data-i18n="Potato">Картофельное</button>
-                <button class="quality-option" data-quality="low" data-i18n="Low">Низкое</button>
-                <button class="quality-option active" data-quality="medium" data-i18n="Medium">Среднее</button>
-                <button class="quality-option" data-quality="high" data-i18n="High">Максимальное</button>
-            </div>
-        </div>
-    </div>
     </div>
     <div id="Lang-section" class="panel">
         <div class="panel-content">
@@ -1832,12 +1833,12 @@
         const hammertime = new Hammer(potionBar);
 
         hammertime.on('panleft', function (event) {
-            potionBar.style.transition = 'transform 0.3s ease-out'; 
+            potionBar.style.transition = 'transform 0.3s ease-out';
             potionBar.style.transform = 'translateX(-120%)';
         });
 
         hammertime.on('panright', function (event) {
-            potionBar.style.transition = 'transform 0.3s ease-out'; 
+            potionBar.style.transition = 'transform 0.3s ease-out';
             potionBar.style.transform = 'translateX(0)';
         });
 
