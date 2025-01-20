@@ -1,0 +1,991 @@
+body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Zametka_Parletter', sans-serif;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE 10+ */
+    user-select: none;
+    /* Стандарт */
+}
+
+.bg {
+    background-image: url('../Textures/background.jpg');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    transition: transform 0.2s ease-out;
+}
+
+.bg.scaled {
+    transform: scale(1.01);
+}
+
+@font-face {
+    font-family: 'Zametka_Parletter';
+    src: url('../fonts/zametka_parletter-webfont.woff2') format('woff2'),
+        url('../fonts/zametka_parletter-webfont.woff') format('woff'),
+        url('../fonts/myfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.main-container {
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    /* Changed to align with the new layout */
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+}
+
+.count {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    position: absolute;
+    /* Абсолютное позиционирование */
+    top: -60%;
+    /* Отступ сверху */
+    left: 50%;
+    /* Центрирование по горизонтали */
+    transform: translateX(-50%);
+    /* Точное центрирование */
+    z-index: 3;
+    /* Поверх меча и искр */
+    color: white;
+    font-size: 42px;
+    text-shadow: 2px 2px 4px #000000;
+    /* Добавляем тень для лучшей читаемости */
+}
+
+.coin-icon {
+    width: 40px;
+    /* Размер изображения */
+    height: 40px;
+    margin-right: 5px;
+    /* Отступ между изображением и текстом */
+}
+
+.image-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    cursor: pointer;
+}
+
+.image {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    /* Для старых версий Safari */
+    -moz-user-select: none;
+    /* Для Firefox */
+    -ms-user-select: none;
+    will-change: transform;
+    transition: transform 0.1s ease-in-out;
+    z-index: 2;
+}
+
+.image:active {
+    will-change: transform;
+    transform: scale(0.9);
+}
+
+.image.pressed {
+    /* Новый класс для анимации */
+    will-change: transform;
+    transform: scale(0.9);
+}
+
+.image.blocked {
+    content: url("Textures/1lvllock.png");
+    position: absolute;
+    /* Чтобы псевдоэлемент накладывался на изображение */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Отключаем обработку событий мыши */
+    user-select: none;
+    -webkit-user-select: none;
+    /* Для старых версий Safari */
+    -moz-user-select: none;
+    /* Для Firefox */
+    -ms-user-select: none;
+}
+
+#loadingScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position-y: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#loadingText {
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.loading-logo {
+    width: 300px;
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+.loading-bar-container {
+    width: 300px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    border: 4px solid #93501F;
+}
+
+.loading-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            #000000 0%,
+            #3a3a3a 17%,
+            #474747 33%,
+            #6b6b6b 50%,
+            #a8a8a8 67%,
+            #d1d1d1 83%,
+            #ffffff 100%);
+    transition: width 6s ease-in-out;
+    animation: rainbow-move 6s linear infinite;
+}
+
+@keyframes rainbow-move {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Volume Controls */
+.volume-control {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    width: 200px;
+    height: 4px;
+    background: linear-gradient(to right, #ffffff 0%, #ffffff 100%);
+    border-radius: 2px;
+    outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.volume-toggle {
+    background: none;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all 0.3s;
+}
+
+.volume-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.volume-toggle.muted {
+    border-color: #ff0000;
+    color: #ff0000;
+}
+
+/* Spark Effect */
+.spark {
+    position: absolute;
+    pointer-events: none;
+    background: #ffd700;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: spark-fade 0.5s ease-out forwards;
+    z-index: 1;
+}
+
+@keyframes spark-fade {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+    }
+}
+
+.graphics-quality {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.quality-option {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.quality-option.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Panel Styles */
+.panel {
+    position: fixed;
+    right: 1rem;
+    top: 1rem;
+    width: calc(50% - 2rem);
+    height: calc(100vh - 2rem);
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 2px solid white;
+    border-radius: 20px;
+    color: white;
+    padding: 2rem;
+    box-sizing: border-box;
+    z-index: 3;
+    overflow: auto;
+    /* Позволяет скролл */
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    /* Для Firefox */
+    -ms-overflow-style: none;
+    /* Для Internet Explorer и Edge */
+}
+
+.panel::-webkit-scrollbar {
+    display: none;
+    /* Для Chrome, Safari и Opera */
+}
+
+.panel.active {
+    display: block;
+}
+
+.panel:not(.active) {
+    animation-name: slideOut;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: none;
+}
+
+#overlay.active {
+    display: block;
+}
+
+
+.panel h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Navigation Bar Styles */
+.navbar {
+    position: fixed;
+    bottom: 1rem;
+    left: 25%;
+    transform: translateX(-50%);
+    width: auto;
+    background-color: #000;
+    border: 2px solid white;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-around;
+    z-index: 3;
+}
+
+.navbar a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    font-size: x-small;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+}
+
+.navbar a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.icon {
+    width: 35px;
+    /* Размер иконок */
+    height: 35px;
+    margin-bottom: 0px;
+    /* Отступ между иконкой и текстом */
+    z-index: 4;
+}
+
+/* Error Message Styles */
+#error-message {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 1rem 2rem;
+    border: 2px solid white;
+    border-radius: 10px;
+    z-index: 5;
+    visibility: hidden;
+    animation: none;
+    /* Отключаем анимацию по умолчанию */
+}
+
+#spark-layer {
+    position: absolute;
+    /* Важно для позиционирования относительно контейнера */
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* Занимает всю ширину контейнера */
+    height: 100%;
+    /* Занимает всю высоту контейнера */
+    z-index: 1;
+    /* Под мечом */
+    pointer-events: none;
+    /* Чтобы клики проходили сквозь слой */
+}
+
+.account-panel {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    align-items: center;
+    background-color: #000;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    z-index: 3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+    /* Позволяем содержимому выходить за пределы панели */
+}
+
+.avatar-frame {
+    position: relative;
+    width: 4rem;
+    /* Устанавливаем размер рамки */
+    height: 4rem;
+    /* Устанавливаем размер рамки */
+    margin-right: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar {
+    width: 3rem;
+    /* Фиксированный размер аватарки */
+    height: 3rem;
+    /* Фиксированный размер аватарки */
+    object-fit: cover;
+    border-radius: 50%;
+    /* Делаем аватарку круглой */
+    z-index: 0;
+    /* Аватарка под рамкой */
+}
+
+.frame {
+    position: absolute;
+    /* Смещаем вправо на ширину отступа + половина ширины рамки */
+    max-width: 8rem;
+    max-height: 8rem;
+    /* Размер рамки больше, чем у аватарки */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Делаем рамку круглой */
+    z-index: 3;
+    /* Убедитесь, что z-index достаточно высокий */
+    pointer-events: none;
+    /* Отключаем взаимодействие с рамкой */
+}
+
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+.account-name {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.account-id {
+    font-size: 0.875rem;
+    margin: 0;
+    opacity: 0.7;
+}
+
+.panel-content h2,
+.panel-content h3 {
+    margin-top: 0;
+    color: #fff;
+}
+
+.panel-content ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.panel-content ul li {
+    margin-bottom: 10px;
+}
+
+.improvement-item {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 5px;
+    /* Уменьшить padding */
+    margin-bottom: 5px;
+    /* Уменьшить margin */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    justify-content: space-between;
+    min-width: 0;
+    /* Позволяет тексту сжиматься */
+}
+
+.improvement-item:hover {
+    background-color: #555;
+}
+
+.improvement-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 5px;
+    /* Уменьшить margin */
+}
+
+.improvement-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* Уменьшить промежутки между элементами */
+}
+
+.improvement-name {
+    font-weight: bold;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    font-size: clamp(0.8rem, 1.0rem, 1.3rem);
+    /* Используем clamp для динамического изменения размера текста */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    /* Позволяет тексту уменьшаться */
+}
+
+.improvement-level {
+    color: #aaa;
+    margin-left: 5px;
+    font-size: clamp(0.6rem, 0.8vmax, 1.2rem);
+    /* Используем clamp для динамического изменения размера текста */
+    white-space: nowrap;
+    /* Запрещаем перенос текста */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    /* Позволяет тексту уменьшаться */
+}
+
+.improvement-bonus,
+.improvement-cost {
+    color: #aaa;
+    font-size: 0.8rem;
+    /* Уменьшить размер шрифта */
+    margin: 0;
+    /* Уменьшить отступы */
+}
+
+.upgrades-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 5px;
+    /* Уменьшить промежутки между элементами */
+}
+
+/*Не путать Potion используеться для bar-а снизу слева а potions для магазина улучшений*/
+.potion-bar {
+    position: fixed;
+    overflow-y: auto;
+    top: 8rem;
+    bottom: 1rem;
+    /* Положение в нижнем углу */
+    left: 1rem;
+    /* Положение в левом углу */
+    background-color: #000;
+    border: 2px solid white;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    /* Вертикальная ориентация */
+    align-items: center;
+    /* Центрирование содержимого по горизонтали */
+    z-index: 2;
+    padding: 0.5rem;
+    width: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    /* Для Firefox */
+    -ms-overflow-style: none;
+    /* Ширина по содержимому */
+}
+
+.potion-bar-animation {
+    position: fixed;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0);
+    top: 8rem;
+    bottom: 1rem;
+    /* Положение в нижнем углу */
+    left: 1rem;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    /* Вертикальная ориентация */
+    align-items: center;
+    /* Центрирование содержимого по горизонтали */
+    z-index: 1;
+    padding: 0.5rem;
+    width: 60px;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    /* Для Firefox */
+    -ms-overflow-style: none;
+    /* Ширина по содержимому */
+}
+
+.potion-bar::-webkit-scrollbar {
+    display: none;
+    /* Для Chrome, Safari и Opera */
+}
+
+.potion-item {
+    position: relative;
+    color: white;
+    margin: 10px 0;
+    /* Отступы между элементами по вертикали */
+    cursor: pointer;
+}
+
+.potion-icon {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    z-index: 4;
+}
+
+.potion-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ability-element {
+    position: relative;
+    display: inline-block;
+}
+
+.ability-element img {
+    display: block;
+}
+
+.ability-timer {
+    position: absolute;
+    top: 5px;
+    /* Увеличил отступ, чтобы таймер был выше */
+    left: 50%;
+    /* Центрирование по горизонтали */
+    transform: translateX(-50%);
+    /* Точное центрирование */
+    color: #fff;
+    padding: 5px;
+    text-align: center;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    z-index: 5;
+}
+
+.activated-ability .potion-icon {
+    transform: scale(1.2);
+    /* Увеличение до 120% */
+}
+
+.potions-item {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 5px;
+    /* Уменьшить padding */
+    margin-bottom: 5px;
+    /* Уменьшить margin */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    justify-content: space-between;
+    min-width: 0;
+    /* Позволяет тексту сжиматься */
+}
+
+.potions-item:hover {
+    background-color: #555;
+}
+
+.potions-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 5px;
+    /* Уменьшить margin */
+}
+
+.potions-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* Уменьшить промежутки между элементами */
+}
+
+.potions-name {
+    font-weight: bold;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    font-size: clamp(0.8rem, 1.0rem, 1.3rem);
+    /* Используем clamp для динамического изменения размера текста */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    /* Позволяет тексту уменьшаться */
+}
+
+.potions-level {
+    color: #aaa;
+    margin-left: 5px;
+    font-size: clamp(0.6rem, 0.8vmax, 1.2rem);
+    /* Используем clamp для динамического изменения размера текста */
+    white-space: nowrap;
+    /* Запрещаем перенос текста */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    /* Позволяет тексту уменьшаться */
+}
+
+.potions-cost {
+    color: #aaa;
+    font-size: 0.8rem;
+    /* Уменьшить размер шрифта */
+    margin: 0;
+    /* Уменьшить отступы */
+}
+
+.message-container {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    z-index: 10;
+    display: none;
+    /* Скрываем по умолчанию */
+}
+
+.languageSelectButton {
+    width: 40%;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.menu {
+    display: flex;
+    /* Включить режим flexbox */
+    flex-wrap: wrap;
+    /* Разрешить перенос элементов на новую строку */
+}
+
+.language-button {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    margin: 5px;
+}
+
+@media (max-width: 1079px) {
+    .main-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .panel {
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%) translateY(100%);
+        width: 100%;
+        max-width: 475px;
+        height: calc(100vh - 1px);
+        border-radius: 10px 10px 0 0;
+        box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.3);
+        position: fixed;
+        box-sizing: border-box;
+        z-index: 4;
+        overflow-y: auto;
+        animation-duration: 0.3s;
+        animation-timing-function: ease-out;
+        animation-fill-mode: forwards;
+        transform: translate3d(0, 0, 0);
+        overscroll-behavior: contain;
+    }
+
+    .panel.active {
+        animation-name: slideIn;
+        display: block;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(-50%) translateY(100%);
+        }
+
+        to {
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        to {
+            transform: translateX(-50%) translateY(100%);
+        }
+    }
+
+    .panel:not(.active) {
+        animation-name: slideOut;
+        display: block;
+    }
+
+    .panel-content {
+        padding-bottom: 80px;
+        overflow-y: auto;
+    }
+
+    #error-message {
+        z-index: 7;
+        position: fixed;
+        left: 1.3rem;
+        bottom: 5.5rem;
+        right: 1.3rem;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 1rem 2rem;
+        border: 2px solid white;
+        border-radius: 10px;
+        visibility: hidden;
+        animation: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* Отключаем анимацию по умолчанию */
+    }
+
+    .navbar {
+        left: 50%;
+        width: 90%;
+        bottom: 1rem;
+        z-index: 10;
+    }
+
+    .potion-bar {
+        left: 1.3rem;
+        bottom: 6rem;
+    }
+
+    .language-button {
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 46%;
+        text-align: center;
+        margin: 5px;
+    }
+}
+
+@media (min-width: 1080px) {
+    .main-container {
+        width: 50%;
+    }
+
+    .panel {
+        width: 50%;
+        transform: translateX(100%);
+        /* Перемещение элемента вне области видимости */
+        transition: transform 0.5s ease-in-out;
+        /* Начальное положение вне области видимости */
+    }
+
+    .panel.active {
+        transform: translateX(0);
+        /* Анимация появления */
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+        }
+
+        to {
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(100%);
+        }
+    }
+
+    .panel:not(.active) {
+        transform: translateX(130%);
+        animation-name: slideOut;
+    }
+
+    .language-button {
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 31%;
+        text-align: center;
+    }
+
+    .gray-button {
+        width: 94%;
+        height: 60px;
+        --white: #ffffff;
+        --gray-100: #d1d1d1;
+        --gray-400: #a1a1a1;
+        --gray-500: #818181;
+    }
+}
