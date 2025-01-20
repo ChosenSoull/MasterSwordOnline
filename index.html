@@ -625,9 +625,33 @@
             /* Вертикальная ориентация */
             align-items: center;
             /* Центрирование содержимого по горизонтали */
-            z-index: 1;
+            z-index: 2;
             padding: 0.5rem;
             width: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: none;
+            /* Для Firefox */
+            -ms-overflow-style: none;
+            /* Ширина по содержимому */
+        }
+
+        .potion-bar-animation {
+            position: fixed;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0);
+            top: 8rem;
+            bottom: 1rem;
+            /* Положение в нижнем углу */
+            left: 1rem;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            /* Вертикальная ориентация */
+            align-items: center;
+            /* Центрирование содержимого по горизонтали */
+            z-index: 1;
+            padding: 0.5rem;
+            width: 60px;
             overscroll-behavior: contain;
             scrollbar-width: none;
             /* Для Firefox */
@@ -1269,6 +1293,7 @@
     <div id="potion-list"></div>
     <div class="potion-bar">
     </div>
+    <div class="potion-bar-animation"></div>
 
     <audio id="gameMusic" loop preload="auto">
         <source src="Returning Home.mp3" type="audio/mpeg">
@@ -1830,14 +1855,17 @@
             return potions.find(potion => potion.unlocksAbility === unlocksAbility);
         }
 
+        const potionanimation= document.querySelector('.potion-bar-animation');
+
+        const hammertimeoff = new Hammer(potionanimation);
         const hammertime = new Hammer(potionBar);
 
         hammertime.on('panleft', function (event) {
             potionBar.style.transition = 'transform 0.3s ease-out';
-            potionBar.style.transform = 'translateX(-120%)';
+            potionBar.style.transform = 'translateX(-130%)';
         });
 
-        hammertime.on('panright', function (event) {
+        hammertimeoff.on('panright', function (event) {
             potionBar.style.transition = 'transform 0.3s ease-out';
             potionBar.style.transform = 'translateX(0)';
         });
