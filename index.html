@@ -11,6 +11,7 @@
     <link rel="shortcut icon" href="Textures/Favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="Textures/Favicon/apple-touch-icon.png" />
     <link rel="manifest" href="Textures/Favicon/site.webmanifest" />
+    <link rel="stylesheet" type="text/css" href="Css/logo.css">
     <style>
         body,
         html {
@@ -287,10 +288,9 @@
             }
         }
 
-        /* Graphics Quality Selector */
         .graphics-quality {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 10px;
             margin: 20px 0;
         }
@@ -830,7 +830,7 @@
             margin: 5px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1079px) {
             .main-container {
                 position: absolute;
                 top: 50%;
@@ -941,7 +941,7 @@
             }
         }
 
-        @media (min-width: 769px) {
+        @media (min-width: 1080px) {
             .main-container {
                 width: 50%;
             }
@@ -994,6 +994,15 @@
                 transition: all 0.3s;
                 width: 31%;
                 text-align: center;
+            }
+
+            .gray-button {
+                width: 94%;
+                height: 60px;
+                --white: #ffffff;
+                --gray-100: #d1d1d1;
+                --gray-400: #a1a1a1;
+                --gray-500: #818181;
             }
         }
     </style>
@@ -1257,7 +1266,42 @@
                     <button class="quality-option" data-quality="high" data-i18n="High">Максимальное</button>
                 </div>
             </div>
+            <div class="settings-group">
+                <h3><span data-i18n="ContactUs"></span></h3>
+                <h4><span data-i18n="OpenSourse"></span></h4>
+                <div class="graphics-quality">
+                    <button class="button gray-button" id="grayButton">
+                        <div class="wrap">
+                            <div class="outlineGithub"></div>
+                            <div class="content">
+                                <img src="Textures/Icons/Github.png" alt="Логотип" />
+                                Github
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                <h4><span data-i18n="SocialNetworks"></span></h4>
+                <button class="button purple-button" id="purpleButton">
+                    <div class="wrap">
+                        <div class="outline"></div>
+                        <div class="content">
+                            <img src="Textures/Icons/Discord.webp" alt="Логотип" />
+                            Discord
+                        </div>
+                    </div>
+                </button>
+                <button class="button blue-button" id="blueButton">
+                    <div class="wrap">
+                        <div class="outline"></div>
+                        <div class="content">
+                            <img src="Textures/Icons/Telegram.png" alt="Логотип" />
+                            Telegram
+                        </div>
+                    </div>
+                </button>
+            </div>
         </div>
+    </div>
     </div>
     <div id="Lang-section" class="panel">
         <div class="panel-content">
@@ -1303,7 +1347,8 @@
     <audio id="clickSound" preload="auto">
         <source src="soundclick.mp3" type="audio/mpeg">
     </audio>
-    <script src="hammer.min.js"></script>
+    <script src="JavaScript/hammer.min.js"></script>
+    <script src="JavaScript/logo.js"></script>
     <script>
         let translations = {}; // Глобальная переменная для переводов
 
@@ -1855,7 +1900,7 @@
             return potions.find(potion => potion.unlocksAbility === unlocksAbility);
         }
 
-        const potionanimation= document.querySelector('.potion-bar-animation');
+        const potionanimation = document.querySelector('.potion-bar-animation');
 
         const hammertimeoff = new Hammer(potionanimation);
         const hammertime = new Hammer(potionBar);
