@@ -1,10 +1,5 @@
 function createHPBar(elementId, maxHP) {
     const hpBar = document.getElementById(elementId);
-    hpBar.style.width = '300px';
-    hpBar.style.height = '45px';
-    hpBar.style.border = '4px solid rgb(209, 23, 39)';
-    hpBar.style.margin = '10px auto';
-    hpBar.style.position = 'relative';
     hpBar.maxHP = maxHP;
     hpBar.currentHP = maxHP;
     hpBar.inner = hpBar.querySelector('.hp-inner');

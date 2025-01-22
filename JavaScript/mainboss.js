@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         playerHPBar.currentHP = playerHPBar.maxHP;
         updateHPBar(playerHPBar, playerHPBar.currentHP);
+        document.querySelectorAll('.count').forEach(element => {
+            element.classList.remove('boss');
+        });
+        document.getElementById('player-hp-bar').classList.remove('active');
+        document.getElementById('boss-hp-bar').classList.remove('active'); 
         document.querySelectorAll('.boss').forEach(boss => boss.classList.remove('active'));
         currentBoss = null;
     }
@@ -153,6 +158,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!gameRunning) {
             resetGame();
             currentBoss = bossId;
+            document.getElementById('player-hp-bar').classList.add('active');
+            document.getElementById('boss-hp-bar').classList.add('active');
+            document.querySelectorAll('.count').forEach(element => {
+                element.classList.add('boss');
+            });
             document.getElementById(bossId).classList.add('active');
             bossHPBar = createHPBar('boss-hp-bar', bossesData[bossId].hp);
             gameRunning = true;

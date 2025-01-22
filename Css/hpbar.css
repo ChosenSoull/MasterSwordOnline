@@ -1,14 +1,40 @@
-#player-hp-bar, #boss-hp-bar {
-    width: 300px;
-    height: 24px; /* Увеличим высоту для более выразительного фона */
+#boss-hp-bar {
+    bottom: 12rem;
+    display: none;
+    width: 275px;
+    height: 45px; /* Увеличим высоту для более выразительного фона */
     background-color: #810109; /* Более светлый серый фон */
-    border: 2px solid; /* Белая обводка */
+    border: 4px solid rgb(209, 23, 39); /* Белая обводка */
     border-radius: 20px; /* Сглаживаем края */
     margin: 10px auto;
     position: relative;
     padding: 5px;
     box-sizing: border-box;
     z-index: 4; /* Важно для учета border в размерах */
+}
+
+#boss-hp-bar.active {
+    display: block;
+}
+
+#player-hp-bar {
+    left: 95px;
+    display: none;
+    bottom: 4.7rem;
+    width: 200px;
+    height: 45px; /* Увеличим высоту для более выразительного фона */
+    background-color: #810109; /* Более светлый серый фон */
+    border: 4px solid rgb(209, 23, 39); /* Белая обводка */
+    border-radius: 20px; /* Сглаживаем края */
+    margin: 10px auto;
+    position: relative;
+    padding: 5px;
+    box-sizing: border-box;
+    z-index: 4; /* Важно для учета border в размерах */
+}
+
+#player-hp-bar.active {
+    display: block;
 }
 
 .hp-inner {
