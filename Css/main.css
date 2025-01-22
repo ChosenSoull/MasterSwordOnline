@@ -116,7 +116,7 @@ body {
 }
 
 .image.blocked {
-    content: url("Textures/1lvllock.png");
+    content: url("../Textures/1lvllock.png");
     position: absolute;
     /* Чтобы псевдоэлемент накладывался на изображение */
     top: 0;

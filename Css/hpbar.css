@@ -1,0 +1,47 @@
+#player-hp-bar, #boss-hp-bar {
+    width: 300px;
+    height: 24px; /* Увеличим высоту для более выразительного фона */
+    background-color: #810109; /* Более светлый серый фон */
+    border: 2px solid; /* Белая обводка */
+    border-radius: 20px; /* Сглаживаем края */
+    margin: 10px auto;
+    position: relative;
+    padding: 5px;
+    box-sizing: border-box;
+    z-index: 4; /* Важно для учета border в размерах */
+}
+
+.hp-inner {
+    height: 100%;
+    background-color: #00a800; /* Более насыщенный зеленый */
+    transition: width 0.3s linear;
+    border-radius: 12px 12px 12px 12px;
+     /* Сглаживаем только левый край зеленой полосы */
+}
+
+/* Сглаживание правого края зеленой полосы, когда она заполнена не полностью */
+#player-hp-bar .hp-inner.low, #boss-hp-bar .hp-inner.low{
+    border-radius: 12px 12px 12px 12px;
+}
+
+.hp-counter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    white-space: nowrap;
+    z-index: 5;
+}
+
+.hp-icon {
+    position: absolute; /* Абсолютное позиционирование */
+    top: -10px; /* Положение сверху (отрицательное значение для размещения над полосой) */
+    left: -45px; /* Положение слева */
+    height: 60px; /* или width, если нужно задать ширину */
+    width: 68px;
+    z-index: 6; /* Чтобы иконка была над всеми остальными элементами */
+}

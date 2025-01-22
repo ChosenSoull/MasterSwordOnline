@@ -17,7 +17,7 @@ document.querySelectorAll('#Lang-section .language-button').forEach(function (la
 
 async function loadTranslations(language) {
     try {
-        const response = await fetch(`./locales/${language}.json`);
+        const response = await fetch(`locales/${language}.json`);
         const data = await response.json();
         translations = data; // Сохраняем переводы в глобальной переменной
         localize(); // Обновляем интерфейс
@@ -127,7 +127,7 @@ const SERVER_URL = 'http://gameswords.ddns.net';
 let currentCount = 0;
 
 document.addEventListener('keydown', function (event) {
-    if (event.code === 'Space') {
+    if (event.code === 'Space' && !isBlocked) {
         image.classList.add('pressed');
         setTimeout(() => {
             image.classList.remove('pressed');
@@ -689,7 +689,7 @@ function clickSword(event) {
             image.classList.remove('active');
         }, 100);
 
-        // Управление воспроизведением звука клика с разрешением трех кликов
+        // Управление воспроизведением звука клика с разрешением шести кликов
         if (activeSounds.length < 6) {
             const soundClone = clickSound.cloneNode(true);
             soundClone.volume = clickSound.volume; // Установка громкости

@@ -13,6 +13,8 @@
     <link rel="manifest" href="Textures/Favicon/site.webmanifest" />
     <link rel="stylesheet" href="Css/logo.css">
     <link rel="stylesheet" href="Css/main.css">
+    <link rel="stylesheet" href="Css/hpbar.css">
+    <link rel="stylesheet" href="Css/boss.css">
 </head>
 
 <body>
@@ -30,6 +32,32 @@
 
     <div class="bg"></div>
 
+    <div id="player-hp-bar">
+        <img src="Textures/heard.png" alt="Player Icon" class="hp-icon">
+        <div class="hp-inner">
+            <span class="hp-counter" id="player-hp-counter"></span>
+        </div>
+    </div>
+
+    <div id="boss-hp-bar">
+        <img src="Textures/heard.png" alt="Boss Icon" class="hp-icon">
+        <div class="hp-inner">
+            <span class="hp-counter" id="boss-hp-counter"></span>
+        </div>
+    </div>
+    <div class="boss boss-1" id="boss-1">Boss 1</div>
+    <div class="boss boss-2" id="boss-2">Boss 2</div>
+    <div class="boss boss-3" id="boss-3">Boss 3</div>
+    <div class="boss boss-4" id="boss-4">Boss 4</div>
+    <div class="boss boss-5" id="boss-5">Boss 5</div>
+    <div class="boss boss-6" id="boss-6">Boss 6</div>
+    <div class="boss boss-7" id="boss-7">Boss 7</div>
+    <div class="boss boss-8" id="boss-8">Boss 8</div>
+    <div class="boss boss-9" id="boss-9">Boss 9</div>
+    <div class="boss boss-10" id="boss-10">Boss 10</div>
+    <div class="boss boss-11" id="boss-11">Boss 11</div>
+    <div class="boss boss-12" id="boss-12">Boss 12</div>
+  
     <div class="main-container">
         <div id="message-container" class="message-container"></div>
         <div class="count">
@@ -230,7 +258,18 @@
     <div id="Quests-section" class="panel">
         <h2><span data-i18n="Quests">Квесты</span></h2>
         <div class="panel-content">
-            <!-- Shop content -->
+            <button id="summon-boss-1">Вызвать Босса 1</button>
+            <button id="summon-boss-2">Вызвать Босса 2</button>
+            <button id="summon-boss-3">Вызвать Босса 3</button>
+            <button id="summon-boss-4">Вызвать Босса 4</button>
+            <button id="summon-boss-5">Вызвать Босса 5</button>
+            <button id="summon-boss-6">Вызвать Босса 6</button>
+            <button id="summon-boss-7">Вызвать Босса 7</button>
+            <button id="summon-boss-8">Вызвать Босса 8</button>
+            <button id="summon-boss-9">Вызвать Босса 9</button>
+            <button id="summon-boss-10">Вызвать Босса 10</button>
+            <button id="summon-boss-11">Вызвать Босса 11</button>
+            <button id="summon-boss-12">Вызвать Босса 12</button>
         </div>
     </div>
     <div id="leaders-section" class="panel">
@@ -365,6 +404,11 @@
     </audio>
     <script src="JavaScript/hammer.min.js"></script>
     <script src="JavaScript/logo.js"></script>
+    <script src="JavaScript/hpbar.js"></script>
+    <script src="JavaScript/playerdamageformula.js"></script>
+    <script src="JavaScript/bossdamageformula.js"></script>
+    <script src="JavaScript/bossmehanics.js"></script>
+    <script src="JavaScript/mainboss.js"></script>
     <script src="JavaScript/main.js"></script>
 </body>
 
