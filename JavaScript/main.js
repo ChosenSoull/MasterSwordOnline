@@ -280,7 +280,7 @@ function activateAbility(id) {
     const abilityElement = document.getElementById(id);
     abilityElement.classList.add('activated-ability');
     const flameAnimation = document.querySelector('.flame-animation');
-    flameAnimation.style.display = 'none';
+    flameAnimation.style.display = 'block';
 
     let timerElement = abilityElement.querySelector('.ability-timer');
     if (!timerElement) {
@@ -333,6 +333,7 @@ function activateAbility(id) {
         }, potion.duration);
     } else {
         console.log(`Способность ${id} не может быть активирована, так как зелье не куплено`);
+        flameAnimation.style.display = 'none';
         setTimeout(() => {
             abilityElement.classList.remove('activated-ability');
         }, 2000); // Убираем класс через 2 секунды
@@ -382,6 +383,8 @@ function startCooldownTimer(id) {
 function deactivateAbility(id) {
     const abilityElement = document.getElementById(id);
     abilityElement.classList.remove('activated-ability');
+    const flameAnimation = document.querySelector('.flame-animation');
+    flameAnimation.style.display = 'none';
 
     const potion = getPotionById(id);
     activeAbilities[id] = false;
