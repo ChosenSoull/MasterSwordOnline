@@ -78,12 +78,32 @@ body {
     display: none;
 }
 
+.coin-container {
+    position: relative; /* Делаем контейнер точкой отсчета для абсолютного позиционирования */
+}
+
 .coin-icon {
+    position: relative;
     width: 40px;
+    bottom: -1px;
     /* Размер изображения */
     height: 40px;
     margin-right: 5px;
+    z-index: 1;
     /* Отступ между изображением и текстом */
+}
+
+.flame-animation {
+    position: absolute;
+    width: 70px;
+    bottom: 10px; /* Позиционируем пламя чуть ниже монеты */
+    left: 45%;
+    transform: translateX(-50%);
+    /* Размер изображения */
+    height: 70px;
+    margin-right: 5px;
+    z-index: 0; /* Размещаем пламя под изображением */
+    /* Другие стили для позиционирования и размера */
 }
 
 .image-container {
@@ -699,10 +719,19 @@ body {
     z-index: 5;
 }
 
-.activated-ability .potion-icon {
-    transform: scale(1.2);
-    /* Увеличение до 120% */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
 }
+
+.activated-ability .potion-icon {
+    animation: pulse 2s ease-in-out infinite;
+}
+
 
 .potions-item {
     display: flex;

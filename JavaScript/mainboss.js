@@ -9,7 +9,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let playerArmor = 20;
     let playerBlock = 0.1;
     let playerDodge = 0.05;
-    let playerRegeneration = 1;
+    let regenerationInterval = null;
+    let regenerationAmount = 0;
+    
+    function startRegeneration() {
+        regenerationInterval = setInterval(() => {
+            // Логика регенерации HP
+            playerHPBar.currentHP = Math.min(playerHPBar.maxHP, playerHPBar.currentHP + regenerationAmount);
+            updateHPBar(playerHPBar, playerHPBar.currentHP);
+        }, 600);
+    }
+    
+    function stopRegeneration() {
+        clearInterval(regenerationInterval);
+        regenerationInterval = null;
+    }
+    
 
     function resetGame() {
         gameRunning = false;
@@ -23,8 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
             element.classList.remove('boss');
         });
         document.getElementById('player-hp-bar').classList.remove('active');
-        document.getElementById('boss-hp-bar').classList.remove('active'); 
+        document.getElementById('boss-hp-bar').classList.remove('active');
         document.querySelectorAll('.boss').forEach(boss => boss.classList.remove('active'));
+        stopRegeneration()
         currentBoss = null;
     }
 
@@ -33,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
 
@@ -42,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss3(hp, armor, resistance, damage) {
@@ -50,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss4(hp, armor, resistance, damage) {
@@ -58,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss5(hp, armor, resistance, damage) {
@@ -66,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss6(hp, armor, resistance, damage) {
@@ -74,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss7(hp, armor, resistance, damage) {
@@ -82,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss8(hp, armor, resistance, damage) {
@@ -90,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss9(hp, armor, resistance, damage) {
@@ -98,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss10(hp, armor, resistance, damage) {
@@ -106,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss11(hp, armor, resistance, damage) {
@@ -114,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
     function boss12(hp, armor, resistance, damage) {
@@ -122,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.armor = armor;
         this.resistance = resistance;
         this.damage = damage;
-        this.specialAbility = function(){
+        this.specialAbility = function () {
         }
     }
 
@@ -163,12 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.count').forEach(element => {
                 element.classList.add('boss');
             });
+            startRegeneration()
             document.getElementById(bossId).classList.add('active');
             bossHPBar = createHPBar('boss-hp-bar', bossesData[bossId].hp);
             gameRunning = true;
             let intervalId = setInterval(() => {
                 if (gameRunning && currentBoss) {
-                    bossAttack(playerHPBar, playerArmor, playerBlock, playerDodge, playerRegeneration, bossesData[currentBoss].damage);
+                    bossAttack(playerHPBar, playerArmor, playerBlock, playerDodge, bossesData[currentBoss].damage);
                     if (playerHPBar.currentHP <= 0) {
                         alert("Вы проиграли");
                         gameRunning = false;

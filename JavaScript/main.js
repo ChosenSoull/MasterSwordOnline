@@ -206,8 +206,7 @@ const improvements = {
         { name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "path/to/mana-icon.png" },
         { name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "path/to/regeneration-icon.png" },
         { name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "path/to/power-icon.png" },
-        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/fire-resistance-icon.png" },
-        { name: "mainMagic", level: 0, baseCost: 300, cost: 300, bonus: 0, totalBonus: 0, icon: "path/to/main-magic-icon.png" }
+        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/fire-resistance-icon.png" }
     ]
 };
 
@@ -217,7 +216,9 @@ const potions = [
     { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "path/to/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false },
     { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "path/to/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false },
     { name: "berserkPotion", baseCost: 500, cost: 500, icon: "path/to/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "healingPotion", baseCost: 600, cost: 600, icon: "path/to/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false }
+    { name: "healingPotion", baseCost: 600, cost: 600, icon: "path/to/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false },
+    { name: "poisonPotion", baseCost: 600, cost: 600, icon: "path/to/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false },
+    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "path/to/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false }
 ];
 
 const categoryNames = {
@@ -228,7 +229,7 @@ const categoryNames = {
 };
 
 function upgrade(item) {
-    if (currentCount >= item.cost && item.name !== "Основная Магия") {
+    if (currentCount >= item.cost && item.name) {
         currentCount -= item.cost;
         item.level++;
         item.cost = Math.ceil(item.baseCost * Math.pow(1.33, item.level));
@@ -278,11 +279,14 @@ function activateAbility(id) {
     const potion = getPotionById(id);
     const abilityElement = document.getElementById(id);
     abilityElement.classList.add('activated-ability');
+    const flameAnimation = document.querySelector('.flame-animation');
+    flameAnimation.style.display = 'none';
 
     let timerElement = abilityElement.querySelector('.ability-timer');
     if (!timerElement) {
         timerElement = document.createElement('div');
         timerElement.classList.add('ability-timer');
+
         abilityElement.appendChild(timerElement);
     }
 
@@ -312,16 +316,29 @@ function activateAbility(id) {
             case 'Healing':
                 healPlayer();
                 break;
+            case 'poison':
+                poisonactivate();
+                break;
+            case 'shield':
+                shieldmagicactivate();
+                break;
             default:
                 console.log(`Неизвестная способность: ${id}`);
         }
         console.log(`Способность ${id} активирована!`);
         startAbilityTimer(id, potion.duration);
-        setTimeout(() => deactivateAbility(id), potion.duration);
+        setTimeout(() => {
+            deactivateAbility(id);
+            abilityElement.classList.remove('activated-ability');
+        }, potion.duration);
     } else {
         console.log(`Способность ${id} не может быть активирована, так как зелье не куплено`);
+        setTimeout(() => {
+            abilityElement.classList.remove('activated-ability');
+        }, 2000); // Убираем класс через 2 секунды
     }
 }
+
 
 function startAbilityTimer(id, duration) {
     const timerElement = document.getElementById(id).querySelector('.ability-timer');
@@ -448,6 +465,14 @@ function activateBerserkMode() {
 function healPlayer() {
     // Логика исцеления игрока
     console.log('Игрок исцелен!');
+}
+
+function poisonactivate() {
+    console.log('Босс отравлен');
+}
+
+function shieldmagicactivate() {
+    console.log('Получен магический барьер');
 }
 
 function displayPotions() {
