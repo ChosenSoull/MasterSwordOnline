@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let playerBaseDamage = 10;
     let playerArmor = 20;
     let playerBlock = 0.1;
-    let playerDodge = 0.05;
     let regenerationInterval = null;
     let regenerationAmount = 0;
+    let dodgeChance = 0;
     
     function startRegeneration() {
         regenerationInterval = setInterval(() => {
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gameRunning = true;
             let intervalId = setInterval(() => {
                 if (gameRunning && currentBoss) {
-                    bossAttack(playerHPBar, playerArmor, playerBlock, playerDodge, bossesData[currentBoss].damage);
+                    bossAttack(playerHPBar, playerArmor, playerBlock, dodgeChance, bossesData[currentBoss].damage);
                     if (playerHPBar.currentHP <= 0) {
                         alert("Вы проиграли");
                         gameRunning = false;
