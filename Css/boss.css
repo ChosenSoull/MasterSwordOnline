@@ -1,10 +1,25 @@
+.main-containerBoss {
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    bottom: 1rem;
+    /* Changed to align with the new layout */
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+    height: 80%;
+    z-index: 0;
+}
+
 .boss {
-    width: 100px; /* Ширина босса */
-    height: 100px; /* Высота босса */
+    width: 100%; /* Ширина босса */
+    height: 100%; /* Высота босса */
     background-color: #800080; /* Пример цвета босса (фиолетовый) */
-    border-radius: 50%; /* Делает босса круглым (можно изменить на квадрат или другую фигуру) */
     margin: 20px auto; /* Центрирует босса по горизонтали */
     position: relative; /* Для позиционирования элементов внутри босса, если потребуется */
+    z-index: 1;
 }
 
 /* Пример стилизации конкретного босса (можно добавить классы для разных боссов) */

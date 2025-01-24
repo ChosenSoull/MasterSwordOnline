@@ -52,6 +52,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 50%;
+    z-index: 1;
 }
 
 .count {
@@ -718,6 +719,7 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 5px;
     z-index: 5;
+    display: none;
 }
 
 @keyframes pulse {
@@ -733,6 +735,20 @@ body {
     animation: pulse 2s ease-in-out infinite;
 }
 
+.activated-ability .ability-background {
+    position: absolute;
+    top: -50%;
+    left: -25%;
+    right: 0;
+    bottom: 0;
+    width: 150%;
+    height: 150%;
+    z-index: 3; /* Фон будет под картинкой */
+    animation: pulse 2s ease-in-out infinite;
+    background: url('../Textures/fire.gif') center center no-repeat;
+    background-size: cover;
+    pointer-events: none; /* Чтобы фон не блокировал клики на иконку */
+}
 
 .potions-item {
     display: flex;
@@ -857,6 +873,13 @@ body {
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+    
+    .main-containerBoss {
+        top: 50%;
+        left: 50%;
+        width: 60%;
+        transform: translate(-50%, -50%);
     }
 
     .panel {

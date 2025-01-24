@@ -48,6 +48,37 @@ function formatNumber(num) {
     }
 }
 
+function formatDuration(duration) {
+    const millisecondsInSecond = 1000;
+    const secondsInMinute = 60;
+    const minutesInHour = 60;
+    const hoursInDay = 24;
+
+    // Преобразуем миллисекунды в секунды
+    const totalSeconds = Math.floor(duration / millisecondsInSecond);
+
+    // Вычисляем дни, часы, минуты и секунды
+    const days = Math.floor(totalSeconds / (hoursInDay * minutesInHour * secondsInMinute));
+    const hours = Math.floor((totalSeconds % (hoursInDay * minutesInHour * secondsInMinute)) / (minutesInHour * secondsInMinute));
+    const minutes = Math.floor((totalSeconds % (minutesInHour * secondsInMinute)) / secondsInMinute);
+    const seconds = totalSeconds % secondsInMinute;
+
+    // Формируем строку с результатом без пробелов
+    let result = '';
+    if (days > 0) {
+        result += `${days}д`;
+    }
+    if (hours > 0) {
+        result += `${hours}ч`;
+    }
+    if (minutes > 0) {
+        result += `${minutes}м`;
+    }
+    result += `${seconds}с`;
+
+    return result;
+}
+
 function updateCount(count) {
     if (isNaN(count)) {
         console.error("Ошибка: count не является числом");
@@ -153,25 +184,6 @@ function getClickCount() {
         .catch(error => console.error('Ошибка получения количества кликов:', error));
 }
 
-// Пример добавления таймера к элементу с id "ability-timer"
-function startAbilityTimer(element, duration) {
-    let remainingTime = duration;
-    const timerElement = element.querySelector('.ability-timer');
-    const intervalId = setInterval(() => {
-        const minutes = Math.floor(remainingTime / 60);
-        const seconds = remainingTime % 60;
-        timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        remainingTime--;
-
-        if (remainingTime < 0) {
-            clearInterval(intervalId);
-            // Код для окончания действия способности
-            element.classList.remove('activated-ability');
-            timerElement.remove();
-        }
-    }, 1000);
-}
-
 let clickCountPerSecond = 0;
 let lastSecondStartTime = Date.now();
 const blockDurations = [20000, 300000, 900000, 1800000, 3600000, 21600000];
@@ -259,44 +271,36 @@ function buyPotion(potion) {
     }
 }
 
-function sellPotion(potion) {
-    if (potion.purchased) {
-        currentCount += potion.cost * 0.5; // Продаем за половину стоимости
-        potion.purchased = false;
-
-        // Блокировка способности
-        document.getElementById(potion.unlocksAbility).classList.remove('unlocked');
-
-        updateCount(currentCount);
-        displayPotions();
-    }
-}
-
 let activeAbilities = {};
+let cooldownTimers = {};
 let timers = {};
 
 function activateAbility(id) {
     const potion = getPotionById(id);
     const abilityElement = document.getElementById(id);
-    abilityElement.classList.add('activated-ability');
     const flameAnimation = document.querySelector('.flame-animation');
-    flameAnimation.style.display = 'block';
 
     let timerElement = abilityElement.querySelector('.ability-timer');
     if (!timerElement) {
         timerElement = document.createElement('div');
         timerElement.classList.add('ability-timer');
-
         abilityElement.appendChild(timerElement);
     }
 
+    abilityElement.classList.add('activated-ability'); // Добавляем класс активности
+
     if (potion && potion.purchased) {
-        if (activeAbilities[id]) {
-            console.log(`Способность ${id} уже активирована.`);
+        if (activeAbilities[id] || cooldownTimers[id]) {
+            console.log(`Способность ${id} уже активирована или на перезарядке.`);
+            abilityElement.classList.remove('activated-ability'); // Удаляем класс активности
             return;
         }
 
         activeAbilities[id] = true;
+        if (Object.keys(activeAbilities).length > 0) {
+            flameAnimation.style.display = 'block';
+        }
+
         switch (id) {
             case 'IncreasedMovementSpeed':
                 increaseMovementSpeed();
@@ -327,55 +331,80 @@ function activateAbility(id) {
         }
         console.log(`Способность ${id} активирована!`);
         startAbilityTimer(id, potion.duration);
+
         setTimeout(() => {
             deactivateAbility(id);
-            abilityElement.classList.remove('activated-ability');
+            abilityElement.classList.remove('activated-ability'); // Удаляем класс после завершения
+            delete activeAbilities[id];
+            if (Object.keys(activeAbilities).length === 0) {
+                flameAnimation.style.display = 'none';
+            }
+            startCooldownTimer(id);
         }, potion.duration);
     } else {
         console.log(`Способность ${id} не может быть активирована, так как зелье не куплено`);
-        flameAnimation.style.display = 'none';
         setTimeout(() => {
-            abilityElement.classList.remove('activated-ability');
-        }, 2000); // Убираем класс через 2 секунды
+            abilityElement.classList.remove('activated-ability'); // Убираем класс через 2 секунды
+            if (Object.keys(activeAbilities).length === 0) {
+                flameAnimation.style.display = 'none';
+            }
+        }, 2000);
     }
 }
 
-
 function startAbilityTimer(id, duration) {
     const timerElement = document.getElementById(id).querySelector('.ability-timer');
-    let timeRemaining = duration / 1000; // Время в секундах
+    if (!timerElement) {
+        console.error(`Таймер для способности ${id} не найден`);
+        return;
+    }
+    timerElement.style.display = 'block'; // Показываем таймер
+
+    let timeRemaining = duration;
 
     if (timers[id]) {
         clearInterval(timers[id]);
     }
 
     timers[id] = setInterval(() => {
-        timerElement.textContent = `${timeRemaining}s`;
-        timeRemaining--;
+        timerElement.textContent = formatDuration(timeRemaining);
+        timeRemaining -= 1000;
 
-        if (timeRemaining < 0) {
+        if (timeRemaining <= 0) {
             clearInterval(timers[id]);
             startCooldownTimer(id);
         }
     }, 1000);
+
+    requestAnimationFrame(() => {
+        timerElement.textContent = formatDuration(timeRemaining);
+    });
 }
 
 function startCooldownTimer(id) {
     const potion = getPotionById(id);
     const timerElement = document.getElementById(id).querySelector('.ability-timer');
-    let cooldownRemaining = potion.cooldown / 1000; // Время в секундах
+    if (!timerElement) {
+        console.error(`Таймер для способности ${id} не найден`);
+        return;
+    }
+    timerElement.style.display = 'block'; // Показываем таймер
 
-    if (timers[id]) {
-        clearInterval(timers[id]);
+    let cooldownRemaining = potion.cooldown; // Время в миллисекундах
+
+    if (cooldownTimers[id]) {
+        clearInterval(cooldownTimers[id]);
     }
 
-    timers[id] = setInterval(() => {
-        timerElement.textContent = `${cooldownRemaining}s`;
-        cooldownRemaining--;
+    cooldownTimers[id] = setInterval(() => {
+        timerElement.textContent = formatDuration(cooldownRemaining);
+        cooldownRemaining -= 1000;
 
-        if (cooldownRemaining < 0) {
-            clearInterval(timers[id]);
+        if (cooldownRemaining <= 0) {
+            clearInterval(cooldownTimers[id]);
             timerElement.textContent = '';
+            timerElement.style.display = 'none'; // Скрываем таймер после окончания
+            delete cooldownTimers[id];
         }
     }, 1000);
 }
@@ -397,6 +426,7 @@ function deactivateAbility(id) {
         }, potion.cooldown);
     }
 }
+
 
 function increaseMovementSpeed() {
     // Логика увеличения скорости передвижения игрока
@@ -542,27 +572,35 @@ if (potionBar) {
         if (!potionElement) {
             // Создаем новый элемент, если его нет
             potionElement = document.createElement('div');
-            potionElement.className = 'potion-item';
+            potionElement.className = 'potion-item ability-element';
             potionElement.id = potion.unlocksAbility;
-        }
 
-        // Создаем или обновляем контейнер иконки
-        let iconContainer = potionElement.querySelector('.potion-icon-container');
-        if (!iconContainer) {
-            iconContainer = document.createElement('div');
+            // Создаем контейнер для фона
+            const backgroundElement = document.createElement('div');
+            backgroundElement.className = 'ability-background';
+            potionElement.appendChild(backgroundElement);
+
+            // Создаем контейнер иконки
+            const iconContainer = document.createElement('div');
             iconContainer.className = 'potion-icon-container';
             potionElement.appendChild(iconContainer);
-        }
 
-        // Создаем или обновляем иконку
-        let iconImg = iconContainer.querySelector('.potion-icon');
-        if (!iconImg) {
-            iconImg = document.createElement('img');
+            // Создаем иконку
+            const iconImg = document.createElement('img');
             iconImg.className = 'potion-icon';
             iconContainer.appendChild(iconImg);
             iconImg.onclick = () => activateAbility(potion.unlocksAbility); // Назначаем обработчик только при создании
+
+            // Создаем таймер
+            const timerElement = document.createElement('div');
+            timerElement.className = 'ability-timer';
+            potionElement.appendChild(timerElement);
+        } else {
+            // Обновляем существующие элементы
+            let iconContainer = potionElement.querySelector('.potion-icon-container');
+            let iconImg = iconContainer.querySelector('.potion-icon');
+            iconImg.src = potion.icon; // Всегда обновляем src иконки
         }
-        iconImg.src = potion.icon; // Всегда обновляем src иконки
 
         // Добавляем элемент в фрагмент (только если он новый)
         if (!existingPotionElements[potion.unlocksAbility]) {
