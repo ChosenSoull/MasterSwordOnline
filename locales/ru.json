@@ -43,7 +43,8 @@
   "invisibilityPotion": "Невидимость",
   "berserkPotion": "Режим берсерка",
   "healingPotion": "Исцеление",
-  "level": "Ур.",
+  "vulnerability": "Уязвимость",
+  "level": "Уровень",
   "cost": "Стоимость",
   "bonus": "Бонус",
   "totalBonus": "Всего",
@@ -53,5 +54,8 @@
   "ContactUs": "Связаться с нами",
   "OpenSourse": "Проект с открытым исходным кодом",
   "SocialNetworks": "Социальные сети",
-  "Quests":"Квесты"
+  "Quests":"Квесты",
+  "poisonPotion":"Яд",
+  "shieldmagicPotion":"Магический щит",
+  "secondlife":"Вторая жизнь"
 }

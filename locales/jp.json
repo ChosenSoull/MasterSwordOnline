@@ -43,8 +43,9 @@
   "invisibilityPotion": "透明化ポーション",
   "berserkPotion": "狂戦士のポーション",
   "healingPotion": "回復ポーション",
-  "level": "レベル.",
+  "level": "レベル",
   "cost": "コスト",
+  "vulnerability": "脆弱性",
   "bonus": "ボーナス",
   "totalBonus": "合計",
   "purchased": "購入済み",
@@ -53,5 +54,8 @@
   "ContactUs": "お問い合わせ",
   "OpenSourse": "オープンソースプロジェクト",
   "SocialNetworks": "ソーシャルネットワーク ",
-  "Quests":"クエスト"
+  "Quests":"クエスト",
+  "poisonPotion":"毒",
+  "shieldmagicPotion":"魔法の盾",
+  "secondlife":"第二の人生"
 }

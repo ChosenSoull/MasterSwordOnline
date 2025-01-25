@@ -541,6 +541,7 @@ body {
 }
 
 .improvement-item {
+    position: relative;
     display: flex;
     align-items: center;
     background-color: #333;
@@ -616,6 +617,114 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 5px;
     /* Уменьшить промежутки между элементами */
+}
+
+/* Основной контейнер */
+.detail-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #000; /* Чёрный фон */
+    color: #fff; /* Белый текст */
+    border: 4px solid #ffffff;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    width: 600px;
+    padding: 20px;
+    z-index: 1000;
+}
+
+/* Внутреннее содержимое */
+.detail-content {
+    position: relative; /* Для позиционирования total-bonus-container относительно него */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%; /* Задаем высоту для корректного позиционирования */
+    min-height: 200px;
+}
+
+.detail-info-container { /* Новый контейнер для элементов меню */
+    display: flex;
+}
+
+.detail-info-container p { /* Стили для p внутри контейнера */
+    display: flex; /* Включаем flexbox для каждой строки */
+    align-items: baseline; /* Выравнивание по базовой линии */
+}
+
+.improvement-bonusMenu{
+    margin-right: 20px;
+}
+
+.improvement-levelMenu{
+    margin-right: 20px;
+}
+
+.improvement-costMenu{
+    margin-right: 20px;
+}
+
+/* Заголовок с изображением */
+.detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Распределяем пространство */
+    width: 100%; /* Занимаем всю ширину контейнера */
+}
+
+.detail-title-container {
+    display: flex;
+    align-items: center;
+    width: 100%; /* Занимаем всю доступную ширину */
+    justify-content: space-between;
+}
+
+/* Изображение улучшения */
+.detail-image {
+    width: 75px;
+    height: 75px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+/* Заголовок */
+.detail-title {
+    font-size: 1.2em;
+    white-space: nowrap; /* Предотвращаем перенос строки */
+    margin-left: 10px;
+}
+
+.detail-total-bonus {
+    font-size: 1em; /* Можно скорректировать размер */
+}
+
+.total-bonus-label {
+    font-size: 1em;
+    color: #ffffff;
+    margin-right: 25px;
+    white-space: nowrap; /* Предотвращаем перенос строки */
+}
+
+/* Кнопка закрытия */
+.close-button {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 48px;
+    height: 48px;
+}
+
+.close-button .close-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 /*Не путать Potion используеться для bar-а снизу слева а potions для магазина улучшений*/

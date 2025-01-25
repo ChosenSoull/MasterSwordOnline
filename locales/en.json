@@ -34,6 +34,7 @@
   "life": "Life",
   "reaction": "Reaction",
   "mana": "Mana",
+  "vulnerability": "Vulnerability",
   "regeneration": "Regeneration",
   "fireResistance": "Fire Resistance",
   "mainMagic": "Main Magic",
@@ -43,7 +44,7 @@
   "invisibilityPotion": "Invisibility Potion",
   "berserkPotion": "Berserk Potion",
   "healingPotion": "Healing Potion",
-  "level": "Lvl.",
+  "level": "Level",
   "cost": "Cost",
   "bonus": "Bonus",
   "totalBonus": "Total",
@@ -53,5 +54,9 @@
   "ContactUs": "Contact us",
   "OpenSourse": "Оpen source project",
   "SocialNetworks": "Social networks",
-  "Quests":"Quests"
+  "Quests":"Quests",
+  "poisonPotion":"Poison",
+  "shieldmagicPotion":"Magic shield",
+  "secondlife":"Second life"
+
 }

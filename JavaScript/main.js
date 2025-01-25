@@ -218,7 +218,8 @@ const improvements = {
         { name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "path/to/mana-icon.png" },
         { name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "path/to/regeneration-icon.png" },
         { name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "path/to/power-icon.png" },
-        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/fire-resistance-icon.png" }
+        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/fire-resistance-icon.png" },
+        { name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/vulnerability-icon.png" }
     ]
 };
 
@@ -230,7 +231,8 @@ const potions = [
     { name: "berserkPotion", baseCost: 500, cost: 500, icon: "path/to/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false },
     { name: "healingPotion", baseCost: 600, cost: 600, icon: "path/to/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false },
     { name: "poisonPotion", baseCost: 600, cost: 600, icon: "path/to/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false },
-    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "path/to/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false }
+    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "path/to/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false },
+    { name: "secondlife", baseCost: 600, cost: 600, icon: "path/to/second-life-icon.png", unlocksAbility: "secondlife", duration: 1000, cooldown: 35000, purchased: false }
 ];
 
 const categoryNames = {
@@ -325,6 +327,9 @@ function activateAbility(id) {
                 break;
             case 'shield':
                 shieldmagicactivate();
+                break;
+            case 'secondlife':
+                secondlife();
                 break;
             default:
                 console.log(`Неизвестная способность: ${id}`);
@@ -508,6 +513,10 @@ function shieldmagicactivate() {
     console.log('Получен магический барьер');
 }
 
+function secondlife() {
+    console.log('Получен магический барьер');
+}
+
 function displayPotions() {
     const potionsContainer = document.getElementById('potions-container');
     if (!potionsContainer) {
@@ -672,22 +681,55 @@ function displayImprovements() {
 
                 const name = document.createElement('div');
                 name.className = 'improvement-name';
-                name.innerHTML = `<span data-i18n="${item.name}">${translations[item.name] || item.name}</span> <span class="improvement-level"</span><span data-i18n="level"></span>${item.level}`;
+                name.innerHTML = `<span data-i18n="${item.name}">${translations[item.name] || item.name}</span>`;
 
                 const bonus = document.createElement('div');
                 bonus.className = 'improvement-bonus';
-                bonus.innerHTML = `+${item.bonus.toFixed(2)} <span data-i18n="bonus"></span> <span data-i18n="totalBonus"></span>: ${formatNumber(item.totalBonus)}`;
+                bonus.innerHTML = `+${item.bonus.toFixed(2)} <span data-i18n="bonus"></span>`;
 
                 const cost = document.createElement('div');
                 cost.className = 'improvement-cost';
                 cost.innerHTML = `<span data-i18n="cost">Стоимость</span>: ${formatNumber(item.cost)}`;
+
+                // Создаём значок "!"
+                const infoIcon = document.createElement('div');
+                infoIcon.className = 'info-icon';
+                infoIcon.innerHTML = '!';
+                infoIcon.onclick = (e) => {
+                    e.stopPropagation(); // Предотвращает запуск других событий клика
+                    showDetailedInfo(item);
+                };
+
+                // Стили для значка "!"
+                infoIcon.style.position = 'absolute';
+                infoIcon.style.top = '5px';
+                infoIcon.style.right = '5px';
+                infoIcon.style.cursor = 'pointer';
+                infoIcon.style.background = '#666666';
+                infoIcon.style.color = '#ffffff';
+                infoIcon.style.fontWeight = 'bold';
+                infoIcon.style.width = '20px';
+                infoIcon.style.height = '20px';
+                infoIcon.style.borderRadius = '50%';
+                infoIcon.style.display = 'flex';
+                infoIcon.style.justifyContent = 'center';
+                infoIcon.style.alignItems = 'center';
+                infoIcon.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
 
                 details.appendChild(name);
                 details.appendChild(bonus);
                 details.appendChild(cost);
                 improvementItem.appendChild(icon);
                 improvementItem.appendChild(details);
+                improvementItem.appendChild(infoIcon); // Добавляем значок "!" в плитку
+
                 categoryContainer.appendChild(improvementItem);
+
+                // Обработка для мобильных устройств (долгое нажатие)
+                improvementItem.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    showDetailedInfo(item);
+                });
             });
         }
     }
@@ -695,6 +737,42 @@ function displayImprovements() {
 }
 displayImprovements();
 displayPotions();
+
+function showDetailedInfo(item) {
+    const detailContainer = document.getElementById('detail-container');
+    if (!detailContainer) {
+        console.error('Element with ID "detail-container" not found');
+        return;
+    }
+    detailContainer.innerHTML = `
+    <div class="detail-content">
+        <button class="close-button" onclick="hideDetailedInfo()">
+            <img src="./Textures/close-icon.png" alt="Закрыть" class="close-icon">
+        </button>
+        <div class="detail-header">
+            <img src="${item.icon}" alt="${item.name}" class="detail-image">
+            <div class="detail-title-container">
+                <h3 class="detail-title">${translations[item.name] || item.name}</h3>
+                <span class="total-bonus-label"><strong><span data-i18n="totalBonus"></span>:</strong>${formatNumber(item.totalBonus)}</span>
+            </div>
+        </div>
+        <div class="detail-info-container"> <p class="improvement-bonusMenu"><strong><span data-i18n="bonus"></span>:</strong> ${item.bonus.toFixed(2)}</p>
+            <p class="improvement-levelMenu"><strong><span data-i18n="level"></span>:</strong> ${item.level}</p>
+            <p class="improvement-costMenu"><strong><span data-i18n="cost"></span>:</strong> ${formatNumber(item.cost)}</p></div>
+        <p class="improvement-description"><strong>Описание:</strong> Этот предмет помогает вашему герою стать сильнее!</p>
+    </div>
+    `;
+    detailContainer.style.display = 'block';
+    localize()
+}
+
+function hideDetailedInfo() {
+    const detailContainer = document.getElementById('detail-container');
+    if (detailContainer) {
+        detailContainer.style.display = 'none';
+    }
+}
+
 
 let activeSounds = [];
 let isUpdating = true; // флаг обновления сообщения
