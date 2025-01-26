@@ -215,11 +215,11 @@ const improvements = {
         { name: "reaction", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png" }
     ],
     "magic": [
-        { name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "path/to/mana-icon.png" },
-        { name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "path/to/regeneration-icon.png" },
-        { name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "path/to/power-icon.png" },
-        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/fire-resistance-icon.png" },
-        { name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "path/to/vulnerability-icon.png" }
+        { name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/mana-icon.png" },
+        { name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/regeneration-icon.png" },
+        { name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/Magic-power-icon.png" },
+        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/fire-resistance-icon.png" },
+        { name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/vulnerability-icon.png" }
     ]
 };
 
