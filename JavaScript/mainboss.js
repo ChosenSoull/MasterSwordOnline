@@ -1,16 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
     const attackButton = document.getElementById('sword');
-    const playerHPBar = createHPBar('player-hp-bar', 450);
+    let maxHP = 450;
+    const playerHPBar = createHPBar('player-hp-bar', maxHP);
     let currentBoss = null;
     let gameRunning = false;
     let bossHPBar;
 
-    let playerBaseDamage = 10;
-    let playerArmor = 20;
-    let playerBlock = 0.1;
+    let playerBaseDamage = 1;
+    let playerArmor = 0;
+    let playerBlock = 0;
     let regenerationInterval = null;
     let regenerationAmount = 0;
-    let dodgeChance = 0;
+    let dodgeChance = 0; 
     
     function startRegeneration() {
         regenerationInterval = setInterval(() => {

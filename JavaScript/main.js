@@ -198,41 +198,41 @@ let clickBonus = 1;
 
 const improvements = {
     "armorAndWeapons": [
-        { name: "helmet", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/helmet-icon.png" },
-        { name: "body", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/body-icon.png" },
-        { name: "pants", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/pants-icon.png" },
-        { name: "boots", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/boots-icon.png" },
-        { name: "shield", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/shield-icon.png" },
-        { name: "sword", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "Textures/sword-icon.png" }
+        { name: "helmet", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/helmet-icon.png",descriptionKeyitem:"helmet_description"},
+        { name: "body", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/body-icon.png",descriptionKeyitem:"body_description" },
+        { name: "pants", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/pants-icon.png",descriptionKeyitem:"pants_description" },
+        { name: "boots", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/boots-icon.png",descriptionKeyitem:"boots_description" },
+        { name: "shield", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/shield-icon.png",descriptionKeyitem:"shield_description" },
+        { name: "sword", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "Textures/sword-icon.png",descriptionKeyitem:"sword_description" }
     ],
     "heroImprovements": [
-        { name: "intellect", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/intellect-icon.png" },
-        { name: "courage", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/courage-icon.png" },
-        { name: "endurance", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/endurance-icon.png" },
-        { name: "confidence", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/confidence-icon.png" },
-        { name: "strength", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/strength-icon.png" },
-        { name: "life", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/life-icon.png" },
-        { name: "reaction", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png" }
+        { name: "intellect", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/intellect-icon.png",descriptionKeyitem:"intellect_description" },
+        { name: "courage", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/courage-icon.png",descriptionKeyitem:"courage_description" },
+        { name: "endurance", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/endurance-icon.png",descriptionKeyitem:"endurance_description" },
+        { name: "confidence", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/confidence-icon.png",descriptionKeyitem:"confidence_description" },
+        { name: "strength", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/strength-icon.png",descriptionKeyitem:"strength_description" },
+        { name: "life", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/life-icon.png",descriptionKeyitem:"life_description" },
+        { name: "reaction", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png",descriptionKeyitem:"reaction_description" }
     ],
     "magic": [
-        { name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/mana-icon.png" },
-        { name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/regeneration-icon.png" },
-        { name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/Magic-power-icon.png" },
-        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/fire-resistance-icon.png" },
-        { name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/vulnerability-icon.png" }
+        { name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/mana-icon.png",descriptionKeyitem:"mana_description" },
+        { name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/regeneration-icon.png",descriptionKeyitem:"regeneration_description" },
+        { name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/Magic-power-icon.png",descriptionKeyitem:"magicstrength_description" },
+        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/fire-resistance-icon.png",descriptionKeyitem:"fireResistance_description" },
+        { name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/vulnerability-icon.png",descriptionKeyitem:"vulnerability_description" }
     ]
 };
 
 const potions = [
-    { name: "speedPotion", baseCost: 100, cost: 100, icon: "Textures/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "magicResistancePotion", baseCost: 200, cost: 200, icon: "Textures/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "Textures/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false },
-    { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "Textures/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "berserkPotion", baseCost: 500, cost: 500, icon: "Textures/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "healingPotion", baseCost: 600, cost: 600, icon: "Textures/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false },
-    { name: "poisonPotion", baseCost: 600, cost: 600, icon: "Textures/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false },
-    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "Textures/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false },
-    { name: "secondlife", baseCost: 600, cost: 600, icon: "Textures/second-life-icon.png", unlocksAbility: "secondlife", duration: 1000, cooldown: 35000, purchased: false }
+    { name: "speedPotion", baseCost: 100, cost: 100, icon: "Textures/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "SpeedPotion" },
+    { name: "magicResistancePotion", baseCost: 200, cost: 200, icon: "Textures/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "MagicResistancePotion" },
+    { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "Textures/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false, descriptionKey: "TeleportationPotion" },
+    { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "Textures/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "InvisibilityPotion" },
+    { name: "berserkPotion", baseCost: 500, cost: 500, icon: "Textures/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "BerserkPotion" },
+    { name: "healingPotion", baseCost: 600, cost: 600, icon: "Textures/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false, descriptionKey: "HealingPotion" },
+    { name: "poisonPotion", baseCost: 600, cost: 600, icon: "Textures/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false, descriptionKey: "PoisonPotion" },
+    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "Textures/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "ShieldmagicPotion" },
+    { name: "secondlife", baseCost: 600, cost: 600, icon: "Textures/second-life-icon.png", unlocksAbility: "secondlife", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "Secondlife" }
 ];
 
 const categoryNames = {
@@ -776,7 +776,7 @@ function showDetailedInfo(item) {
         <div class="detail-info-container"> <p class="improvement-bonusMenu"><strong><span data-i18n="bonus"></span>:</strong> ${item.bonus.toFixed(2)}</p>
             <p class="improvement-levelMenu"><strong><span data-i18n="level"></span>:</strong> ${item.level}</p>
             <p class="improvement-costMenu"><strong><span data-i18n="cost"></span>:</strong> ${formatNumber(item.cost)}</p></div>
-        <p class="improvement-description"><strong>Описание:</strong> Этот предмет помогает вашему герою стать сильнее!</p>
+        <p class="improvement-description" data-i18n="${item.descriptionKeyitem}"></p>
     </div>
     `;
     detailContainer.style.display = 'block';
@@ -786,7 +786,7 @@ function showDetailedInfo(item) {
 function showDetailedInfoPotion(potion) {
     const detailContainer = document.getElementById('detail-container');
     if (!detailContainer) {
-        console.error('Element with ID "detail-container" not found');
+        console.error('Element with ID "detail-container" nowwt found');
         return;
     }
     detailContainer.innerHTML = `
@@ -800,9 +800,12 @@ function showDetailedInfoPotion(potion) {
                 <h3 class="detail-title">${translations[potion.name] || potion.name}</h3>
             </div>
         </div>
-        <div>
-            <p class="improvement-costMenu"><strong><span data-i18n="cost"></span>:</strong> ${formatNumber(potion.cost)}</p></div>
-        <p class="improvement-description"><strong>Описание:</strong> Этот предмет помогает вашему герою стать сильнее!</p>
+        <div class="detail-info-container">
+            <p class="improvement-costMenu"><strong><span data-i18n="cost"></span>:</strong> ${formatNumber(potion.cost)}</p>
+            <p class="improvement-costMenu"><strong><span data-i18n="duration"></span>:</strong> ${formatDuration(potion.duration)}</p>
+            <p class="improvement-costMenu"><strong><span data-i18n="cooldown"></span>:</strong> ${formatDuration(potion.cooldown)}</p>
+        </div>
+        <p class="improvement-description" data-i18n="${potion.descriptionKey}"></p>
     </div>
     `;
     detailContainer.style.display = 'block';
