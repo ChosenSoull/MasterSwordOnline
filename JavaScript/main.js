@@ -224,15 +224,15 @@ const improvements = {
 };
 
 const potions = [
-    { name: "speedPotion", baseCost: 100, cost: 100, icon: "path/to/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "magicResistancePotion", baseCost: 200, cost: 200, icon: "path/to/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "path/to/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false },
-    { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "path/to/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "berserkPotion", baseCost: 500, cost: 500, icon: "path/to/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false },
-    { name: "healingPotion", baseCost: 600, cost: 600, icon: "path/to/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false },
-    { name: "poisonPotion", baseCost: 600, cost: 600, icon: "path/to/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false },
-    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "path/to/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false },
-    { name: "secondlife", baseCost: 600, cost: 600, icon: "path/to/second-life-icon.png", unlocksAbility: "secondlife", duration: 1000, cooldown: 35000, purchased: false }
+    { name: "speedPotion", baseCost: 100, cost: 100, icon: "Textures/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false },
+    { name: "magicResistancePotion", baseCost: 200, cost: 200, icon: "Textures/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false },
+    { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "Textures/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false },
+    { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "Textures/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false },
+    { name: "berserkPotion", baseCost: 500, cost: 500, icon: "Textures/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false },
+    { name: "healingPotion", baseCost: 600, cost: 600, icon: "Textures/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false },
+    { name: "poisonPotion", baseCost: 600, cost: 600, icon: "Textures/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false },
+    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "Textures/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false },
+    { name: "secondlife", baseCost: 600, cost: 600, icon: "Textures/second-life-icon.png", unlocksAbility: "secondlife", duration: 1000, cooldown: 35000, purchased: false }
 ];
 
 const categoryNames = {
@@ -538,11 +538,9 @@ function displayPotions() {
         }
         potionItem.onclick = () => buyPotion(potion);
 
-        const potionIcon = document.createElement('div');
+        const potionIcon = document.createElement('img');
         potionIcon.className = 'potions-icon';
-        const iconImg = document.createElement('img');
-        iconImg.src = potion.icon;
-        potionIcon.appendChild(iconImg);
+        potionIcon.src = potion.icon;
 
         const potionDetails = document.createElement('div');
         potionDetails.className = 'potions-details';
@@ -559,6 +557,30 @@ function displayPotions() {
         potionDetails.appendChild(potionCost);
         potionItem.appendChild(potionIcon);
         potionItem.appendChild(potionDetails);
+        categoryContainer.appendChild(potionItem);
+
+        const infoIcon = document.createElement('div');
+        infoIcon.className = 'info-icon';
+        infoIcon.innerHTML = '!';
+        infoIcon.onclick = () => showDetailedInfoPotion(potion); // Call showDetailedInfo on click
+
+        // Style the info icon
+        infoIcon.style.position = 'absolute';
+        infoIcon.style.top = '5px';
+        infoIcon.style.right = '5px';
+        infoIcon.style.cursor = 'pointer';
+        infoIcon.style.background = '#666666';
+        infoIcon.style.color = '#ffffff';
+        infoIcon.style.fontWeight = 'bold';
+        infoIcon.style.width = '20px';
+        infoIcon.style.height = '20px';
+        infoIcon.style.borderRadius = '50%';
+        infoIcon.style.display = 'flex';
+        infoIcon.style.justifyContent = 'center';
+        infoIcon.style.alignItems = 'center';
+        infoIcon.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+
+        potionItem.appendChild(infoIcon);
         categoryContainer.appendChild(potionItem);
     });
     localize();
@@ -597,6 +619,7 @@ if (potionBar) {
             // Создаем иконку
             const iconImg = document.createElement('img');
             iconImg.className = 'potion-icon';
+            iconImg.src = potion.icon;
             iconContainer.appendChild(iconImg);
             iconImg.onclick = () => activateAbility(potion.unlocksAbility); // Назначаем обработчик только при создании
 
@@ -724,12 +747,6 @@ function displayImprovements() {
                 improvementItem.appendChild(infoIcon); // Добавляем значок "!" в плитку
 
                 categoryContainer.appendChild(improvementItem);
-
-                // Обработка для мобильных устройств (долгое нажатие)
-                improvementItem.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    showDetailedInfo(item);
-                });
             });
         }
     }
@@ -759,6 +776,32 @@ function showDetailedInfo(item) {
         <div class="detail-info-container"> <p class="improvement-bonusMenu"><strong><span data-i18n="bonus"></span>:</strong> ${item.bonus.toFixed(2)}</p>
             <p class="improvement-levelMenu"><strong><span data-i18n="level"></span>:</strong> ${item.level}</p>
             <p class="improvement-costMenu"><strong><span data-i18n="cost"></span>:</strong> ${formatNumber(item.cost)}</p></div>
+        <p class="improvement-description"><strong>Описание:</strong> Этот предмет помогает вашему герою стать сильнее!</p>
+    </div>
+    `;
+    detailContainer.style.display = 'block';
+    localize()
+}
+
+function showDetailedInfoPotion(potion) {
+    const detailContainer = document.getElementById('detail-container');
+    if (!detailContainer) {
+        console.error('Element with ID "detail-container" not found');
+        return;
+    }
+    detailContainer.innerHTML = `
+    <div class="detail-content">
+        <button class="close-button" onclick="hideDetailedInfo()">
+            <img src="./Textures/close-icon.png" alt="Закрыть" class="close-icon">
+        </button>
+        <div class="detail-header">
+            <img src="${potion.icon}" alt="${potion.name}" class="detail-image">
+            <div class="detail-title-container">
+                <h3 class="detail-title">${translations[potion.name] || potion.name}</h3>
+            </div>
+        </div>
+        <div>
+            <p class="improvement-costMenu"><strong><span data-i18n="cost"></span>:</strong> ${formatNumber(potion.cost)}</p></div>
         <p class="improvement-description"><strong>Описание:</strong> Этот предмет помогает вашему герою стать сильнее!</p>
     </div>
     `;
