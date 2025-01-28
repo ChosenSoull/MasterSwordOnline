@@ -1,17 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const attackButton = document.getElementById('sword');
-    let maxHP = 450;
+    maxHP = 450;
     const playerHPBar = createHPBar('player-hp-bar', maxHP);
     let currentBoss = null;
     let gameRunning = false;
     let bossHPBar;
+    let originalResistance = 0;
 
-    let playerBaseDamage = 1;
-    let playerArmor = 0;
-    let playerBlock = 0;
-    let regenerationInterval = null;
-    let regenerationAmount = 0;
-    let dodgeChance = 0; 
+
+    playerBaseDamage = 1;
+    playerArmor = 0;
+    playerBlock = 0;
+    regenerationInterval = null;
+    regenerationAmount = 0;
+    dodgeChance = 0;
+    playerVulnerability = 0;
     
     function startRegeneration() {
         regenerationInterval = setInterval(() => {
@@ -26,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         regenerationInterval = null;
     }
     
-
     function resetGame() {
         gameRunning = false;
         if (bossHPBar) {
@@ -41,9 +43,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('player-hp-bar').classList.remove('active');
         document.getElementById('boss-hp-bar').classList.remove('active');
         document.querySelectorAll('.boss').forEach(boss => boss.classList.remove('active'));
-        stopRegeneration()
+        stopRegeneration();
+    
+        // Восстанавливаем исходное значение сопротивления босса
+        if (currentBoss) {
+            bossesData[currentBoss].resistance = originalResistance;
+            console.log(`Boss resistance reset to: ${bossesData[currentBoss].resistance}`);
+        }
+    
         currentBoss = null;
     }
+    
 
     function boss1(hp, armor, resistance, damage) {
         this.hp = hp;
@@ -145,18 +155,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const bossesData = {
-        'boss-1': new boss1(2000, 50, 0.2, 20),
-        'boss-2': new boss2(3000, 75, 0.3, 30),
-        'boss-3': new boss3(4000, 100, 0.4, 40),
-        'boss-4': new boss4(5000, 125, 0.5, 50),
-        'boss-5': new boss5(6000, 150, 0.6, 60),
-        'boss-6': new boss6(7000, 175, 0.7, 70),
-        'boss-7': new boss7(8000, 200, 0.8, 80),
-        'boss-8': new boss8(9000, 225, 0.9, 90),
-        'boss-9': new boss9(10000, 250, 1, 100),
-        'boss-10': new boss10(15000, 275, 1.1, 110),
-        'boss-11': new boss11(20000, 300, 1.2, 120),
-        'boss-12': new boss12(35000, 325, 1.3, 130),
+        'boss-1': new boss1(2000, 50,20, 20),
+        'boss-2': new boss2(3000, 75,30, 30),
+        'boss-3': new boss3(4000, 100,40, 40),
+        'boss-4': new boss4(5000, 125,50, 50),
+        'boss-5': new boss5(6000, 150,60, 60),
+        'boss-6': new boss6(7000, 175,70, 70),
+        'boss-7': new boss7(8000, 200,80, 80),
+        'boss-8': new boss8(9000, 225,90, 90),
+        'boss-9': new boss9(10000, 250,100, 100),
+        'boss-10': new boss10(15000, 275,110, 110),
+        'boss-11': new boss11(20000, 300,120, 120),
+        'boss-12': new boss12(35000, 325,130, 130),
     };
 
     attackButton.addEventListener('click', () => {
@@ -173,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function summonBoss(bossId) {
         if (!gameRunning) {
+            createHPBar('player-hp-bar', maxHP);
             resetGame();
             currentBoss = bossId;
             document.getElementById('player-hp-bar').classList.add('active');
@@ -180,9 +191,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.count').forEach(element => {
                 element.classList.add('boss');
             });
-            startRegeneration()
+            startRegeneration();
             document.getElementById(bossId).classList.add('active');
             bossHPBar = createHPBar('boss-hp-bar', bossesData[bossId].hp);
+    
+            // Сохраняем исходное значение сопротивления
+            originalResistance = bossesData[bossId].resistance;
+    
+            // Уменьшаем сопротивление босса на значение уязвимости игрока
+            bossesData[bossId].resistance -= playerVulnerability;
+            console.log(`Boss resistance reduced to: ${bossesData[bossId].resistance}`);
+    
             gameRunning = true;
             let intervalId = setInterval(() => {
                 if (gameRunning && currentBoss) {
