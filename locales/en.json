@@ -86,5 +86,10 @@
   "regeneration_description": "Enhances the body's natural regenerative abilities. Speeds up the wound healing process. Provides ?% regeneration",
   "magicstrength_description": "Innate ability to use magic. Determines the character's potential in learning new spells and achieving higher levels of magical mastery.",
   "fireResistance_description": "The character has the ability to absorb fire directed at them. The fire extinguishes upon contact with the character, causing no damage.",
-  "vulnerability_description": "The hero's sword becomes capable of penetrating unknown materials and entities. Provides armor reduction for bosses"
+  "vulnerability_description": "The hero's sword becomes capable of penetrating unknown materials and entities. Provides armor reduction for bosses",
+  "dodge": "Dodge",
+  "HP": "HP",
+  "armor": "Armor",
+  "block": "Block",
+  "Basedamage": "Base Damage"
 }

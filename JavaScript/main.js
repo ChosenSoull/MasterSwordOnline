@@ -198,65 +198,101 @@ let clickBonus = 1;
 
 const improvements = {
     "armorAndWeapons": [
-        { name: "helmet", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/helmet-icon.png",descriptionKeyitem:"helmet_description",additionalUpgrades: [
-            { type: 'armor', value: 10 }
-        ]},
-        { name: "body", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/body-icon.png",descriptionKeyitem:"body_description",additionalUpgrades: [
-            { type: 'armor', value: 10 }
-        ] },
-        { name: "pants", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/pants-icon.png",descriptionKeyitem:"pants_description",additionalUpgrades: [
-            { type: 'armor', value: 10 }
-        ] },
-        { name: "boots", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/boots-icon.png",descriptionKeyitem:"boots_description",additionalUpgrades: [
-            { type: 'armor', value: 10 },
-            { type: 'dodge', value: 10 }
-        ] },
-        { name: "shield", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/shield-icon.png",descriptionKeyitem:"shield_description",additionalUpgrades: [
-            { type: 'block', value: 10 }
-        ] },
-        { name: "sword", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "Textures/sword-icon.png",descriptionKeyitem:"sword_description",additionalUpgrades: [
-            { type: 'Basedamage', value: 10 }
-        ] }
+        {
+            name: "helmet", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/helmet-icon.png", descriptionKeyitem: "helmet_description", additionalUpgrades: [
+                { type: 'armor', value: 10 }
+            ]
+        },
+        {
+            name: "body", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/body-icon.png", descriptionKeyitem: "body_description", additionalUpgrades: [
+                { type: 'armor', value: 10 }
+            ]
+        },
+        {
+            name: "pants", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/pants-icon.png", descriptionKeyitem: "pants_description", additionalUpgrades: [
+                { type: 'armor', value: 10 }
+            ]
+        },
+        {
+            name: "boots", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/boots-icon.png", descriptionKeyitem: "boots_description", additionalUpgrades: [
+                { type: 'armor', value: 10 },
+                { type: 'dodge', value: 10 }
+            ]
+        },
+        {
+            name: "shield", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/shield-icon.png", descriptionKeyitem: "shield_description", additionalUpgrades: [
+                { type: 'block', value: 10 }
+            ]
+        },
+        {
+            name: "sword", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "Textures/sword-icon.png", descriptionKeyitem: "sword_description", additionalUpgrades: [
+                { type: 'Basedamage', value: 10 }
+            ]
+        }
     ],
     "heroImprovements": [
-        { name: "intellect", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/intellect-icon.png",descriptionKeyitem:"intellect_description",additionalUpgrades: [
-            { type: '', value: 10 }
-        ] },
-        { name: "courage", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/courage-icon.png",descriptionKeyitem:"courage_description",additionalUpgrades: [
-            { type: 'Basedamage', value: 10 }
-        ] },
-        { name: "endurance", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/endurance-icon.png",descriptionKeyitem:"endurance_description",additionalUpgrades: [
-            { type: 'block', value: 10 }
-        ] },
-        { name: "confidence", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/confidence-icon.png",descriptionKeyitem:"confidence_description",additionalUpgrades: [
-            { type: 'dodge', value: 10 }
-        ] },
-        { name: "strength", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/strength-icon.png",descriptionKeyitem:"strength_description",additionalUpgrades: [
-            { type: 'Basedamage', value: 10 }
-        ] },
-        { name: "life", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/life-icon.png",descriptionKeyitem:"life_description",additionalUpgrades: [
-            { type: 'HP', value: 10 }
-        ] },
-        { name: "reaction", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png",descriptionKeyitem:"reaction_description",additionalUpgrades: [
-            { type: 'dodge', value: 10 }
-        ] }
+        {
+            name: "intellect", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/intellect-icon.png", descriptionKeyitem: "intellect_description", additionalUpgrades: [
+                { type: '', value: 10 }
+            ]
+        },
+        {
+            name: "courage", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/courage-icon.png", descriptionKeyitem: "courage_description", additionalUpgrades: [
+                { type: 'Basedamage', value: 10 }
+            ]
+        },
+        {
+            name: "endurance", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/endurance-icon.png", descriptionKeyitem: "endurance_description", additionalUpgrades: [
+                { type: 'block', value: 10 }
+            ]
+        },
+        {
+            name: "confidence", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/confidence-icon.png", descriptionKeyitem: "confidence_description", additionalUpgrades: [
+                { type: 'dodge', value: 10 }
+            ]
+        },
+        {
+            name: "strength", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/strength-icon.png", descriptionKeyitem: "strength_description", additionalUpgrades: [
+                { type: 'Basedamage', value: 10 }
+            ]
+        },
+        {
+            name: "life", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/life-icon.png", descriptionKeyitem: "life_description", additionalUpgrades: [
+                { type: 'HP', value: 10 }
+            ]
+        },
+        {
+            name: "reaction", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png", descriptionKeyitem: "reaction_description", additionalUpgrades: [
+                { type: 'dodge', value: 10 }
+            ]
+        }
     ],
     "magic": [
-        { name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/mana-icon.png",descriptionKeyitem:"mana_description",additionalUpgrades: [
-            { type: '', value: 10 }
-        ] },
-        { name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/regeneration-icon.png",descriptionKeyitem:"regeneration_description",additionalUpgrades: [
-            { type: 'regeneration', value: 10 }
-        ] },
-        { name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/Magic-power-icon.png",descriptionKeyitem:"magicstrength_description",additionalUpgrades: [
-            { type: '', value: 10 }
-        ] },
-        { name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/fire-resistance-icon.png",descriptionKeyitem:"fireResistance_description",additionalUpgrades: [
-            { type: '', value: 10 }
-        ] },
-        { name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/vulnerability-icon.png",descriptionKeyitem:"vulnerability_description",additionalUpgrades: [
-            { type: 'vulnerability', value: 10 }
-        ] }
+        {
+            name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/mana-icon.png", descriptionKeyitem: "mana_description", additionalUpgrades: [
+                { type: '', value: 10 }
+            ]
+        },
+        {
+            name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/regeneration-icon.png", descriptionKeyitem: "regeneration_description", additionalUpgrades: [
+                { type: 'regeneration', value: 10 }
+            ]
+        },
+        {
+            name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/Magic-power-icon.png", descriptionKeyitem: "magicstrength_description", additionalUpgrades: [
+                { type: '', value: 10 }
+            ]
+        },
+        {
+            name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/fire-resistance-icon.png", descriptionKeyitem: "fireResistance_description", additionalUpgrades: [
+                { type: '', value: 10 }
+            ]
+        },
+        {
+            name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/vulnerability-icon.png", descriptionKeyitem: "vulnerability_description", additionalUpgrades: [
+                { type: 'vulnerability', value: 10 }
+            ]
+        }
     ]
 };
 
@@ -818,8 +854,12 @@ function showDetailedInfo(item) {
         console.error('Element with ID "detail-container" not found');
         return;
     }
+
+    // Clear existing content (optional, for better performance)
+    detailContainer.innerHTML = '';
+
     detailContainer.innerHTML = `
-    <div class="detail-content">
+      <div class="detail-content">
         <button class="close-button" onclick="hideDetailedInfo()">
             <img src="./Textures/close-icon.png" alt="Закрыть" class="close-icon">
         </button>
@@ -830,14 +870,34 @@ function showDetailedInfo(item) {
                 <span class="total-bonus-label"><strong><span data-i18n="totalBonus"></span>:</strong>${formatNumber(item.totalBonus)}</span>
             </div>
         </div>
-        <div class="detail-info-container"> <p class="improvement-bonusMenu"><strong><span data-i18n="bonus"></span>:</strong> ${item.bonus.toFixed(2)}</p>
+        <div class="detail-info-container">
+            <p class="improvement-bonusMenu"><strong><span data-i18n="bonus"></span>:</strong> ${item.bonus.toFixed(2)}</p>
             <p class="improvement-levelMenu"><strong><span data-i18n="level"></span>:</strong> ${item.level}</p>
-            <p class="improvement-costMenu"><strong><span data-i18n="cost"></span>:</strong> ${formatNumber(item.cost)}</p></div>
+            <p class="improvement-costMenu"><strong><span data-i18n="cost"></span>:</strong> ${formatNumber(item.cost)}</p>
+            <div class="additional-upgrades-container"></div>
+        </div>
         <p class="improvement-description" data-i18n="${item.descriptionKeyitem}"></p>
-    </div>
+      </div>
     `;
+
+    // Handle additional upgrades
+    const additionalUpgradesContainer = detailContainer.querySelector('.additional-upgrades-container');
+    const upgrades = item.additionalUpgrades || []; // Handle empty array case
+
+    upgrades.forEach(upgrade => {
+        const newParagraph = document.createElement('p');
+        newParagraph.classList.add('additional-upgrade');
+        newParagraph.innerHTML = `
+          <strong>
+              <span data-i18n="${upgrade.type}"></span>: 
+              ${formatNumber(upgrade.value)}
+          </strong>
+      `;
+        additionalUpgradesContainer.appendChild(newParagraph);
+    });
+
     detailContainer.style.display = 'block';
-    localize()
+    localize();
 }
 
 function showDetailedInfoPotion(potion) {

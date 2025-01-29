@@ -667,6 +667,16 @@ body {
     margin-right: 20px;
 }
 
+.additional-upgrades-container{
+    display:flex;
+}
+
+.additional-upgrade {
+    display: flex;
+    margin-right: 20px;
+    /* Добавьте другие стили, если необходимо */
+}
+
 /* Заголовок с изображением */
 .detail-header {
     display: flex;
