@@ -194,7 +194,7 @@ let blockDuration = 20000; // Начальная блокировка 20 сек�
 let lastBlockTime = 0; // Время последней блокировки
 const escalationTime = 1200000; // 20 минут в миллисекундах
 let blockLevel = 0; // Уровень блокировки (0, 1, 2, 3, 4, 5)
-let clickBonus = 1;
+let clickBonus = 100000000;
 
 const improvements = {
     "armorAndWeapons": [
@@ -302,10 +302,10 @@ const potions = [
     { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "Textures/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false, descriptionKey: "TeleportationPotion" },
     { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "Textures/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "InvisibilityPotion" },
     { name: "berserkPotion", baseCost: 500, cost: 500, icon: "Textures/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "BerserkPotion" },
-    { name: "healingPotion", baseCost: 600, cost: 600, icon: "Textures/healing-potion-icon.png", unlocksAbility: "Healing", duration: 1000, cooldown: 60000, purchased: false, descriptionKey: "HealingPotion" },
+    { name: "healingPotion", baseCost: 600, cost: 600, icon: "Textures/healing-potion-icon.png", unlocksAbility: "Healing", duration: 60000, cooldown: 60000, purchased: false, descriptionKey: "HealingPotion" },
     { name: "poisonPotion", baseCost: 600, cost: 600, icon: "Textures/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false, descriptionKey: "PoisonPotion" },
     { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "Textures/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "ShieldmagicPotion" },
-    { name: "secondlife", baseCost: 600, cost: 600, icon: "Textures/second-life-icon.png", unlocksAbility: "secondlife", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "Secondlife" }
+    { name: "secondlife", baseCost: 600, cost: 600, icon: "Textures/second-life-icon.png", unlocksAbility: "Secondlife", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "Secondlife" }
 ];
 
 const baff = {
@@ -421,8 +421,8 @@ function activateAbility(id) {
             case 'shield':
                 shieldmagicactivate();
                 break;
-            case 'secondlife':
-                secondlife();
+            case 'Secondlife':
+                secondLifeYes();
                 break;
             default:
                 console.log(`Неизвестная способность: ${id}`);
@@ -525,10 +525,36 @@ function deactivateAbility(id) {
     }
 }
 
+const activeEffects = new Map(); // Хранит все активные эффекты
+
+function applyEffect(effectName, multiplier, duration) {
+    if (activeEffects.has(effectName)) return;
+
+    // Сохраняем оригинальный множитель перед применением
+    const originalMultiplier = 1;
+    const newMultiplier = multiplier;
+
+    // Применяем эффект
+    clickBonus = clickBonus / originalMultiplier * newMultiplier;
+    console.log(`Эффект ${effectName} активирован. Бонус: ${clickBonus}`);
+
+    // Сохраняем информацию для отката
+    activeEffects.set(effectName, {
+        original: originalMultiplier,
+        current: newMultiplier,
+        timer: setTimeout(() => {
+            // Откатываем только свой множитель
+            clickBonus = clickBonus / newMultiplier * originalMultiplier;
+            activeEffects.delete(effectName);
+            console.log(`Эффект ${effectName} деактивирован. Бонус: ${clickBonus}`);
+        }, duration)
+    });
+}
 
 function increaseMovementSpeed() {
-    // Логика увеличения скорости передвижения игрока
-    console.log('Скорость передвижения увеличена!');
+    const potion = potions.find(p => p.unlocksAbility === 'IncreasedMovementSpeed');
+    if (!potion) return;
+    applyEffect('speed', 3, potion.duration);
 }
 
 function increaseMagicResistance() {
@@ -541,61 +567,39 @@ function teleportPlayer() {
     console.log('Игрок телепортирован!');
 }
 
+isPlayerInvisible = false;
+
 function makePlayerInvisible() {
-    // Логика невидимости игрока
+    const potion = potions.find(p => p.unlocksAbility === 'Invisibility');
+    isPlayerInvisible = true;
+    setTimeout(() => {
+        isPlayerInvisible = false;
+        console.log('Игрок снова видим');
+    }, potion.duration);
     console.log('Игрок невидим!');
 }
 
-let isBerserkActive = false;
-let berserkCooldown = false;
-let originalClickBonus; // Хранить оригинальный clickBonus
-
 function activateBerserkMode() {
-    const berserkPotion = potions.find(potion => potion.unlocksAbility === 'Berserk');
-    if (!berserkPotion) {
-        console.log('Зелье режима берсерка не найдено.');
-        return;
-    }
-
-    const berserkDuration = berserkPotion.duration;
-    const berserkCooldownTime = berserkPotion.cooldown;
-
-    if (berserkCooldown) {
-        console.log('Режим берсерка находится на перезарядке.');
-        return;
-    }
-
-    if (!isBerserkActive) {
-        isBerserkActive = true;
-        console.log('Режим берсерка активирован! Увеличение урона на 33% на 1 минуту.');
-
-        // Увеличиваем clickBonus на 33%
-        originalClickBonus = clickBonus;
-        clickBonus *= 1.33;
-        // Обновить UI, если необходимо
-
-        // Таймер на 1 минуту для окончания режима берсерка
-        setTimeout(() => {
-            isBerserkActive = false;
-            console.log('Режим берсерка закончился. Урон восстановлен до нормального уровня.');
-
-            // Восстанавливаем обычный clickBonus
-            clickBonus = originalClickBonus;
-            // Обновить UI, если необходимо
-
-            // Устанавливаем перезарядку на 5 минут
-            berserkCooldown = true;
-            setTimeout(() => {
-                berserkCooldown = false;
-                console.log('Перезарядка режима берсерка закончилась. Способность снова доступна.');
-            }, berserkCooldownTime); // Используем cooldown из const potions
-        }, berserkDuration); // Используем duration из const potions
-    }
+    const potion = potions.find(p => p.unlocksAbility === 'Berserk');
+    if (!potion) return;
+    applyEffect('berserk', 1.33, potion.duration);
 }
 
+regenerationTimeout = null;
+
 function healPlayer() {
-    // Логика исцеления игрока
-    console.log('Игрок исцелен!');
+    const potion = potions.find(p => p.unlocksAbility === 'Healing');
+
+    const originalRegeneration = regenerationAmount;
+    regenerationAmount *= 2;
+
+    console.log(`Регенерация усилена! Текущее значение: x2 (${regenerationAmount})`);
+
+    regenerationTimeout = setTimeout(() => {
+        regenerationAmount = originalRegeneration;
+        regenerationTimeout = null;
+        console.log('Регенерация восстановлена');
+    }, potion.duration);
 }
 
 function poisonactivate() {
@@ -606,7 +610,7 @@ function shieldmagicactivate() {
     console.log('Получен магический барьер');
 }
 
-function secondlife() {
+function secondLifeYes() {
     console.log('Получен магический барьер');
 }
 

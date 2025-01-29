@@ -9,6 +9,11 @@ function bossAttack(playerHPBar, playerArmor, block, dodgeChance, bossDamage) {
         updateHPBar(playerHPBar, playerHPBar.currentHP - 0);
         return;
     }
+    if (isPlayerInvisible) {
+        updateHPBar(playerHPBar, playerHPBar.currentHP - 0);
+        console.log("Игрок невидим, босс промахивается.");
+        return;
+    }
 
     let damage = calculateBossDamage(bossDamage, playerArmor, block);
     updateHPBar(playerHPBar, playerHPBar.currentHP - damage);
