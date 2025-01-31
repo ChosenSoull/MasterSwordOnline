@@ -7,20 +7,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="Page-title">Кликер меча</title>
-    <link rel="icon" type="image/png" href="Textures/Favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="Textures/Favicon/favicon.svg" />
-    <link rel="shortcut icon" href="Textures/Favicon/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="Textures/Favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="Textures/Favicon/site.webmanifest" />
-    <link rel="stylesheet" href="Css/logo.css">
-    <link rel="stylesheet" href="Css/hpbar.css">
-    <link rel="stylesheet" href="Css/boss.css">
-    <link rel="stylesheet" href="Css/main.css">
+    <link rel="icon" type="image/png" href="assets/textures/Favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="assets/textures/Favicon/favicon.svg" />
+    <link rel="shortcut icon" href="assets/textures/Favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/textures/Favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="assets/textures/Favicon/site.webmanifest" />
+    <link rel="stylesheet" href="client/css/logo.css">
+    <link rel="stylesheet" href="client/css/hpbar.css">
+    <link rel="stylesheet" href="client/css/boss.css">
+    <link rel="stylesheet" href="client/css/main.css">
 </head>
 
 <body>
-    <div id="loadingScreen" style="background-image: url('Textures/BgLoading.jpg');">
-        <img src="Textures/logo.png" alt="Logo" class="loading-logo">
+    <div id="loadingScreen" style="background-image: url('assets/textures/BgLoading.jpg');">
+        <img src="assets/textures/logo.png" alt="Logo" class="loading-logo">
         <div class="loading-bar-container">
             <div class="loading-bar"></div>
         </div>
@@ -35,7 +35,7 @@
 
     <div class="navbar">
         <div id="player-hp-bar">
-            <img src="Textures/heard.png" alt="Player Icon" class="hp-icon">
+            <img src="assets/textures/heard.png" alt="Player Icon" class="hp-icon">
             <div class="hp-inner">
                 <span class="hp-counter" id="player-hp-counter"></span>
             </div>
@@ -43,7 +43,7 @@
     </div>
     <div class="main-container">
         <div id="boss-hp-bar">
-            <img src="Textures/heard.png" alt="Boss Icon" class="hp-icon">
+            <img src="assets/textures/heard.png" alt="Boss Icon" class="hp-icon">
             <div class="hp-inner">
                 <span class="hp-counter" id="boss-hp-counter"></span>
             </div>
@@ -69,13 +69,13 @@
         <div id="message-container" class="message-container"></div>
         <div class="count">
             <div class="coin-container">
-                <img src="Textures/fire.gif" alt="Flame" class="flame-animation">
-                <img src="Textures/Coin.png" alt="Монетка" class="coin-icon">
+                <img src="assets/textures/fire.gif" alt="Flame" class="flame-animation">
+                <img src="assets/textures/Coin.png" alt="Монетка" class="coin-icon">
             </div>
             <span id="count">0</span>
         </div>
         <div class="image-container" onclick="clickSword()">
-            <img id="sword" src="Textures/1lvl.png" class="image">
+            <img id="sword" src="assets/textures/1lvl.png" class="image">
             <div id="spark-layer"></div>
         </div>
     </div>
@@ -84,8 +84,8 @@
 
     <div id="account-panel" class="account-panel" onclick="showPanel('profile-section', event)">
         <div class="avatar-frame">
-            <img src="server/public/uploads/default_avatar.png" Avatar class="avatar">
-            <img src="server/public/progress/6.png" class="frame">
+            <img src="assets/textures/public/uploads/default_avatar.png" Avatar class="avatar">
+            <img src="assets/textures/public/progress/6.png" class="frame">
         </div>
         <div class="account-info">
             <p class="account-name">Имя аккаунта</p>
@@ -335,7 +335,7 @@
                         <div class="wrap">
                             <div class="outlineGithub"></div>
                             <div class="content">
-                                <img src="Textures/Icons/Github.png" alt="Логотип" />
+                                <img src="assets/textures/Icons/Github.png" alt="Логотип" />
                                 Github
                             </div>
                         </div>
@@ -346,7 +346,7 @@
                     <div class="wrap">
                         <div class="outline"></div>
                         <div class="content">
-                            <img src="Textures/Icons/Discord.webp" alt="Логотип" />
+                            <img src="assets/textures/Icons/Discord.webp" alt="Логотип" />
                             Discord
                         </div>
                     </div>
@@ -355,7 +355,7 @@
                     <div class="wrap">
                         <div class="outline"></div>
                         <div class="content">
-                            <img src="Textures/Icons/Telegram.png" alt="Логотип" />
+                            <img src="assets/textures/Icons/Telegram.png" alt="Логотип" />
                             Telegram
                         </div>
                     </div>
@@ -378,23 +378,23 @@
     </div>
     <div class="navbar">
         <a href="#" onclick="showPanel('improvements-section', event)" class="nav-link">
-            <img src="Textures/Icons/Amplification.png" alt="" class="icon">
+            <img src="assets/textures/Icons/Amplification.png" alt="" class="icon">
             <span data-i18n="Improvement">Улучшения</span>
         </a>
         <a href="#" onclick="showPanel('Quests-section', event)" class="nav-link">
-            <img src="Textures/Icons/Quests.png" alt="" class="icon">
+            <img src="assets/textures/Icons/Quests.png" alt="" class="icon">
             <span data-i18n="Quests">Квесты</span>
         </a>
         <a href="#" onclick="showPanel('leaders-section', event)" class="nav-link">
-            <img src="Textures/Icons/Liders.png" alt="" class="icon">
+            <img src="assets/textures/Icons/Liders.png" alt="" class="icon">
             <span data-i18n="Liders">Лидеры</span>
         </a>
         <a href="#" onclick="showPanel('shop-section', event)" class="nav-link">
-            <img src="Textures/Icons/Shop.png" alt="" class="icon">
+            <img src="assets/textures/Icons/Shop.png" alt="" class="icon">
             <span data-i18n="Shop">Магазин</span>
         </a>
         <a href="#" onclick="showPanel('settings-section', event)" class="nav-link">
-            <img src="Textures/Icons/Settings.png" alt="" class="icon">
+            <img src="assets/textures/Icons/Settings.png" alt="" class="icon">
             <span data-i18n="Settings">Настройки</span>
         </a>
     </div>
@@ -411,21 +411,21 @@
     </div>    
 
     <audio id="gameMusic" loop preload="auto">
-        <source src="Returning Home.mp3" type="audio/mpeg">
+        <source src="assets/audio/Returning Home.mp3" type="audio/mpeg">
         Ваш браузер не поддерживает элемент audio.
     </audio>
 
     <audio id="clickSound" preload="auto">
-        <source src="soundclick.mp3" type="audio/mpeg">
+        <source src="assets/audio/soundclick.mp3" type="audio/mpeg">
     </audio>
-    <script src="JavaScript/hammer.min.js"></script>
-    <script src="JavaScript/logo.js"></script>
-    <script src="JavaScript/hpbar.js"></script>
-    <script src="JavaScript/playerdamageformula.js"></script>
-    <script src="JavaScript/bossdamageformula.js"></script>
-    <script src="JavaScript/bossmehanics.js"></script>
-    <script src="JavaScript/mainboss.js"></script>
-    <script src="JavaScript/main.js"></script>
+    <script src="client/js/hammer.min.js"></script>
+    <script src="client/js/logo.js"></script>
+    <script src="client/js/hpbar.js"></script>
+    <script src="client/js/playerdamageformula.js"></script>
+    <script src="client/js/bossdamageformula.js"></script>
+    <script src="client/js/bossmehanics.js"></script>
+    <script src="client/js/mainboss.js"></script>
+    <script src="client/js/main.js"></script>
 </body>
 
 </html>

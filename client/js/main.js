@@ -1,3 +1,60 @@
+async function createAccount(name) {
+    const response = await fetch('/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'create_account',
+            name: name
+        })
+    });
+
+    const data = await response.json();
+    if (data.status === 'success') {
+        localStorage.setItem('playerID', data.player_id);
+        localStorage.setItem('sessionToken', data.session_token);
+    }
+    return data;
+}
+
+async function saveGameData(gameState) {
+    const response = await fetch('/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'save_data',
+            player_id: localStorage.getItem('playerID'),
+            session_token: localStorage.getItem('sessionToken'),
+            count: gameState.count,
+            level: gameState.level,
+            improvements: gameState.improvements,
+            potions: gameState.potions,
+            stats: gameState.stats,
+            active_abilities: gameState.activeAbilities
+        })
+    });
+    return await response.json();
+}
+
+async function loadGameData() {
+    const response = await fetch(`/api.php?player_id=${localStorage.getItem('playerID')
+        }&session_token=${localStorage.getItem('sessionToken')
+        }`);
+
+    const data = await response.json();
+    if (data.status === 'success') {
+        // Обновление состояния игры
+        gameState = {
+            count: data.data.count,
+            level: data.data.level,
+            improvements: data.data.improvements,
+            potions: data.data.potions,
+            stats: data.data.stats,
+            activeAbilities: data.data.active_abilities
+        };
+    }
+    return data;
+}
+
 let translations = {}; // Глобальная переменная для переводов
 
 loadTranslations('ru');
@@ -17,7 +74,7 @@ document.querySelectorAll('#Lang-section .language-button').forEach(function (la
 
 async function loadTranslations(language) {
     try {
-        const response = await fetch(`locales/${language}.json`);
+        const response = await fetch(`client/locales/${language}.json`);
         const data = await response.json();
         translations = data; // Сохраняем переводы в глобальной переменной
         localize(); // Обновляем интерфейс
@@ -194,102 +251,102 @@ let blockDuration = 20000; // Начальная блокировка 20 сек�
 let lastBlockTime = 0; // Время последней блокировки
 const escalationTime = 1200000; // 20 минут в миллисекундах
 let blockLevel = 0; // Уровень блокировки (0, 1, 2, 3, 4, 5)
-let clickBonus = 100000000;
+let clickBonus = 1;
 
 const improvements = {
     "armorAndWeapons": [
         {
-            name: "helmet", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/helmet-icon.png", descriptionKeyitem: "helmet_description", additionalUpgrades: [
+            name: "helmet", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "assets/textures/helmet-icon.png", descriptionKeyitem: "helmet_description", additionalUpgrades: [
                 { type: 'armor', value: 10 }
             ]
         },
         {
-            name: "body", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/body-icon.png", descriptionKeyitem: "body_description", additionalUpgrades: [
+            name: "body", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "assets/textures/body-icon.png", descriptionKeyitem: "body_description", additionalUpgrades: [
                 { type: 'armor', value: 10 }
             ]
         },
         {
-            name: "pants", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/pants-icon.png", descriptionKeyitem: "pants_description", additionalUpgrades: [
+            name: "pants", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "assets/textures/pants-icon.png", descriptionKeyitem: "pants_description", additionalUpgrades: [
                 { type: 'armor', value: 10 }
             ]
         },
         {
-            name: "boots", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/boots-icon.png", descriptionKeyitem: "boots_description", additionalUpgrades: [
+            name: "boots", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "assets/textures/boots-icon.png", descriptionKeyitem: "boots_description", additionalUpgrades: [
                 { type: 'armor', value: 10 },
                 { type: 'dodge', value: 10 }
             ]
         },
         {
-            name: "shield", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/shield-icon.png", descriptionKeyitem: "shield_description", additionalUpgrades: [
+            name: "shield", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "assets/textures/shield-icon.png", descriptionKeyitem: "shield_description", additionalUpgrades: [
                 { type: 'block', value: 10 }
             ]
         },
         {
-            name: "sword", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "Textures/sword-icon.png", descriptionKeyitem: "sword_description", additionalUpgrades: [
+            name: "sword", level: 0, baseCost: 500, cost: 500, bonus: 1.25, totalBonus: 0, icon: "assets/textures/sword-icon.png", descriptionKeyitem: "sword_description", additionalUpgrades: [
                 { type: 'Basedamage', value: 10 }
             ]
         }
     ],
     "heroImprovements": [
         {
-            name: "intellect", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/intellect-icon.png", descriptionKeyitem: "intellect_description", additionalUpgrades: [
+            name: "intellect", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "assets/textures/intellect-icon.png", descriptionKeyitem: "intellect_description", additionalUpgrades: [
                 { type: '', value: 10 }
             ]
         },
         {
-            name: "courage", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/courage-icon.png", descriptionKeyitem: "courage_description", additionalUpgrades: [
+            name: "courage", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "assets/textures/courage-icon.png", descriptionKeyitem: "courage_description", additionalUpgrades: [
                 { type: 'Basedamage', value: 10 }
             ]
         },
         {
-            name: "endurance", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/endurance-icon.png", descriptionKeyitem: "endurance_description", additionalUpgrades: [
+            name: "endurance", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "assets/textures/endurance-icon.png", descriptionKeyitem: "endurance_description", additionalUpgrades: [
                 { type: 'block', value: 10 }
             ]
         },
         {
-            name: "confidence", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/confidence-icon.png", descriptionKeyitem: "confidence_description", additionalUpgrades: [
+            name: "confidence", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "assets/textures/confidence-icon.png", descriptionKeyitem: "confidence_description", additionalUpgrades: [
                 { type: 'dodge', value: 10 }
             ]
         },
         {
-            name: "strength", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/strength-icon.png", descriptionKeyitem: "strength_description", additionalUpgrades: [
+            name: "strength", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "assets/textures/strength-icon.png", descriptionKeyitem: "strength_description", additionalUpgrades: [
                 { type: 'Basedamage', value: 10 }
             ]
         },
         {
-            name: "life", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "Textures/life-icon.png", descriptionKeyitem: "life_description", additionalUpgrades: [
+            name: "life", level: 0, baseCost: 300, cost: 300, bonus: 1.25, totalBonus: 0, icon: "assets/textures/life-icon.png", descriptionKeyitem: "life_description", additionalUpgrades: [
                 { type: 'HP', value: 10 }
             ]
         },
         {
-            name: "reaction", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/reaction-icon.png", descriptionKeyitem: "reaction_description", additionalUpgrades: [
+            name: "reaction", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "assets/textures/reaction-icon.png", descriptionKeyitem: "reaction_description", additionalUpgrades: [
                 { type: 'dodge', value: 10 }
             ]
         }
     ],
     "magic": [
         {
-            name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "Textures/mana-icon.png", descriptionKeyitem: "mana_description", additionalUpgrades: [
+            name: "mana", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "assets/textures/mana-icon.png", descriptionKeyitem: "mana_description", additionalUpgrades: [
                 { type: '', value: 10 }
             ]
         },
         {
-            name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "Textures/regeneration-icon.png", descriptionKeyitem: "regeneration_description", additionalUpgrades: [
+            name: "regeneration", level: 0, baseCost: 150, cost: 150, bonus: 1.25, totalBonus: 0, icon: "assets/textures/regeneration-icon.png", descriptionKeyitem: "regeneration_description", additionalUpgrades: [
                 { type: 'regeneration', value: 10 }
             ]
         },
         {
-            name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "Textures/Magic-power-icon.png", descriptionKeyitem: "magicstrength_description", additionalUpgrades: [
+            name: "strength", level: 0, baseCost: 200, cost: 200, bonus: 1.25, totalBonus: 0, icon: "assets/textures/Magic-power-icon.png", descriptionKeyitem: "magicstrength_description", additionalUpgrades: [
                 { type: '', value: 10 }
             ]
         },
         {
-            name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/fire-resistance-icon.png", descriptionKeyitem: "fireResistance_description", additionalUpgrades: [
+            name: "fireResistance", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "assets/textures/fire-resistance-icon.png", descriptionKeyitem: "fireResistance_description", additionalUpgrades: [
                 { type: '', value: 10 }
             ]
         },
         {
-            name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "Textures/vulnerability-icon.png", descriptionKeyitem: "vulnerability_description", additionalUpgrades: [
+            name: "vulnerability", level: 0, baseCost: 250, cost: 250, bonus: 1.25, totalBonus: 0, icon: "assets/textures/vulnerability-icon.png", descriptionKeyitem: "vulnerability_description", additionalUpgrades: [
                 { type: 'vulnerability', value: 10 }
             ]
         }
@@ -297,15 +354,15 @@ const improvements = {
 };
 
 const potions = [
-    { name: "speedPotion", baseCost: 100, cost: 100, icon: "Textures/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "SpeedPotion" },
-    { name: "magicResistancePotion", baseCost: 200, cost: 200, icon: "Textures/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "MagicResistancePotion" },
-    { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "Textures/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false, descriptionKey: "TeleportationPotion" },
-    { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "Textures/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "InvisibilityPotion" },
-    { name: "berserkPotion", baseCost: 500, cost: 500, icon: "Textures/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "BerserkPotion" },
-    { name: "healingPotion", baseCost: 600, cost: 600, icon: "Textures/healing-potion-icon.png", unlocksAbility: "Healing", duration: 60000, cooldown: 60000, purchased: false, descriptionKey: "HealingPotion" },
-    { name: "poisonPotion", baseCost: 600, cost: 600, icon: "Textures/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false, descriptionKey: "PoisonPotion" },
-    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "Textures/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "ShieldmagicPotion" },
-    { name: "secondlife", baseCost: 600, cost: 600, icon: "Textures/second-life-icon.png", unlocksAbility: "Secondlife", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "Secondlife" }
+    { name: "speedPotion", baseCost: 100, cost: 100, icon: "assets/textures/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "SpeedPotion" },
+    { name: "magicResistancePotion", baseCost: 200, cost: 200, icon: "assets/textures/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "MagicResistancePotion" },
+    { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "assets/textures/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false, descriptionKey: "TeleportationPotion" },
+    { name: "invisibilityPotion", baseCost: 400, cost: 400, icon: "assets/textures/invisibility-potion-icon.png", unlocksAbility: "Invisibility", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "InvisibilityPotion" },
+    { name: "berserkPotion", baseCost: 500, cost: 500, icon: "assets/textures/berserk-potion-icon.png", unlocksAbility: "Berserk", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "BerserkPotion" },
+    { name: "healingPotion", baseCost: 600, cost: 600, icon: "assets/textures/healing-potion-icon.png", unlocksAbility: "Healing", duration: 60000, cooldown: 60000, purchased: false, descriptionKey: "HealingPotion" },
+    { name: "poisonPotion", baseCost: 600, cost: 600, icon: "assets/textures/poison-icon.png", unlocksAbility: "poison", duration: 75000, cooldown: 40000, purchased: false, descriptionKey: "PoisonPotion" },
+    { name: "shieldmagicPotion", baseCost: 600, cost: 600, icon: "assets/textures/shieldmagic-icon.png", unlocksAbility: "shield", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "ShieldmagicPotion" },
+    { name: "secondlife", baseCost: 600, cost: 600, icon: "assets/textures/second-life-icon.png", unlocksAbility: "Secondlife", duration: 1000, cooldown: 35000, purchased: false, descriptionKey: "Secondlife" }
 ];
 
 const baff = {
