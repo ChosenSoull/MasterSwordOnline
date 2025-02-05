@@ -1,60 +1,3 @@
-async function createAccount(name) {
-    const response = await fetch('/api.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            action: 'create_account',
-            name: name
-        })
-    });
-
-    const data = await response.json();
-    if (data.status === 'success') {
-        localStorage.setItem('playerID', data.player_id);
-        localStorage.setItem('sessionToken', data.session_token);
-    }
-    return data;
-}
-
-async function saveGameData(gameState) {
-    const response = await fetch('/api.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            action: 'save_data',
-            player_id: localStorage.getItem('playerID'),
-            session_token: localStorage.getItem('sessionToken'),
-            count: gameState.count,
-            level: gameState.level,
-            improvements: gameState.improvements,
-            potions: gameState.potions,
-            stats: gameState.stats,
-            active_abilities: gameState.activeAbilities
-        })
-    });
-    return await response.json();
-}
-
-async function loadGameData() {
-    const response = await fetch(`/api.php?player_id=${localStorage.getItem('playerID')
-        }&session_token=${localStorage.getItem('sessionToken')
-        }`);
-
-    const data = await response.json();
-    if (data.status === 'success') {
-        // Обновление состояния игры
-        gameState = {
-            count: data.data.count,
-            level: data.data.level,
-            improvements: data.data.improvements,
-            potions: data.data.potions,
-            stats: data.data.stats,
-            activeAbilities: data.data.active_abilities
-        };
-    }
-    return data;
-}
-
 let translations = {}; // Глобальная переменная для переводов
 
 loadTranslations('ru');
@@ -212,7 +155,7 @@ const countElement = document.getElementById('count');
 const image = document.querySelector('.image');
 const clickSound = document.getElementById("clickSound");
 const SERVER_URL = 'http://gameswords.ddns.net';
-let currentCount = 0;
+currentCount = 0;
 
 document.addEventListener('keydown', function (event) {
     if (event.code === 'Space' && !isBlocked) {
@@ -245,15 +188,15 @@ let clickCountPerSecond = 0;
 let lastSecondStartTime = Date.now();
 const blockDurations = [20000, 300000, 900000, 1800000, 3600000, 21600000];
 const maxClicksPerSecond = 15;
-let isBlocked = false;
-let blockStartTime = 0;
-let blockDuration = 20000; // Начальная блокировка 20 секунд
-let lastBlockTime = 0; // Время последней блокировки
+isBlocked = false;
+blockStartTime = 0;
+blockDuration = 20000; // Начальная блокировка 20 секунд
+lastBlockTime = 0; // Время последней блокировки
 const escalationTime = 1200000; // 20 минут в миллисекундах
-let blockLevel = 0; // Уровень блокировки (0, 1, 2, 3, 4, 5)
-let clickBonus = 1;
+blockLevel = 0; // Уровень блокировки (0, 1, 2, 3, 4, 5)
+clickBonus = 1;
 
-const improvements = {
+improvements = {
     "armorAndWeapons": [
         {
             name: "helmet", level: 0, baseCost: 100, cost: 100, bonus: 1.25, totalBonus: 0, icon: "assets/textures/helmet-icon.png", descriptionKeyitem: "helmet_description", additionalUpgrades: [
@@ -353,7 +296,7 @@ const improvements = {
     ]
 };
 
-const potions = [
+potions = [
     { name: "speedPotion", baseCost: 100, cost: 100, icon: "assets/textures/speed-potion-icon.png", unlocksAbility: "IncreasedMovementSpeed", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "SpeedPotion" },
     { name: "magicResistancePotion", baseCost: 200, cost: 200, icon: "assets/textures/magic-resistance-potion-icon.png", unlocksAbility: "MagicResistance", duration: 60000, cooldown: 300000, purchased: false, descriptionKey: "MagicResistancePotion" },
     { name: "teleportationPotion", baseCost: 300, cost: 300, icon: "assets/textures/teleportation-potion-icon.png", unlocksAbility: "Teleport", duration: 1000, cooldown: 300000, purchased: false, descriptionKey: "TeleportationPotion" },
@@ -423,9 +366,9 @@ function buyPotion(potion) {
     }
 }
 
-let activeAbilities = {};
-let cooldownTimers = {};
-let timers = {};
+activeAbilities = {};
+cooldownTimers = {};
+timers = {};
 
 function activateAbility(id) {
     const potion = getPotionById(id);

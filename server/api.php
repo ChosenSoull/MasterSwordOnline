@@ -1,258 +1,163 @@
 <?php
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST");
+header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: https://gameswords.kesug.com");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
-require_once '/path/to/secure/directory/config.php';
 
-// Конфигурация базы данных
-$servername = "sqlXXX.infinityfree.com";
-$username = "if0_XXXXXXX";
-$password = "YOUR_DB_PASSWORD";
-$dbname = "if0_XXXXXXX";
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Прямое указание параметров БД
+$host = '';      // Хост БД
+$dbname = '';      // Имя базы данных
+$user = '';           // Пользователь БД
+$pass = '';       // Пароль БД
+
+$conn = new mysqli($host, $user, $pass, $dbname);
 
 if ($conn->connect_error) {
-    http_response_code(500);
-    die(json_encode(["status" => "error", "message" => "Connection failed: " . $conn->connect_error]));
+    die(json_encode(['error' => 'Connection failed: ' . $conn->connect_error]));
 }
 
-// Создание таблиц
-$conn->query("CREATE TABLE IF NOT EXISTS players (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    session_token VARCHAR(64) UNIQUE,
-    count INT DEFAULT 0,
-    level INT DEFAULT 1,
-    improvements JSON,
-    potions JSON,
-    stats JSON,
-    active_abilities JSON,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)");
-
-// Обработка входящих запросов
-$data = json_decode(file_get_contents('php://input'), true);
-$method = $_SERVER['REQUEST_METHOD'];
-
-try {
-    if ($method === 'POST') {
-        handlePostRequest($conn, $data);
-    } elseif ($method === 'GET') {
-        handleGetRequest($conn);
+// Создание гостевого аккаунта
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_guest') {
+    $username = generateGuestUsername($conn);
+    $login_key = bin2hex(random_bytes(32));
+    
+    $stmt = $conn->prepare("INSERT INTO users 
+        (username, login_key, improvements, potions, active_abilities, cooldown_timers, timers)
+        VALUES (?, ?, ?, ?, ?, ?, ?)");
+    
+    // Начальные значения по умолчанию
+    $defaults = json_encode([]);
+    $stmt->bind_param("sssssss", 
+        $username, 
+        $login_key,
+        $defaults,
+        $defaults,
+        $defaults,
+        $defaults,
+        $defaults
+    );
+    
+    if ($stmt->execute()) {
+        echo json_encode([
+            'id' => $stmt->insert_id,
+            'username' => $username,
+            'login_key' => $login_key
+        ]);
     } else {
-        throw new Exception("Method not allowed", 405);
+        echo json_encode(['error' => 'Account creation failed']);
     }
-} catch (Exception $e) {
-    http_response_code($e->getCode());
-    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+    exit;
 }
 
-$conn->close();
-
-// Обработчики запросов
-function handlePostRequest($conn, $data) {
-    if (!isset($data['action'])) {
-        throw new Exception("Action is required", 400);
-    }
-
-    switch ($data['action']) {
-        case 'create_account':
-            createAccount($conn, $data);
-            break;
-        case 'save_data':
-            saveGameData($conn, $data);
-            break;
-        default:
-            throw new Exception("Invalid action", 400);
-    }
-}
-
-function handleGetRequest($conn) {
-    if (!isset($_GET['player_id']) || !isset($_GET['session_token'])) {
-        throw new Exception("Player ID and session token required", 400);
-    }
+// Сохранение данных игры
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $login_key = $data['login_key'];
     
-    loadGameData(
-        $conn,
-        intval($_GET['player_id']),
-        $_GET['session_token']
-    );
-}
-
-// Основные функции
-function createAccount($conn, $data) {
-    validateData($data, ['name']);
-    
-    // Генерация токена
-    $sessionToken = bin2hex(random_bytes(32));
-    
-    // Инициализация данных
-    $defaults = [
-        'improvements' => initializeImprovements(),
-        'potions' => initializePotions(),
-        'stats' => initializeStats(),
-        'active_abilities' => []
-    ];
-
-    $stmt = $conn->prepare("INSERT INTO players 
-        (name, session_token, improvements, potions, stats, active_abilities)
-        VALUES (?, ?, ?, ?, ?, ?)");
-        
-    $stmt->bind_param("ssssss",
-        $data['name'],
-        $sessionToken,
-        json_encode($defaults['improvements']),
-        json_encode($defaults['potions']),
-        json_encode($defaults['stats']),
-        json_encode($defaults['active_abilities'])
-    );
-
-    if (!$stmt->execute()) {
-        throw new Exception("Account creation failed: " . $stmt->error, 500);
-    }
-
-    echo json_encode([
-        "status" => "success",
-        "player_id" => $stmt->insert_id,
-        "session_token" => $sessionToken,
-        "name" => $data['name']
-    ]);
-    $stmt->close();
-}
-
-function saveGameData($conn, $data) {
-    validateData($data, [
-        'player_id', 'session_token', 'count', 'level',
-        'improvements', 'potions', 'stats', 'active_abilities'
-    ]);
-
-    verifySession($conn, $data['player_id'], $data['session_token']);
-
-    $stmt = $conn->prepare("UPDATE players SET
-        count = ?,
-        level = ?,
+    $stmt = $conn->prepare("UPDATE users SET
         improvements = ?,
         potions = ?,
-        stats = ?,
-        active_abilities = ?
-        WHERE id = ?");
-
-    $stmt->bind_param("iissssi",
-        $data['count'],
-        $data['level'],
-        encryptData(json_encode($data['improvements'])),
-        encryptData(json_encode($data['potions'])),
-        encryptData(json_encode($data['stats'])),
-        encryptData(json_encode($data['active_abilities'])),
-        $data['player_id']
+        active_abilities = ?,
+        cooldown_timers = ?,
+        timers = ?,
+        is_blocked = ?,
+        block_start_time = ?,
+        block_duration = ?,
+        last_block_time = ?,
+        block_level = ?,
+        current_count = ?,
+        max_hp = ?,
+        player_base_damage = ?,
+        player_armor = ?,
+        player_block = ?,
+        regeneration_amount = ?,
+        dodge_chance = ?,
+        player_vulnerability = ?
+        WHERE login_key = ?");
+    
+    $stmt->bind_param("ssssssiiiiiiiiiiiiis", 
+        json_encode($data['improvements']),
+        json_encode($data['potions']),
+        json_encode($data['activeAbilities']),
+        json_encode($data['cooldownTimers']),
+        json_encode($data['timers']),
+        $data['isBlocked'],
+        $data['blockStartTime'],
+        $data['blockDuration'],
+        $data['lastBlockTime'],
+        $data['blockLevel'],
+        $data['currentCount'],
+        $data['maxHP'],
+        $data['playerBaseDamage'],
+        $data['playerArmor'],
+        $data['playerBlock'],
+        $data['regenerationAmount'],
+        $data['dodgeChance'],
+        $data['playerVulnerability'],
+        $login_key
     );
-
-    if (!$stmt->execute()) {
-        throw new Exception("Save failed: " . $stmt->error, 500);
+    
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['error' => 'Save failed']);
     }
-
-    echo json_encode(["status" => "success"]);
-    $stmt->close();
+    exit;
 }
 
-function loadGameData($conn, $playerId, $sessionToken) {
-    verifySession($conn, $playerId, $sessionToken);
-
-    $stmt = $conn->prepare("SELECT * FROM players WHERE id = ?");
-    $stmt->bind_param("i", $playerId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 0) {
-        throw new Exception("Player not found", 404);
-    }
-
-    $row = $result->fetch_assoc();
-    $response = [
-        "status" => "success",
-        "data" => [
-            "count" => $row['count'],
-            "level" => $row['level'],
-            "improvements" => json_decode(decryptData($row['improvements']), true),
-            "potions" => json_decode(decryptData($row['potions']), true),
-            "stats" => json_decode(decryptData($row['stats']), true),
-            "active_abilities" => json_decode(decryptData($row['active_abilities']), true),
-            "account_info" => [
-                "name" => $row['name'],
-                "id" => $row['id']
-            ]
-        ]
-    ];
-
-    echo json_encode($response);
-    $stmt->close();
-}
-
-// Вспомогательные функции
-function validateData($data, $fields) {
-    foreach ($fields as $field) {
-        if (!isset($data[$field])) {
-            throw new Exception("Missing required field: $field", 400);
-        }
-    }
-}
-
-function verifySession($conn, $playerId, $sessionToken) {
-    $stmt = $conn->prepare("SELECT id FROM players WHERE id = ? AND session_token = ?");
-    $stmt->bind_param("is", $playerId, $sessionToken);
+// Загрузка данных игры
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'load') {
+    $login_key = $_POST['login_key'];
+    
+    $stmt = $conn->prepare("SELECT * FROM users WHERE login_key = ?");
+    $stmt->bind_param("s", $login_key);
     $stmt->execute();
     $result = $stmt->get_result();
     
-    if ($result->num_rows === 0) {
-        throw new Exception("Invalid session", 401);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        echo json_encode([
+            'improvements' => json_decode($row['improvements'], true),
+            'potions' => json_decode($row['potions'], true),
+            'activeAbilities' => json_decode($row['active_abilities'], true),
+            'cooldownTimers' => json_decode($row['cooldown_timers'], true),
+            'timers' => json_decode($row['timers'], true),
+            'isBlocked' => $row['is_blocked'],
+            'blockStartTime' => $row['block_start_time'],
+            'blockDuration' => $row['block_duration'],
+            'lastBlockTime' => $row['last_block_time'],
+            'blockLevel' => $row['block_level'],
+            'currentCount' => $row['current_count'],
+            'maxHP' => $row['max_hp'],
+            'playerBaseDamage' => $row['player_base_damage'],
+            'playerArmor' => $row['player_armor'],
+            'playerBlock' => $row['player_block'],
+            'regenerationAmount' => $row['regeneration_amount'],
+            'dodgeChance' => $row['dodge_chance'],
+            'playerVulnerability' => $row['player_vulnerability']
+        ]);
+    } else {
+        echo json_encode(['error' => 'User not found']);
     }
-    $stmt->close();
+    exit;
 }
 
-function encryptData($data) {
-    $key = "YOUR_SECRET_ENCRYPTION_KEY"; // Замените на реальный ключ
-    $iv = openssl_random_pseudo_bytes(16);
-    return base64_encode($iv . openssl_encrypt($data, 'aes-256-ctr', $key, 0, $iv));
-}
-
-function decryptData($data) {
-    $key = "YOUR_SECRET_ENCRYPTION_KEY"; // Тот же ключ
-    $data = base64_decode($data);
-    $iv = substr($data, 0, 16);
-    return openssl_decrypt(substr($data, 16), 'aes-256-ctr', $key, 0, $iv);
-}
-
-// Инициализация начальных значений
-function initializeImprovements() {
-    return [
-        "armorAndWeapons" => array_map(function($item) {
-            return array_merge($item, ['level' => 0, 'totalBonus' => 0]);
-        }, [
-            // Ваши данные об улучшениях
-        ]),
-        // Остальные категории
-    ];
-}
-
-function initializePotions() {
-    return array_map(function($potion) {
-        return array_merge($potion, ['purchased' => false]);
-    }, [
-        // Ваши данные о зельях
-    ]);
-}
-
-function initializeStats() {
-    return [
-        "playerBaseDamage" => 1,
-        "playerArmor" => 0,
-        "playerBlock" => 0,
-        "regenerationAmount" => 0,
-        "dodgeChance" => 0,
-        "playerVulnerability" => 0,
-        "maxHP" => 450
-    ];
+function generateGuestUsername($conn) {
+    $attempts = 0;
+    do {
+        $number = rand(1, 99999);
+        $username = "guest" . str_pad($number, 5, '0', STR_PAD_LEFT);
+        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $attempts++;
+    } while ($result->num_rows > 0 && $attempts < 10);
+    
+    return $username;
 }
 ?>
