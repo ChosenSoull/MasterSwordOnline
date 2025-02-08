@@ -11,11 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $dbConfig = [
-    'host' => '',
-    'dbname' => '',
-    'user' => '',
-    'pass' => ''
+    'host' => 'sql308.infinityfree.com',
+    'dbname' => 'if0_37982919_gamedatabase',
+    'user' => 'if0_37982919',
+    'pass' => 'xhal0pApmhvY'
 ];
+
+if (isset($_GET['action']) && $_GET['action'] === 'check_ddns') {
+    echo 'yes';
+    exit;
+}
 
 try {
     $conn = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass'], $dbConfig['dbname']);
@@ -58,13 +63,124 @@ function handleCreateGuest($conn) {
     $username = generateGuestUsername($conn);
     $loginKey = bin2hex(random_bytes(32));
     $defaults = json_encode([]);
+    $improvementsdefault = json_encode([
+        "armorAndWeapons" => [
+            [
+                "name" => "helmet", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/helmet-icon.png", "descriptionKeyitem" => "helmet_description", 
+                "additionalUpgrades" => [["type" => "armor", "value" => 10]]
+            ],
+            [
+                "name" => "body", "level" => 0, "baseCost" => 200, "cost" => 200, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/body-icon.png", "descriptionKeyitem" => "body_description", 
+                "additionalUpgrades" => [["type" => "armor", "value" => 10]]
+            ],
+            [
+                "name" => "pants", "level" => 0, "baseCost" => 150, "cost" => 150, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/pants-icon.png", "descriptionKeyitem" => "pants_description", 
+                "additionalUpgrades" => [["type" => "armor", "value" => 10]]
+            ],
+            [
+                "name" => "boots", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/boots-icon.png", "descriptionKeyitem" => "boots_description", 
+                "additionalUpgrades" => [["type" => "armor", "value" => 10], ["type" => "dodge", "value" => 10]]
+            ],
+            [
+                "name" => "shield", "level" => 0, "baseCost" => 300, "cost" => 300, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/shield-icon.png", "descriptionKeyitem" => "shield_description", 
+                "additionalUpgrades" => [["type" => "block", "value" => 10]]
+            ],
+            [
+                "name" => "sword", "level" => 0, "baseCost" => 500, "cost" => 500, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/sword-icon.png", "descriptionKeyitem" => "sword_description", 
+                "additionalUpgrades" => [["type" => "Basedamage", "value" => 10]]
+            ]
+        ],
+        "heroImprovements" => [
+            [
+                "name" => "intellect", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/intellect-icon.png", "descriptionKeyitem" => "intellect_description", 
+                "additionalUpgrades" => [["type" => "", "value" => 10]]
+            ],
+            [
+                "name" => "courage", "level" => 0, "baseCost" => 150, "cost" => 150, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/courage-icon.png", "descriptionKeyitem" => "courage_description", 
+                "additionalUpgrades" => [["type" => "Basedamage", "value" => 10]]
+            ],
+            [
+                "name" => "endurance", "level" => 0, "baseCost" => 200, "cost" => 200, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/endurance-icon.png", "descriptionKeyitem" => "endurance_description", 
+                "additionalUpgrades" => [["type" => "block", "value" => 10]]
+            ],
+            [
+                "name" => "confidence", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/confidence-icon.png", "descriptionKeyitem" => "confidence_description", 
+                "additionalUpgrades" => [["type" => "dodge", "value" => 10]]
+            ],
+            [
+                "name" => "strength", "level" => 0, "baseCost" => 250, "cost" => 250, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/strength-icon.png", "descriptionKeyitem" => "strength_description", 
+                "additionalUpgrades" => [["type" => "Basedamage", "value" => 10]]
+            ],
+            [
+                "name" => "life", "level" => 0, "baseCost" => 300, "cost" => 300, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/life-icon.png", "descriptionKeyitem" => "life_description", 
+                "additionalUpgrades" => [["type" => "HP", "value" => 10]]
+            ],
+            [
+                "name" => "reaction", "level" => 0, "baseCost" => 200, "cost" => 200, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/reaction-icon.png", "descriptionKeyitem" => "reaction_description", 
+                "additionalUpgrades" => [["type" => "dodge", "value" => 10]]
+            ]
+        ],
+        "magic" => [
+            [
+                "name" => "mana", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/mana-icon.png", "descriptionKeyitem" => "mana_description", 
+                "additionalUpgrades" => [["type" => "", "value" => 10]]
+            ],
+            [
+                "name" => "regeneration", "level" => 0, "baseCost" => 150, "cost" => 150, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/regeneration-icon.png", "descriptionKeyitem" => "regeneration_description", 
+                "additionalUpgrades" => [["type" => "regeneration", "value" => 10]]
+            ],
+            [
+                "name" => "strength", "level" => 0, "baseCost" => 200, "cost" => 200, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/Magic-power-icon.png", "descriptionKeyitem" => "magicstrength_description", 
+                "additionalUpgrades" => [["type" => "", "value" => 10]]
+            ],
+            [
+                "name" => "fireResistance", "level" => 0, "baseCost" => 250, "cost" => 250, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/fire-resistance-icon.png", "descriptionKeyitem" => "fireResistance_description", 
+                "additionalUpgrades" => [["type" => "", "value" => 10]]
+            ],
+            [
+                "name" => "vulnerability", "level" => 0, "baseCost" => 250, "cost" => 250, "bonus" => 1.25, "totalBonus" => 0, 
+                "icon" => "assets/textures/vulnerability-icon.png", "descriptionKeyitem" => "vulnerability_description", 
+                "additionalUpgrades" => [["type" => "vulnerability", "value" => 10]]
+            ]
+        ]
+    ], JSON_UNESCAPED_SLASHES);
+
+    $potionsdefault = json_encode([
+        ["name" => "speedPotion", "baseCost" => 100, "cost" => 100, "icon" => "assets/textures/speed-potion-icon.png", "unlocksAbility" => "IncreasedMovementSpeed", "duration" => 60000, "cooldown" => 300000, "purchased" => false, "descriptionKey" => "SpeedPotion"],
+        ["name" => "magicResistancePotion", "baseCost" => 200, "cost" => 200, "icon" => "assets/textures/magic-resistance-potion-icon.png", "unlocksAbility" => "MagicResistance", "duration" => 60000, "cooldown" => 300000, "purchased" => false, "descriptionKey" => "MagicResistancePotion"],
+        ["name" => "teleportationPotion", "baseCost" => 300, "cost" => 300, "icon" => "assets/textures/teleportation-potion-icon.png", "unlocksAbility" => "Teleport", "duration" => 1000, "cooldown" => 300000, "purchased" => false, "descriptionKey" => "TeleportationPotion"],
+        ["name" => "invisibilityPotion", "baseCost" => 400, "cost" => 400, "icon" => "assets/textures/invisibility-potion-icon.png", "unlocksAbility" => "Invisibility", "duration" => 60000, "cooldown" => 300000, "purchased" => false, "descriptionKey" => "InvisibilityPotion"],
+        ["name" => "berserkPotion", "baseCost" => 500, "cost" => 500, "icon" => "assets/textures/berserk-potion-icon.png", "unlocksAbility" => "Berserk", "duration" => 60000, "cooldown" => 300000, "purchased" => false, "descriptionKey" => "BerserkPotion"],
+        ["name" => "healingPotion", "baseCost" => 600, "cost" => 600, "icon" => "assets/textures/healing-potion-icon.png", "unlocksAbility" => "Healing", "duration" => 60000, "cooldown" => 60000, "purchased" => false, "descriptionKey" => "HealingPotion"],
+        ["name" => "poisonPotion", "baseCost" => 600, "cost" => 600, "icon" => "assets/textures/poison-icon.png", "unlocksAbility" => "poison", "duration" => 75000, "cooldown" => 40000, "purchased" => false, "descriptionKey" => "PoisonPotion"],
+        ["name" => "shieldmagicPotion", "baseCost" => 600, "cost" => 600, "icon" => "assets/textures/shieldmagic-icon.png", "unlocksAbility" => "shield", "duration" => 1000, "cooldown" => 35000, "purchased" => false, "descriptionKey" => "ShieldmagicPotion"],
+        ["name" => "secondlife", "baseCost" => 600, "cost" => 600, "icon" => "assets/textures/second-life-icon.png", "unlocksAbility" => "Secondlife", "duration" => 1000, "cooldown" => 35000, "purchased" => false, "descriptionKey" => "Secondlife"]
+    ], JSON_UNESCAPED_SLASHES);
+
 
     $stmt = $conn->prepare("INSERT INTO users (username, login_key, improvements, potions, active_abilities, cooldown_timers, timers) VALUES (?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
     }
     
-    $stmt->bind_param("sssssss", $username, $loginKey, $defaults, $defaults, $defaults, $defaults, $defaults);
+    $stmt->bind_param("sssssss", $username, $loginKey, $improvementsdefault, $potionsdefault, $defaults, $defaults, $defaults);
     
     if (!$stmt->execute()) {
         throw new Exception('Failed to create guest: ' . $stmt->error);
@@ -94,6 +210,7 @@ function handleSaveGame($conn, $data) {
     $fieldMapping = [
         'improvements' => 'improvements',
         'potions' => 'potions',
+        'clickBonus' => 'click_bonus',
         'activeAbilities' => 'active_abilities',
         'cooldownTimers' => 'cooldown_timers',
         'timers' => 'timers',
@@ -162,9 +279,18 @@ function handleLoadGame($conn, $data) {
 
     $row = $result->fetch_assoc();
 
+    // Декодируем JSON-поля
+    $jsonFields = ['improvements', 'potions', 'active_abilities', 'cooldown_timers', 'timers'];
+    foreach ($jsonFields as $field) {
+        if (isset($row[$field])) {
+            $row[$field] = json_decode($row[$field], true);
+        }
+    }
+
     $reverseMapping = array_flip([
         'improvements' => 'improvements',
         'potions' => 'potions',
+        'click_bonus' => 'clickBonus',
         'active_abilities' => 'activeAbilities',
         'cooldown_timers' => 'cooldownTimers',
         'timers' => 'timers',
