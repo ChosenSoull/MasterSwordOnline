@@ -76,6 +76,8 @@ const GameStorage = {
 
       // 🔹 Маппинг серверных ключей в клиентские
       const mapping = {
+        id: "userID",
+        username: "userName",
         improvements: "improvements",
         potions: "potions",
         click_bonus: "clickBonus",
@@ -112,7 +114,9 @@ const GameStorage = {
       if (transformedData.activeAbilities) activeAbilities = structuredClone(transformedData.activeAbilities);
       if (transformedData.cooldownTimers) cooldownTimers = structuredClone(transformedData.cooldownTimers);
       if (transformedData.timers) timers = structuredClone(transformedData.timers);
-
+      
+      document.querySelector(".account-name").textContent = transformedData.userName ?? "Гость";
+      document.querySelector(".account-id").textContent = `ID: ${transformedData.userID ?? "N/A"}`;
       isBlocked = transformedData.isBlocked ?? false;
       clickBonus = transformedData.clickBonus ?? 1;
       blockStartTime = transformedData.blockStartTime ?? 0;
@@ -131,7 +135,7 @@ const GameStorage = {
       displayImprovements();
       displayPotions();
       updateCount(currentCount);
-      potionBar();
+      updatePotionBar();
 
       console.log("✅ Данные успешно загружены и применены!", {
         improvements, potions, activeAbilities, cooldownTimers, timers,

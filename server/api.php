@@ -11,10 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $dbConfig = [
-    'host' => 'sql308.infinityfree.com',
-    'dbname' => 'if0_37982919_gamedatabase',
-    'user' => 'if0_37982919',
-    'pass' => 'xhal0pApmhvY'
+    'host' => '',
+    'dbname' => '',
+    'user' => '',
+    'pass' => ''
 ];
 
 if (isset($_GET['action']) && $_GET['action'] === 'check_ddns') {

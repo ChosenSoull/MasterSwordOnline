@@ -564,59 +564,64 @@ function displayPotions() {
 }
 
 const potionBar = document.querySelector('.potion-bar');
-if (potionBar) {
-    const existingPotionElements = {}; // Объект для хранения существующих элементов
 
-    // Собираем ссылки на существующие элементы, используя id способности как ключ
-    potionBar.querySelectorAll('.potion-item').forEach(item => {
-        existingPotionElements[item.id] = item;
-    });
+function updatePotionBar() {
+    if (potionBar) {
+        potionBar.innerHTML = '';
+        const existingPotionElements = {}; // Объект для хранения существующих элементов
 
-    const fragment = document.createDocumentFragment();
+        // Собираем ссылки на существующие элементы, используя id способности как ключ
+        potionBar.querySelectorAll('.potion-item').forEach(item => {
+            existingPotionElements[item.id] = item;
+        });
 
-    potions.forEach(potion => {
-        let potionElement = existingPotionElements[potion.unlocksAbility];
+        const fragment = document.createDocumentFragment();
 
-        if (!potionElement) {
-            // Создаем новый элемент, если его нет
-            potionElement = document.createElement('div');
-            potionElement.className = 'potion-item ability-element';
-            potionElement.id = potion.unlocksAbility;
+        potions.forEach(potion => {
+            let potionElement = existingPotionElements[potion.unlocksAbility];
 
-            // Создаем контейнер для фона
-            const backgroundElement = document.createElement('div');
-            backgroundElement.className = 'ability-background';
-            potionElement.appendChild(backgroundElement);
+            if (!potionElement) {
+                // Создаем новый элемент, если его нет
+                potionElement = document.createElement('div');
+                potionElement.className = 'potion-item ability-element';
+                potionElement.id = potion.unlocksAbility;
 
-            // Создаем контейнер иконки
-            const iconContainer = document.createElement('div');
-            iconContainer.className = 'potion-icon-container';
-            potionElement.appendChild(iconContainer);
+                // Создаем контейнер для фона
+                const backgroundElement = document.createElement('div');
+                backgroundElement.className = 'ability-background';
+                potionElement.appendChild(backgroundElement);
 
-            // Создаем иконку
-            const iconImg = document.createElement('img');
-            iconImg.className = 'potion-icon';
-            iconImg.src = potion.icon;
-            iconContainer.appendChild(iconImg);
-            iconImg.onclick = () => activateAbility(potion.unlocksAbility); // Назначаем обработчик только при создании
+                // Создаем контейнер иконки
+                const iconContainer = document.createElement('div');
+                iconContainer.className = 'potion-icon-container';
+                potionElement.appendChild(iconContainer);
 
-            // Создаем таймер
-            const timerElement = document.createElement('div');
-            timerElement.className = 'ability-timer';
-            potionElement.appendChild(timerElement);
-        } else {
-            // Обновляем существующие элементы
-            let iconContainer = potionElement.querySelector('.potion-icon-container');
-            let iconImg = iconContainer.querySelector('.potion-icon');
-            iconImg.src = potion.icon; // Всегда обновляем src иконки
-        }
+                // Создаем иконку
+                const iconImg = document.createElement('img');
+                iconImg.className = 'potion-icon';
+                iconImg.src = potion.icon;
+                iconContainer.appendChild(iconImg);
+                iconImg.onclick = () => activateAbility(potion.unlocksAbility); // Назначаем обработчик только при создании
 
-        // Добавляем элемент в фрагмент (только если он новый)
-        if (!existingPotionElements[potion.unlocksAbility]) {
-            fragment.appendChild(potionElement);
-        }
-    });
-    potionBar.appendChild(fragment); // Добавляем фрагмент в DOM (один раз)
+                // Создаем таймер
+                const timerElement = document.createElement('div');
+                timerElement.className = 'ability-timer';
+                potionElement.appendChild(timerElement);
+            } else {
+                // Обновляем существующие элементы
+                let iconContainer = potionElement.querySelector('.potion-icon-container');
+                let iconImg = iconContainer.querySelector('.potion-icon');
+                iconImg.src = potion.icon; // Всегда обновляем src иконки
+            }
+
+            // Добавляем элемент в фрагмент (только если он новый)
+            if (!existingPotionElements[potion.unlocksAbility]) {
+                fragment.appendChild(potionElement);
+            }
+        });
+
+        potionBar.appendChild(fragment); // Добавляем фрагмент в DOM (один раз)
+    }
 }
 
 function getPotionById(unlocksAbility) {
