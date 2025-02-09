@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="client/css/logo.css">
     <link rel="stylesheet" href="client/css/hpbar.css">
     <link rel="stylesheet" href="client/css/boss.css">
+    <link rel="stylesheet" href="client/css/profile.css">
     <link rel="stylesheet" href="client/css/main.css">
 </head>
 
@@ -92,12 +93,23 @@
             <p class="account-id">ID:123456</p>
         </div>
     </div>
-
     </div>
     <div id="profile-section" class="panel">
         <h2><span data-i18n="Profile">Профиль</span></h2>
-        <div class="panel-content">
-            <!-- Profile content -->
+        <div class="panel-contentProfile">
+            <div class="avatar-frameProfile">
+                <img id="avatar" src="assets/textures/public/uploads/default_avatar.png" class="avatarProfile">
+                <input type="file" id="avatar-upload" accept="image/png, image/jpeg, image/gif" style="display:none;">
+              <button class="edit-button" id="edit-button" style="display:inline;">Изменить</button>
+            </div>
+            <div class="account-infoProfile">
+                <p class="account-nameProfile" id="account-name">Имя аккаунта</p>
+                <input type="text" id="edit-name" style="display:none;">
+                <p id="name-error" style="color: red; display: none;">Имя содержит запрещённые слова!</p>
+                <p class="account-idProfile" id="account-id">ID: 123456</p>
+            </div>
+            <button class="save-button" id="save-button" style="display:none;">Сохранить изменения</button>
+            <button class="cancel-button" id="cancel-button" style="display:none;">Отмена</button>
         </div>
     </div>
 
@@ -426,6 +438,7 @@
     <script src="client/js/bossmehanics.js"></script>
     <script src="client/js/mainboss.js"></script>
     <script src="client/js/main.js"></script>
+    <script src="client/js/avatarandname.js"></script>
     <script src="client/js/Savegamedata.js"></script>
 </body>
 
