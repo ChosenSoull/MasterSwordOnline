@@ -157,7 +157,13 @@ const clickSound = document.getElementById("clickSound");
 currentCount = 0;
 
 document.addEventListener('keydown', function (event) {
-    if (event.code === 'Space' && !isBlocked) {
+    const activeElement = document.activeElement;
+    const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' || 
+        activeElement.tagName === 'TEXTAREA'
+    );
+    
+    if (event.code === 'Space' && !isBlocked && !isInputFocused) {
         image.classList.add('pressed');
         setTimeout(() => {
             image.classList.remove('pressed');
