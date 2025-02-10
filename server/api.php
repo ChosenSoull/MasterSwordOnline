@@ -504,7 +504,7 @@ function changeprofile($conn, $data)
 
         // Обновление пути в БД
         $stmt = $conn->prepare("UPDATE users SET avatar = ? WHERE id = ?");
-        $stmt->bind_param("si", $newFilename, $userId);
+        $stmt->bind_param("si", $destination, $userId);
         $stmt->execute();
     }
 
