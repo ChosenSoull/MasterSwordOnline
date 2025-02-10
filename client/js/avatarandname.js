@@ -169,7 +169,6 @@ function showError(message) {
 }
 
 function resetUI() {
-    document.getElementById('avatar').src = tempAvatar;
-    document.getElementById('edit-name').value = tempName;
+    updateProfileData();
     exitEditMode();
 }

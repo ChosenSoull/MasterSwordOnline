@@ -76,8 +76,6 @@ const GameStorage = {
 
       // 🔹 Маппинг серверных ключей в клиентские
       const mapping = {
-        id: "userID",
-        username: "userName",
         improvements: "improvements",
         potions: "potions",
         click_bonus: "clickBonus",
@@ -114,9 +112,7 @@ const GameStorage = {
       if (transformedData.activeAbilities) activeAbilities = structuredClone(transformedData.activeAbilities);
       if (transformedData.cooldownTimers) cooldownTimers = structuredClone(transformedData.cooldownTimers);
       if (transformedData.timers) timers = structuredClone(transformedData.timers);
-      
-      document.querySelector(".account-name").textContent = transformedData.userName ?? "Гость";
-      document.querySelector(".account-id").textContent = `ID: ${transformedData.userID ?? "N/A"}`;
+
       isBlocked = transformedData.isBlocked ?? false;
       clickBonus = transformedData.clickBonus ?? 1;
       blockStartTime = transformedData.blockStartTime ?? 0;
@@ -136,6 +132,7 @@ const GameStorage = {
       displayPotions();
       updateCount(currentCount);
       updatePotionBar();
+      updateProfileData()
 
       console.log("✅ Данные успешно загружены и применены!", {
         improvements, potions, activeAbilities, cooldownTimers, timers,
@@ -149,6 +146,49 @@ const GameStorage = {
     }
   }
 };
+
+async function updateProfileData() {
+  let loginKey = localStorage.getItem('game_login_key');
+  try {
+    const response = await fetch('api.php', { // Замените 'api.php' на URL вашего сервера
+      method: 'POST',
+      body: new URLSearchParams({
+        action: 'loadProfile',
+        login_key: loginKey
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Проверяем, есть ли данные и нужные поля
+    if (data && data.id && data.username && data.avatar) {
+      // Обновляем ID
+      document.querySelectorAll('.account-id').forEach(el => el.textContent = `ID: ${data.id}`);
+      document.querySelectorAll('.account-idProfile').forEach(el => el.textContent = `ID: ${data.id}`);
+
+      // Обновляем имя пользователя
+      document.querySelectorAll('.account-name').forEach(el => el.textContent = data.username);
+      document.querySelectorAll('.account-nameProfile').forEach(el => el.textContent = data.username);
+
+
+      // Обновляем аватар
+      document.querySelectorAll('.avatar').forEach(el => el.src = data.avatar);
+      document.querySelectorAll('.avatarProfile').forEach(el => el.src = data.avatar);
+
+    } else {
+      console.error('Неверный формат данных, полученных с сервера:', data);
+      // Обработка ошибки, например, вывод сообщения пользователю
+    }
+
+  } catch (error) {
+    console.error('Ошибка при выполнении запроса:', error);
+    // Обработка ошибки, например, вывод сообщения пользователю
+  }
+}
 
 // 🚀 Запуск игры + Автосохранение
 window.addEventListener('load', async () => {

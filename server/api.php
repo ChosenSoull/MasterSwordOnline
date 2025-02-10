@@ -44,7 +44,10 @@ try {
             handleLoadGame($conn, $data);
             break;
         case 'updateprofile':
-            changeprofile($conn, $data, $files);
+            changeprofile($conn, $data);
+            break;
+        case 'loadProfile':
+            loadProfile($conn);
             break;
         default:
             throw new Exception('Invalid action: ' . $action);
@@ -510,6 +513,34 @@ function changeprofile($conn, $data)
 
     $conn->close();
     return ['status' => 'ok'];
+}
+
+function loadProfile($conn) {
+    if (empty($data['login_key'])) {
+        throw new Exception('Missing login key');
+    }
+
+    $loginKey = (empty($data['login_key']));
+
+    try {
+        $stmt = $conn->prepare("SELECT id, username, avatar FROM users WHERE login_key = ?");
+        $stmt->bind_param("s", $loginKey);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user_data = $result->fetch_assoc();
+
+        if ($user_data) {
+            header('Content-Type: application/json');
+            echo json_encode($user_data);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'User not found']);
+        }
+
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
 }
 
 ?>
