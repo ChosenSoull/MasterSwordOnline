@@ -1,126 +1,160 @@
 let tempName = "";
 let tempAvatar = "";
 
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
+    syncProfileData();
+    initEventListeners();
+});
+
 function syncProfileData() {
-    document.getElementById('account-name').textContent = document.querySelector('#account-panel .account-name').textContent;
-    document.getElementById('avatar').src = document.querySelector('#account-panel .avatar').src;
+    const accountName = document.querySelector('#account-panel .account-name').textContent;
+    const avatarSrc = document.querySelector('#account-panel .avatar').src;
+    
+    document.getElementById('account-name').textContent = accountName;
+    document.getElementById('avatar').src = avatarSrc;
 }
 
-syncProfileData();
+function initEventListeners() {
+    // Режим редактирования
+    document.getElementById('edit-button').addEventListener('click', () => {
+        enterEditMode();
+    });
+// Выбор файла
+document.getElementById('avatar-upload').addEventListener('change', handleFileSelect);
 
-document.getElementById('edit-button').addEventListener('click', function () {
-    tempName = document.getElementById('account-name').textContent;
-    tempAvatar = document.getElementById('avatar').src;
-    document.getElementById('edit-name').value = tempName;
-    document.getElementById('edit-name').style.display = 'inline';
-    document.getElementById('account-name').style.display = 'none';
-    document.getElementById('save-button').style.display = 'inline';
-    document.getElementById('cancel-button').style.display = 'inline';
-    document.getElementById('name-error').style.display = 'none';
-    this.style.display = 'none';
+// Сохранение
+document.getElementById('save-button').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await handleSave();
 });
 
-document.getElementById('save-button').addEventListener('click', async function () {
-    const newName = document.getElementById('edit-name').value;
-    const fileInput = document.getElementById('avatar-upload');
-    const file = fileInput.files[0];
-    const loginKey = localStorage.getItem('game_login_key');
+// Отмена
+document.getElementById('cancel-button').addEventListener('click', resetUI);
+}
 
-    if (file && !validateFileType(file)) {
-        document.getElementById('name-error').textContent = "Неверный формат файла! Допустимые: .png, .jpg, .gif";
-        document.getElementById('name-error').style.display = 'block';
-        return;
+function enterEditMode() {
+tempName = document.getElementById('account-name').textContent;
+tempAvatar = document.getElementById('avatar').src;
+
+// Показываем элементы редактирования
+document.getElementById('edit-name').value = tempName;
+toggleElements(true);
+
+// Активируем выбор файла только в режиме редактирования
+document.getElementById('avatar').addEventListener('click', handleAvatarClick);
+}
+
+function exitEditMode() {
+toggleElements(false);
+document.getElementById('avatar').removeEventListener('click', handleAvatarClick);
+}
+
+function toggleElements(editMode) {
+document.getElementById('edit-name').style.display = editMode ? 'inline' : 'none';
+document.getElementById('account-name').style.display = editMode ? 'none' : 'inline';
+document.getElementById('edit-button').style.display = editMode ? 'none' : 'inline';
+document.getElementById('save-button').style.display = editMode ? 'inline' : 'none';
+document.getElementById('cancel-button').style.display = editMode ? 'inline' : 'none';
+document.getElementById('name-error').style.display = 'none';
+}
+
+async function handleSave() {
+const newName = document.getElementById('edit-name').value.trim();
+const fileInput = document.getElementById('avatar-upload');
+
+try {
+    // Валидация имени
+    if (await validateName(newName) === false) return;
+
+    // Подготовка данных
+    const formData = new FormData();
+    if (fileInput.files[0]) formData.append('avatar', fileInput.files[0]);
+    if (newName !== tempName) formData.append('name', newName);
+    formData.append('login_key', localStorage.getItem('game_login_key'));
+
+    // Отправка
+    const response = await fetch('api.php', {
+        method: 'POST',
+        body: formData
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+        updateProfileData(data);
+        exitEditMode();
+    } else {
+        showError(data.error || "Ошибка обновления");
     }
+} catch (error) {
+    console.error('Ошибка:', error);
+    showError("Сетевая ошибка");
+}
+}
 
-    if (newName !== tempName || file) {
-        let params = new URLSearchParams({
-            action: file && newName !== tempName ? 'update_all' : file ? 'update_avatar' : 'update_name',
-            login_key: loginKey
-        });
+async function validateName(name) {
+if (name === tempName) return true;
 
-        if (newName !== tempName) {
-            params.append('name', newName);
-        }
+// Проверка запрещенных слов (пример)
+const forbiddenWords = ['admin', 'root'];
+if (forbiddenWords.some(word => name.toLowerCase().includes(word))) {
+    showError("Имя содержит запрещенные слова!");
+    return false;
+}
+return true;
+}
 
-        if (file) {
-            let formData = new FormData();
-            formData.append('avatar', file);
-            formData.append('login_key', loginKey);
-            await sendUpdateRequest(formData);
-        }
+function handleAvatarClick() {
+document.getElementById('avatar-upload').click();
+}
 
-        await fetch('api.php', {
-            method: 'POST',
-            body: params
-        });
-    }
+function handleFileSelect(e) {
+const file = e.target.files[0];
+if (!file) return;
 
-    resetUI();
-});
+if (!validateFileType(file)) {
+    showError("Неверный формат файла! Допустимые: .png, .jpg, .gif");
+    return;
+}
 
-async function sendUpdateRequest(formData) {
-    try {
-        const response = await fetch('api.php', {
-            method: 'POST',
-            body: formData
-        });
-        const data = await response.json();
-        if (data.success) {
-            if (data.newAvatarUrl) {
-                document.getElementById('avatar').src = data.newAvatarUrl;
-                document.querySelector('#account-panel .avatar').src = data.newAvatarUrl;
-            }
-            if (data.name) {
-                document.getElementById('account-name').textContent = data.name;
-                document.querySelector('#account-panel .account-name').textContent = data.name;
-            }
-        } else {
-            document.getElementById('name-error').textContent = data.error;
-            document.getElementById('name-error').style.display = 'block';
-        }
-    } catch (error) {
-        console.error('Ошибка запроса:', error);
-    }
+previewAvatar(file);
 }
 
 function validateFileType(file) {
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/gif'];
-    return allowedTypes.includes(file.type);
+return ['image/png', 'image/jpeg', 'image/gif'].includes(file.type);
+}
+
+function previewAvatar(file) {
+const reader = new FileReader();
+reader.onload = (e) => {
+    document.getElementById('avatar').src = e.target.result;
+};
+reader.readAsDataURL(file);
+}
+
+function updateProfileData(data) {
+if (data.name) {
+    document.querySelectorAll('.account-name').forEach(el => {
+        el.textContent = data.name;
+    });
+}
+if (data.newAvatarUrl) {
+    document.querySelectorAll('.avatar').forEach(el => {
+        el.src = data.newAvatarUrl;
+    });
+}
+}
+
+function showError(message) {
+const errorElement = document.getElementById('name-error');
+errorElement.textContent = message;
+errorElement.style.display = 'block';
 }
 
 function resetUI() {
-    document.getElementById('edit-name').style.display = 'none';
-    document.getElementById('account-name').style.display = 'inline';
-    document.getElementById('edit-button').style.display = 'inline';
-    document.getElementById('save-button').style.display = 'none';
-    document.getElementById('cancel-button').style.display = 'none';
-    document.getElementById('name-error').style.display = 'none';
-}
-
-document.getElementById('cancel-button').addEventListener('click', function () {
-    document.getElementById('edit-name').style.display = 'none';
-    document.getElementById('account-name').style.display = 'inline';
     document.getElementById('avatar').src = tempAvatar;
-    document.getElementById('edit-button').style.display = 'inline';
-    document.getElementById('save-button').style.display = 'none';
-    document.getElementById('cancel-button').style.display = 'none';
-    document.getElementById('name-error').style.display = 'none';
-});
-
-document.getElementById('avatar').addEventListener('click', function () {
-    document.getElementById('avatar-upload').click();
-});
-
-document.getElementById('avatar-upload').addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (file && validateFileType(file)) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            document.getElementById('avatar').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    } else {
-        document.getElementById('name-error').textContent = "Неверный формат файла! Допустимые: .png, .jpg, .gif";
-        document.getElementById('name-error').style.display = 'block';
-    }
-});
+    document.getElementById('edit-name').value = tempName;
+    exitEditMode();
+    syncProfileData();
+}

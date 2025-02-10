@@ -100,14 +100,17 @@
             <div class="avatar-frameProfile">
                 <img id="avatar" src="assets/textures/public/uploads/default_avatar.png" class="avatarProfile">
                 <input type="file" id="avatar-upload" accept="image/png, image/jpeg, image/gif" style="display:none;">
-              <button class="edit-button" id="edit-button" style="display:inline;">Изменить</button>
+                <button class="edit-button" id="edit-button">Изменить</button>
+                <img src="assets/textures/public/progress/6.png" class="frameonprofile">
             </div>
+
             <div class="account-infoProfile">
                 <p class="account-nameProfile" id="account-name">Имя аккаунта</p>
-                <input type="text" id="edit-name" style="display:none;">
-                <p id="name-error" style="color: red; display: none;">Имя содержит запрещённые слова!</p>
+                <input type="text" id="edit-name" style="display:none; margin-top: 0.5rem;">
                 <p class="account-idProfile" id="account-id">ID: 123456</p>
+                <p id="name-error" style="color: red; display: none;">Имя содержит запрещённые слова!</p>
             </div>
+
             <button class="save-button" id="save-button" style="display:none;">Сохранить изменения</button>
             <button class="cancel-button" id="cancel-button" style="display:none;">Отмена</button>
         </div>
@@ -419,27 +422,27 @@
     <div id="detail-container" class="detail-container">
         <div class="detail-content">
             <div class="detail-header">
+            </div>
         </div>
-    </div>    
 
-    <audio id="gameMusic" loop preload="auto">
-        <source src="assets/audio/Returning Home.mp3" type="audio/mpeg">
-        Ваш браузер не поддерживает элемент audio.
-    </audio>
+        <audio id="gameMusic" loop preload="auto">
+            <source src="assets/audio/Returning Home.mp3" type="audio/mpeg">
+            Ваш браузер не поддерживает элемент audio.
+        </audio>
 
-    <audio id="clickSound" preload="auto">
-        <source src="assets/audio/soundclick.mp3" type="audio/mpeg">
-    </audio>
-    <script src="client/js/hammer.min.js"></script>
-    <script src="client/js/logo.js"></script>
-    <script src="client/js/hpbar.js"></script>
-    <script src="client/js/playerdamageformula.js"></script>
-    <script src="client/js/bossdamageformula.js"></script>
-    <script src="client/js/bossmehanics.js"></script>
-    <script src="client/js/mainboss.js"></script>
-    <script src="client/js/main.js"></script>
-    <script src="client/js/avatarandname.js"></script>
-    <script src="client/js/Savegamedata.js"></script>
+        <audio id="clickSound" preload="auto">
+            <source src="assets/audio/soundclick.mp3" type="audio/mpeg">
+        </audio>
+        <script src="client/js/hammer.min.js"></script>
+        <script src="client/js/logo.js"></script>
+        <script src="client/js/hpbar.js"></script>
+        <script src="client/js/playerdamageformula.js"></script>
+        <script src="client/js/bossdamageformula.js"></script>
+        <script src="client/js/bossmehanics.js"></script>
+        <script src="client/js/mainboss.js"></script>
+        <script src="client/js/main.js"></script>
+        <script src="client/js/avatarandname.js"></script>
+        <script src="client/js/Savegamedata.js"></script>
 </body>
 
 </html>

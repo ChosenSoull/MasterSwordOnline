@@ -1,11 +1,20 @@
 .panel-contentProfile {
     display: flex;
+    border: 3px solid white;
+    border-radius: 10px;
+}
+
+#edit-name {
+    width: 12rem;
+    height: 1.7rem;
+    border-radius: 10px;
+    border: 2px solid gray;
 }
 
 .avatar-frameProfile {
     position: relative;
-    width: 8rem;
-    height: 8rem;
+    width: 6rem;
+    height: 6rem;
     margin-left: 3rem;
     margin-top: 2rem;
     object-fit: cover;
@@ -14,40 +23,45 @@
 }
 
 .avatarProfile {
-    display : flex;
+    display: flex;
     justify-content: center;
-    width: 8rem;
-    height: 8rem;
+    width: 6rem;
+    height: 6rem;
     object-fit: cover;
     border-radius: 50%;
     z-index: 0;
 }
 
 .account-infoProfile {
-  margin-top: 3rem;
-  margin-left: 3rem;
+    margin-top: 3rem;
+    margin-left: 5rem;
+    position: relative;
 }
 
 .account-nameProfile {
-  font-size: 20px;
+    font-size: 30px;
+    margin-bottom: 0px;
+    margin-top: 0px;
 }
 
 .account-idProfile {
-  margin-top: -20px;
+    position: relative;
+    margin-bottom: 50px;
+    margin-top: 5px;
 }
 
 .edit-button {
     position: absolute;
-    bottom: -10px; /* Смещение вниз относительно аватара */
-    right: -50px; /* Смещение вправо относительно аватара */
+    bottom: -10px;
+    right: -50px;
     padding: 0.4rem 1rem;
     background: #808080;
     color: white;
     border: 2px solid white;
     border-radius: 1rem;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 1; /* Чтобы кнопка была поверх изображения */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 2;
     transform: scale(0.9);
     transition: all 0.2s;
 }
@@ -58,16 +72,16 @@
 }
 
 .save-button {
-    margin-top: 0.5rem;
+    margin-top: -1.5rem;
     position: fixed;
     right: 2rem;
     padding: 0.8rem 1.5rem;
     background: #808080;
     color: white;
     border: 2px solid white;
-    border-radius: 1.5rem;
+    border-radius: 1rem;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: all 0.2s;
 }
 
@@ -77,20 +91,32 @@
 }
 
 .cancel-button {
-    margin-top: 0.5rem;
+    margin-top: -1.5rem;
     position: fixed;
     right: 15rem;
     padding: 0.8rem 1.5rem;
     background: #808080;
     color: white;
     border: 2px solid white;
-    border-radius: 1.5rem;
+    border-radius: 1rem;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: all 0.2s;
 }
 
 .cancel-button:hover {
     transform: scale(1.05);
     background: #666666;
+}
+
+.frameonprofile {
+    position: absolute;
+    max-width: 22rem;
+    max-height: 19rem;
+    top: 57%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    pointer-events: none;
+    z-index: 1;
 }
