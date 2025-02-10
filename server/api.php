@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: https://gameswords.kesug.com");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, multipart/form-data");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Max-Age: 86400");
 
@@ -25,7 +25,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'check_ddns') {
 try {
     $conn = new mysqli($dbConfig['host'], $dbConfig['user'], $dbConfig['pass'], $dbConfig['dbname']);
     $conn->set_charset("utf8mb4");
-    
+
     if ($conn->connect_error) {
         throw new Exception('Database connection failed: ' . $conn->connect_error);
     }
@@ -43,6 +43,9 @@ try {
         case 'load':
             handleLoadGame($conn, $data);
             break;
+        case 'updateprofile':
+            changeprofile($conn, $data, $files);
+            break;
         default:
             throw new Exception('Invalid action: ' . $action);
     }
@@ -51,7 +54,8 @@ try {
     echo json_encode(['error' => $e->getMessage()]);
 }
 
-function getRequestData() {
+function getRequestData()
+{
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
     if (strpos($contentType, 'application/json') !== false) {
         return json_decode(file_get_contents('php://input'), true) ?? [];
@@ -59,104 +63,213 @@ function getRequestData() {
     return $_POST;
 }
 
-function handleCreateGuest($conn) {
+function handleCreateGuest($conn)
+{
     $username = generateGuestUsername($conn);
     $loginKey = bin2hex(random_bytes(32));
     $defaults = json_encode([]);
     $improvementsdefault = json_encode([
         "armorAndWeapons" => [
             [
-                "name" => "helmet", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/helmet-icon.png", "descriptionKeyitem" => "helmet_description", 
+                "name" => "helmet",
+                "level" => 0,
+                "baseCost" => 100,
+                "cost" => 100,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/helmet-icon.png",
+                "descriptionKeyitem" => "helmet_description",
                 "additionalUpgrades" => [["type" => "armor", "value" => 10]]
             ],
             [
-                "name" => "body", "level" => 0, "baseCost" => 200, "cost" => 200, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/body-icon.png", "descriptionKeyitem" => "body_description", 
+                "name" => "body",
+                "level" => 0,
+                "baseCost" => 200,
+                "cost" => 200,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/body-icon.png",
+                "descriptionKeyitem" => "body_description",
                 "additionalUpgrades" => [["type" => "armor", "value" => 10]]
             ],
             [
-                "name" => "pants", "level" => 0, "baseCost" => 150, "cost" => 150, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/pants-icon.png", "descriptionKeyitem" => "pants_description", 
+                "name" => "pants",
+                "level" => 0,
+                "baseCost" => 150,
+                "cost" => 150,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/pants-icon.png",
+                "descriptionKeyitem" => "pants_description",
                 "additionalUpgrades" => [["type" => "armor", "value" => 10]]
             ],
             [
-                "name" => "boots", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/boots-icon.png", "descriptionKeyitem" => "boots_description", 
+                "name" => "boots",
+                "level" => 0,
+                "baseCost" => 100,
+                "cost" => 100,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/boots-icon.png",
+                "descriptionKeyitem" => "boots_description",
                 "additionalUpgrades" => [["type" => "armor", "value" => 10], ["type" => "dodge", "value" => 10]]
             ],
             [
-                "name" => "shield", "level" => 0, "baseCost" => 300, "cost" => 300, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/shield-icon.png", "descriptionKeyitem" => "shield_description", 
+                "name" => "shield",
+                "level" => 0,
+                "baseCost" => 300,
+                "cost" => 300,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/shield-icon.png",
+                "descriptionKeyitem" => "shield_description",
                 "additionalUpgrades" => [["type" => "block", "value" => 10]]
             ],
             [
-                "name" => "sword", "level" => 0, "baseCost" => 500, "cost" => 500, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/sword-icon.png", "descriptionKeyitem" => "sword_description", 
+                "name" => "sword",
+                "level" => 0,
+                "baseCost" => 500,
+                "cost" => 500,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/sword-icon.png",
+                "descriptionKeyitem" => "sword_description",
                 "additionalUpgrades" => [["type" => "Basedamage", "value" => 10]]
             ]
         ],
         "heroImprovements" => [
             [
-                "name" => "intellect", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/intellect-icon.png", "descriptionKeyitem" => "intellect_description", 
+                "name" => "intellect",
+                "level" => 0,
+                "baseCost" => 100,
+                "cost" => 100,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/intellect-icon.png",
+                "descriptionKeyitem" => "intellect_description",
                 "additionalUpgrades" => [["type" => "", "value" => 10]]
             ],
             [
-                "name" => "courage", "level" => 0, "baseCost" => 150, "cost" => 150, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/courage-icon.png", "descriptionKeyitem" => "courage_description", 
+                "name" => "courage",
+                "level" => 0,
+                "baseCost" => 150,
+                "cost" => 150,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/courage-icon.png",
+                "descriptionKeyitem" => "courage_description",
                 "additionalUpgrades" => [["type" => "Basedamage", "value" => 10]]
             ],
             [
-                "name" => "endurance", "level" => 0, "baseCost" => 200, "cost" => 200, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/endurance-icon.png", "descriptionKeyitem" => "endurance_description", 
+                "name" => "endurance",
+                "level" => 0,
+                "baseCost" => 200,
+                "cost" => 200,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/endurance-icon.png",
+                "descriptionKeyitem" => "endurance_description",
                 "additionalUpgrades" => [["type" => "block", "value" => 10]]
             ],
             [
-                "name" => "confidence", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/confidence-icon.png", "descriptionKeyitem" => "confidence_description", 
+                "name" => "confidence",
+                "level" => 0,
+                "baseCost" => 100,
+                "cost" => 100,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/confidence-icon.png",
+                "descriptionKeyitem" => "confidence_description",
                 "additionalUpgrades" => [["type" => "dodge", "value" => 10]]
             ],
             [
-                "name" => "strength", "level" => 0, "baseCost" => 250, "cost" => 250, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/strength-icon.png", "descriptionKeyitem" => "strength_description", 
+                "name" => "strength",
+                "level" => 0,
+                "baseCost" => 250,
+                "cost" => 250,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/strength-icon.png",
+                "descriptionKeyitem" => "strength_description",
                 "additionalUpgrades" => [["type" => "Basedamage", "value" => 10]]
             ],
             [
-                "name" => "life", "level" => 0, "baseCost" => 300, "cost" => 300, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/life-icon.png", "descriptionKeyitem" => "life_description", 
+                "name" => "life",
+                "level" => 0,
+                "baseCost" => 300,
+                "cost" => 300,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/life-icon.png",
+                "descriptionKeyitem" => "life_description",
                 "additionalUpgrades" => [["type" => "HP", "value" => 10]]
             ],
             [
-                "name" => "reaction", "level" => 0, "baseCost" => 200, "cost" => 200, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/reaction-icon.png", "descriptionKeyitem" => "reaction_description", 
+                "name" => "reaction",
+                "level" => 0,
+                "baseCost" => 200,
+                "cost" => 200,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/reaction-icon.png",
+                "descriptionKeyitem" => "reaction_description",
                 "additionalUpgrades" => [["type" => "dodge", "value" => 10]]
             ]
         ],
         "magic" => [
             [
-                "name" => "mana", "level" => 0, "baseCost" => 100, "cost" => 100, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/mana-icon.png", "descriptionKeyitem" => "mana_description", 
+                "name" => "mana",
+                "level" => 0,
+                "baseCost" => 100,
+                "cost" => 100,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/mana-icon.png",
+                "descriptionKeyitem" => "mana_description",
                 "additionalUpgrades" => [["type" => "", "value" => 10]]
             ],
             [
-                "name" => "regeneration", "level" => 0, "baseCost" => 150, "cost" => 150, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/regeneration-icon.png", "descriptionKeyitem" => "regeneration_description", 
+                "name" => "regeneration",
+                "level" => 0,
+                "baseCost" => 150,
+                "cost" => 150,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/regeneration-icon.png",
+                "descriptionKeyitem" => "regeneration_description",
                 "additionalUpgrades" => [["type" => "regeneration", "value" => 10]]
             ],
             [
-                "name" => "strength", "level" => 0, "baseCost" => 200, "cost" => 200, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/Magic-power-icon.png", "descriptionKeyitem" => "magicstrength_description", 
+                "name" => "strength",
+                "level" => 0,
+                "baseCost" => 200,
+                "cost" => 200,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/Magic-power-icon.png",
+                "descriptionKeyitem" => "magicstrength_description",
                 "additionalUpgrades" => [["type" => "", "value" => 10]]
             ],
             [
-                "name" => "fireResistance", "level" => 0, "baseCost" => 250, "cost" => 250, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/fire-resistance-icon.png", "descriptionKeyitem" => "fireResistance_description", 
+                "name" => "fireResistance",
+                "level" => 0,
+                "baseCost" => 250,
+                "cost" => 250,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/fire-resistance-icon.png",
+                "descriptionKeyitem" => "fireResistance_description",
                 "additionalUpgrades" => [["type" => "", "value" => 10]]
             ],
             [
-                "name" => "vulnerability", "level" => 0, "baseCost" => 250, "cost" => 250, "bonus" => 1.25, "totalBonus" => 0, 
-                "icon" => "assets/textures/vulnerability-icon.png", "descriptionKeyitem" => "vulnerability_description", 
+                "name" => "vulnerability",
+                "level" => 0,
+                "baseCost" => 250,
+                "cost" => 250,
+                "bonus" => 1.25,
+                "totalBonus" => 0,
+                "icon" => "assets/textures/vulnerability-icon.png",
+                "descriptionKeyitem" => "vulnerability_description",
                 "additionalUpgrades" => [["type" => "vulnerability", "value" => 10]]
             ]
         ]
@@ -179,9 +292,9 @@ function handleCreateGuest($conn) {
     if (!$stmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
     }
-    
+
     $stmt->bind_param("sssssss", $username, $loginKey, $improvementsdefault, $potionsdefault, $defaults, $defaults, $defaults);
-    
+
     if (!$stmt->execute()) {
         throw new Exception('Failed to create guest: ' . $stmt->error);
     }
@@ -189,7 +302,8 @@ function handleCreateGuest($conn) {
     echo json_encode(['login_key' => $loginKey, 'username' => $username]);
 }
 
-function generateGuestUsername($conn) {
+function generateGuestUsername($conn)
+{
     for ($i = 0; $i < 10; $i++) {
         $username = 'guest' . random_int(10000, 99999);
         $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
@@ -202,7 +316,8 @@ function generateGuestUsername($conn) {
     throw new Exception('Failed to generate unique username');
 }
 
-function handleSaveGame($conn, $data) {
+function handleSaveGame($conn, $data)
+{
     if (empty($data['login_key'])) {
         throw new Exception('Missing login key');
     }
@@ -247,7 +362,7 @@ function handleSaveGame($conn, $data) {
 
     $query = "UPDATE users SET " . implode(", ", $updates) . " WHERE login_key = ?";
     $stmt = $conn->prepare($query);
-    
+
     if (!$stmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
     }
@@ -255,7 +370,7 @@ function handleSaveGame($conn, $data) {
     $types .= "s";
     $params[] = $data['login_key'];
     $stmt->bind_param($types, ...$params);
-    
+
     if (!$stmt->execute()) {
         throw new Exception('Save failed: ' . $stmt->error);
     }
@@ -263,7 +378,8 @@ function handleSaveGame($conn, $data) {
     echo json_encode(['status' => 'success']);
 }
 
-function handleLoadGame($conn, $data) {
+function handleLoadGame($conn, $data)
+{
     if (empty($data['login_key'])) {
         throw new Exception('Missing login key');
     }
@@ -316,3 +432,84 @@ function handleLoadGame($conn, $data) {
 
     echo json_encode($response);
 }
+
+function changeprofile($conn, $data)
+{
+    // Проверка наличия логин-ключа
+    if (empty($data['login_key'])) {
+        throw new Exception('Missing login key');
+    }
+
+    $loginKey = $data['login_key'];
+    $newUsername = isset($data['username']) ? trim($data['username']) : null;
+    $avatarFile = isset($_FILES['avatar']) ? $_FILES['avatar'] : null;
+
+    // Если нет нового имени и реального файла (либо файл не передан, либо UPLOAD_ERR_NO_FILE)
+    if (empty($newUsername) && (!$avatarFile || $avatarFile['error'] === UPLOAD_ERR_NO_FILE)) {
+        throw new Exception('Nothing to update');
+    }
+
+    // Получаем ID пользователя по loginkey
+    $stmt = $conn->prepare("SELECT id FROM users WHERE login_key = ?");
+    $stmt->bind_param("s", $loginKey);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+
+    if (!$user) {
+        throw new Exception('User not found');
+    }
+
+    $userId = $user['id'];
+
+    // Обновление имени пользователя
+    if (!empty($newUsername)) {
+        $stmt = $conn->prepare("UPDATE users SET username = ? WHERE id = ?");
+        $stmt->bind_param("si", $newUsername, $userId);
+        $stmt->execute();
+    }
+
+    // Обработка аватарки
+    if ($avatarFile && $avatarFile['error'] === UPLOAD_ERR_OK) {
+        // Проверка типа файла
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+        $detectedType = finfo_file($fileInfo, $avatarFile['tmp_name']);
+
+        if (!in_array($detectedType, $allowedTypes)) {
+            http_response_code(404);
+            throw new Exception('Invalid file type');
+        }
+
+        // Определение расширения
+        $extensions = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif'
+        ];
+        $extension = $extensions[$detectedType];
+
+        // Путь для сохранения
+        $avatarDir = 'assets/textures/public/uploads/';
+        $newFilename = $userId . '.' . $extension;
+        $destination = $avatarDir . $newFilename;
+
+        // Удаление старого аватара
+        array_map('unlink', glob($avatarDir . $userId . ".*"));
+
+        // Перемещение файла
+        if (!move_uploaded_file($avatarFile['tmp_name'], $destination)) {
+            throw new Exception('Failed to save avatar');
+        }
+
+        // Обновление пути в БД
+        $stmt = $conn->prepare("UPDATE users SET avatar = ? WHERE id = ?");
+        $stmt->bind_param("si", $newFilename, $userId);
+        $stmt->execute();
+    }
+
+    $conn->close();
+    return ['status' => 'ok'];
+}
+
+?>
