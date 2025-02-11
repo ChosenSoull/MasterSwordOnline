@@ -8,7 +8,19 @@
     width: 12rem;
     height: 1.7rem;
     border-radius: 10px;
-    border: 2px solid gray;
+    border: 2px solid white;
+    color: #fff;
+    background-color: #1b1b1b;
+}
+
+#edit-description {
+    min-height: 59px;
+    border: none;
+    border-radius: 10px;
+    width: 21.8rem;
+    background-color: #1b1b1b;
+    color: #fff;
+    word-break: break-all;
 }
 
 .avatar-frameProfile {
@@ -16,7 +28,7 @@
     width: 6rem;
     height: 6rem;
     margin-left: 3rem;
-    margin-top: 2rem;
+    margin-top: 4.1rem;
     object-fit: cover;
     border-radius: 50%;
     z-index: 0;
@@ -46,7 +58,6 @@
 
 .account-idProfile {
     position: relative;
-    margin-bottom: 50px;
     margin-top: 5px;
 }
 
@@ -119,4 +130,18 @@
     z-index: 3;
     pointer-events: none;
     z-index: 1;
+}
+
+.descriptionContainer {
+    min-height: 60px;
+    border: 2px solid white;
+    border-radius: 10px;
+    width: 22rem;
+    margin-bottom: 20px;
+}
+
+.descriptionPanel {
+    word-break: break-all;
+    margin-left: 10px;
+    margin-right: 10px;
 }

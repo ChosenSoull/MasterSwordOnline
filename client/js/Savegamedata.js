@@ -164,10 +164,12 @@ async function updateProfileData() {
 
     const data = await response.json();
 
-    localStorage.removeItem(data.avatar);
+    if (localStorage.getItem('avatar') === data.avatar) {
+      localStorage.removeItem('avatar');
+    }
 
     // Проверяем, есть ли данные и нужные поля
-    if (data && data.id && data.username && data.avatar) {
+    if (data && data.id && data.username && data.avatar && data.description !== undefined) {
       // Обновляем ID
       document.querySelectorAll('.account-id').forEach(el => el.textContent = `ID: ${data.id}`);
       document.querySelectorAll('.account-idProfile').forEach(el => el.textContent = `ID: ${data.id}`);
@@ -180,6 +182,12 @@ async function updateProfileData() {
       // Обновляем аватар
       document.querySelectorAll('.avatar').forEach(el => el.src = data.avatar);
       document.querySelectorAll('.avatarProfile').forEach(el => el.src = data.avatar);
+
+      document.querySelectorAll('#description').forEach(el => {
+        if (data.description) { // Проверяем, что data.description не пустое, не null и не undefined
+          el.textContent = data.description;
+        }
+      });
 
     } else {
       console.error('Неверный формат данных, полученных с сервера:', data);

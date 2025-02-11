@@ -467,10 +467,11 @@ function changeprofile($conn, $data)
 
     $loginKey = $data['login_key'];
     $newUsername = isset($data['username']) ? trim($data['username']) : null;
+    $newDescription = isset($data['description']) ? trim($data['description']) : null;
     $avatarFile = isset($_FILES['avatar']) ? $_FILES['avatar'] : null;
 
     // Если нет нового имени и реального файла (либо файл не передан, либо UPLOAD_ERR_NO_FILE)
-    if (empty($newUsername) && (!$avatarFile || $avatarFile['error'] === UPLOAD_ERR_NO_FILE)) {
+    if (empty($newUsername) && empty($newDescription) && (!$avatarFile || $avatarFile['error'] === UPLOAD_ERR_NO_FILE)) {
         throw new Exception('Nothing to update');
     }
 
@@ -491,6 +492,12 @@ function changeprofile($conn, $data)
     if (!empty($newUsername)) {
         $stmt = $conn->prepare("UPDATE users SET username = ? WHERE id = ?");
         $stmt->bind_param("si", $newUsername, $userId);
+        $stmt->execute();
+    }
+
+    if (!empty($newDescription)) {
+        $stmt = $conn->prepare("UPDATE users SET description_profile = ? WHERE id = ?");
+        $stmt->bind_param("si", $newDescription, $userId);
         $stmt->execute();
     }
 
@@ -557,7 +564,7 @@ function loadProfile($conn)
     try {
         // Подготавливаем запрос
         $stmt = $conn->prepare("
-            SELECT id, username, avatar 
+            SELECT id, username, avatar, description_profile
             FROM users 
             WHERE login_key = ? 
             LIMIT 1
@@ -583,7 +590,8 @@ function loadProfile($conn)
             echo json_encode([
                 'id' => $user['id'],
                 'username' => $user['username'],
-                'avatar' => $user['avatar']
+                'avatar' => $user['avatar'],
+                'description' => $user['description_profile']
             ]);
         } else {
             echo json_encode(['error' => 'User not found']);

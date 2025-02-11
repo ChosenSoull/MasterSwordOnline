@@ -2,7 +2,8 @@
 <html lang="ru">
 
 <head>
-    <meta name="description" content="Уникальный кликер Кликер меча в жанре RPG с разнообразными улучшениями, интересными боссами и системой достижений. Играй онлайн и стань самым могущественным воином и спаси королевство!">
+    <meta name="description"
+        content="Уникальный кликер Кликер меча в жанре RPG с разнообразными улучшениями, интересными боссами и системой достижений. Играй онлайн и стань самым могущественным воином и спаси королевство!">
     <meta name="csrf-token" content="{{csrfToken}}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -108,12 +109,15 @@
                 <p class="account-nameProfile" id="account-name">Имя аккаунта</p>
                 <input type="text" id="edit-name" style="display:none; margin-top: 0.5rem;">
                 <p class="account-idProfile" id="account-id">ID: 123456</p>
+                <div class="descriptionContainer">
+                    <p class="descriptionPanel" id="description"></p>
+                    <input type="text" id="edit-description" style="display:none;">
+                </div>
                 <p id="name-error" style="color: red; display: none;">Имя содержит запрещённые слова!</p>
             </div>
 
             <button class="save-button" id="save-button" style="display:none;">Сохранить изменения</button>
             <button class="cancel-button" id="cancel-button" style="display:none;">Отмена</button>
-        </div>
     </div>
 
     <div id="improvements-section" class="panel">
