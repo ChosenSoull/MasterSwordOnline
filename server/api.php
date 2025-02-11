@@ -290,19 +290,39 @@ function handleCreateGuest($conn)
         ["name" => "secondlife", "baseCost" => 600, "cost" => 600, "icon" => "assets/textures/second-life-icon.png", "unlocksAbility" => "Secondlife", "duration" => 1000, "cooldown" => 35000, "purchased" => false, "descriptionKey" => "Secondlife"]
     ], JSON_UNESCAPED_SLASHES);
 
-
-    $stmt = $conn->prepare("INSERT INTO users (username, login_key, improvements, potions, active_abilities, cooldown_timers, timers) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("SELECT id FROM users WHERE login_key = ?");
     if (!$stmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
     }
 
-    $stmt->bind_param("sssssss", $username, $loginKey, $improvementsdefault, $potionsdefault, $defaults, $defaults, $defaults);
+    $stmt->bind_param("s", $loginKey);
 
     if (!$stmt->execute()) {
-        throw new Exception('Failed to create guest: ' . $stmt->error);
+        throw new Exception('Execute failed: ' . $stmt->error);
     }
 
-    echo json_encode(['login_key' => $loginKey, 'username' => $username]);
+    $stmt->store_result();
+
+    if ($stmt->num_rows == 0) {
+        // Пользователь с таким login_key не найден, создаем новый аккаунт
+        $stmt = $conn->prepare("INSERT INTO users (username, login_key, improvements, potions, active_abilities, cooldown_timers, timers) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $conn->error);
+        }
+
+        $stmt->bind_param("sssssss", $username, $loginKey, $improvementsdefault, $potionsdefault, $defaults, $defaults, $defaults);
+
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to create guest: ' . $stmt->error);
+        }
+
+        echo json_encode(['login_key' => $loginKey, 'username' => $username]);
+    } else {
+        echo json_encode(['login_key' => $loginKey, 'username' => $username]); // Или другие данные пользователя
+    }
+
+    $stmt->close();
+    $conn->close();
 }
 
 function generateGuestUsername($conn)
@@ -379,6 +399,7 @@ function handleSaveGame($conn, $data)
     }
 
     echo json_encode(['status' => 'success']);
+    $conn->close();
 }
 
 function handleLoadGame($conn, $data)
@@ -434,6 +455,7 @@ function handleLoadGame($conn, $data)
     }
 
     echo json_encode($response);
+    $conn->close();
 }
 
 function changeprofile($conn, $data)
@@ -497,8 +519,17 @@ function changeprofile($conn, $data)
         $newFilename = $userId . '.' . $extension;
         $destination = $avatarDir . $newFilename;
 
-        // Удаление старого аватара
-        array_map('unlink', glob($avatarDir . $userId . ".*"));
+        // Удаление старого аватара (если он есть)
+        $oldAvatar = $avatarDir . $userId . ".*"; // Шаблон для поиска старых файлов
+        $files = glob($oldAvatar); // Получаем список файлов, соответствующих шаблону
+
+        if (!empty($files)) {
+            foreach ($files as $file) {
+                if (file_exists($file)) {
+                    unlink($file); // Удаляем каждый найденный файл
+                }
+            }
+        }
 
         // Перемещение файла
         if (!move_uploaded_file($avatarFile['tmp_name'], $destination)) {
@@ -512,34 +543,59 @@ function changeprofile($conn, $data)
     }
 
     $conn->close();
-    return ['status' => 'ok'];
 }
 
-function loadProfile($conn) {
-    if (empty($data['login_key'])) {
-        throw new Exception('Missing login key');
+function loadProfile($conn)
+{
+    $loginKey = $_POST['login_key'] ?? '';
+
+    if (empty($loginKey)) {
+        echo json_encode(['error' => 'Missing login key']);
+        return;
     }
 
-    $loginKey = (empty($data['login_key']));
-
     try {
-        $stmt = $conn->prepare("SELECT id, username, avatar FROM users WHERE login_key = ?");
-        $stmt->bind_param("s", $loginKey);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user_data = $result->fetch_assoc();
+        // Подготавливаем запрос
+        $stmt = $conn->prepare("
+            SELECT id, username, avatar 
+            FROM users 
+            WHERE login_key = ? 
+            LIMIT 1
+        ");
 
-        if ($user_data) {
-            header('Content-Type: application/json');
-            echo json_encode($user_data);
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $conn->error);
+        }
+
+        // Привязываем параметры
+        $stmt->bind_param('s', $loginKey);
+
+        // Выполняем запрос
+        if (!$stmt->execute()) {
+            throw new Exception('Execute failed: ' . $stmt->error);
+        }
+
+        // Получаем результат
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        if ($user) {
+            echo json_encode([
+                'id' => $user['id'],
+                'username' => $user['username'],
+                'avatar' => $user['avatar']
+            ]);
         } else {
-            http_response_code(404);
             echo json_encode(['error' => 'User not found']);
         }
 
+        $stmt->close();
+
     } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(['error' => $e->getMessage()]);
+        error_log("Database error: " . $e->getMessage());
+        echo json_encode(['error' => 'Database error']);
+    } finally {
+        $conn->close();
     }
 }
 

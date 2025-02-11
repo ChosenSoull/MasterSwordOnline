@@ -164,6 +164,8 @@ async function updateProfileData() {
 
     const data = await response.json();
 
+    localStorage.removeItem(data.avatar);
+
     // Проверяем, есть ли данные и нужные поля
     if (data && data.id && data.username && data.avatar) {
       // Обновляем ID
@@ -197,7 +199,7 @@ window.addEventListener('load', async () => {
     await GameStorage.loadGameState();
 
     // 🔄 Автосохранение каждые 10 секунд
-    setInterval(() => GameStorage.saveGameState(), 10000);
+    setInterval(() => GameStorage.saveGameState(), 30000);
 
     // 💾 Сохранение при выходе с сайта
     window.addEventListener('beforeunload', (event) => {
