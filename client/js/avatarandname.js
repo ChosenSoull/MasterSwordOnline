@@ -209,5 +209,6 @@ function showError(message) {
 
 function resetUI() {
     updateProfileData();
+    fetchAvatar();
     exitEditMode();
 }
