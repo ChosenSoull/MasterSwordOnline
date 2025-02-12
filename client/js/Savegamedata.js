@@ -132,7 +132,8 @@ const GameStorage = {
       displayPotions();
       updateCount(currentCount);
       updatePotionBar();
-      updateProfileData()
+      updateProfileData();
+      fetchAvatar();
 
       console.log("✅ Данные успешно загружены и применены!", {
         improvements, potions, activeAbilities, cooldownTimers, timers,
@@ -178,11 +179,6 @@ async function updateProfileData() {
       document.querySelectorAll('.account-name').forEach(el => el.textContent = data.username);
       document.querySelectorAll('.account-nameProfile').forEach(el => el.textContent = data.username);
 
-
-      // Обновляем аватар
-      document.querySelectorAll('.avatar').forEach(el => el.src = data.avatar);
-      document.querySelectorAll('.avatarProfile').forEach(el => el.src = data.avatar);
-
       document.querySelectorAll('#description').forEach(el => {
         if (data.description) { // Проверяем, что data.description не пустое, не null и не undefined
           el.textContent = data.description;
@@ -198,6 +194,44 @@ async function updateProfileData() {
     console.error('Ошибка при выполнении запроса:', error);
     // Обработка ошибки, например, вывод сообщения пользователю
   }
+}
+
+async function fetchAvatar() {
+    let loginKey = localStorage.getItem('game_login_key');
+    if (!loginKey) {
+        console.error('Login key not found');
+        return;
+    }
+
+    try {
+        let response = await fetch('server.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'getAvatar',
+                loginkey: loginKey
+            })
+        });
+
+        let result = await response.json();
+
+        if (result.status === 'success') {
+            let avatarData = result.avatar;
+            localStorage.setItem('user_avatar', avatarData);
+
+            // Применяем аватар ко всем элементам с классом avatar
+            document.querySelectorAll('.avatar').forEach(elem => {
+                elem.style.backgroundImage = `url(data:image/png;base64,${avatarData})`;
+            });
+
+        } else {
+            console.error('Failed to fetch avatar:', result.message);
+        }
+    } catch (error) {
+        console.error('Error fetching avatar:', error);
+    }
 }
 
 // 🚀 Запуск игры + Автосохранение
