@@ -197,43 +197,79 @@ async function updateProfileData() {
 }
 
 async function fetchAvatar() {
-    let loginKey = localStorage.getItem('game_login_key');
-    if (!loginKey) {
-        console.error('Login key not found');
-        return;
-    }
+  let loginKey = localStorage.getItem('game_login_key');
+  if (!loginKey) {
+      console.error('Login key not found');
+      return;
+  }
 
-    try {
-        let response = await fetch('server.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'getAvatar',
-                loginkey: loginKey
-            })
-        });
+  try {
+      let response = await fetch('api.php', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              action: 'getAvatar',
+              login_key: loginKey
+          })
+      });
 
-        let result = await response.json();
+      if (!response.ok) {
+          const errorText = await response.text(); // Get error message from server
+          throw new Error(`HTTP error ${response.status}: ${errorText}`);
+      }
 
-        if (result.status === 'success') {
-            let avatarData = result.avatar;
-            localStorage.setItem('user_avatar', avatarData);
+      let result = await response.json();
 
-            // Применяем аватар ко всем элементам с классом avatar
-            document.querySelectorAll('.avatar').forEach(elem => {
-                elem.style.backgroundImage = `url(data:image/png;base64,${avatarData})`;
-            });
+      if (result.status === 'success') {
+          let avatarData = result.avatar;
+          localStorage.setItem('user_avatar', avatarData);
 
-        } else {
-            console.error('Failed to fetch avatar:', result.message);
-        }
-    } catch (error) {
-        console.error('Error fetching avatar:', error);
-    }
+          updateAvatar(document.querySelector('.avatar'), avatarData);
+          updateAvatar(document.querySelector('.avatarProfile'), avatarData);
+
+      } else {
+          console.error('Failed to fetch avatar:', result.message);
+          alert("Ошибка загрузки аватара: " + result.message); // Alert the user
+      }
+  } catch (error) {
+      console.error('Error fetching avatar:', error);
+      alert("Ошибка загрузки аватара: " + error.message); // Alert the user
+  }
 }
 
+function updateAvatar(element, avatarData) {
+  if (element && avatarData && element.nodeName === 'IMG') {
+    try {
+      // Try to determine the MIME type (not reliable, server should provide it)
+      let mimeType = 'image/png'; // Default
+      if (avatarData.startsWith('/9j/')) {
+          mimeType = 'image/jpeg';
+      } else if (avatarData.startsWith('R0lGOD')) {
+          mimeType = 'image/gif';
+      }
+
+      const tempImg = new Image();
+      tempImg.src = `data:${mimeType};base64,${avatarData}`;
+
+      tempImg.onload = () => {
+        // Устанавливаем src напрямую целевому элементу
+        element.src = tempImg.src;
+        element.style.display = 'block';
+      };
+
+      tempImg.onerror = () => {
+        console.error('Ошибка загрузки изображения');
+        element.src = 'assets/textures/public/uploads/default_avatar.png';
+      };
+
+    } catch (error) {
+      console.error('Error processing avatar:', error);
+      element.src = 'assets/textures/public/uploads/default_avatar.png';
+    }
+  }
+}
 // 🚀 Запуск игры + Автосохранение
 window.addEventListener('load', async () => {
   try {

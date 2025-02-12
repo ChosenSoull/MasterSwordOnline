@@ -611,11 +611,14 @@ function loadProfile($conn)
 }
 
 function getAvatar($conn, $data) {
-    $loginkey = $data['loginkey'];
+    if (empty($data['login_key'])) {
+        throw new Exception('Missing login key');
+    }
 
+    $login_key = $data['login_key'];
     // Находим путь к аватару
-    $stmt = $conn->prepare("SELECT avatar FROM users WHERE loginkey = ?");
-    $stmt->bind_param("s", $loginkey);
+    $stmt = $conn->prepare("SELECT avatar FROM users WHERE login_key = ?");
+    $stmt->bind_param("s", $login_key);
     $stmt->execute();
     $result = $stmt->get_result();
 
