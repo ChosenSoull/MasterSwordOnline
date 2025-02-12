@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="client/css/hpbar.css">
     <link rel="stylesheet" href="client/css/boss.css">
     <link rel="stylesheet" href="client/css/profile.css">
+    <link rel="stylesheet" href="client/css/liders.css">
     <link rel="stylesheet" href="client/css/main.css">
 </head>
 
@@ -27,7 +28,6 @@
             <div class="loading-bar"></div>
         </div>
         <span id="loadingText" data-i18n="Loading">Загрузка</span>
-        <button id="loadingMusicButton">Включить музыку</button>
     </div>
 
     <div id="error-message" data-i18n="Error-message"> Произошла ошибка подключения. Пожалуйста, подождите включения
@@ -405,7 +405,7 @@
             <img src="assets/textures/Icons/Quests.png" alt="" class="icon">
             <span data-i18n="Quests">Квесты</span>
         </a>
-        <a href="#" onclick="showPanel('leaders-section', event)" class="nav-link">
+        <a href="#" onclick="loadLeaders(); showPanel('leaders-section', event)" class="nav-link">
             <img src="assets/textures/Icons/Liders.png" alt="" class="icon">
             <span data-i18n="Liders">Лидеры</span>
         </a>
@@ -444,6 +444,7 @@
         <script src="client/js/playerdamageformula.js"></script>
         <script src="client/js/bossdamageformula.js"></script>
         <script src="client/js/bossmehanics.js"></script>
+        <script src="client/js/liders.js"></script>
         <script src="client/js/mainboss.js"></script>
         <script src="client/js/main.js"></script>
         <script src="client/js/Savegamedata.js"></script>

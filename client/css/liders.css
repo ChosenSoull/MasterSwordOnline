@@ -1,0 +1,88 @@
+/* Стили для общего блока лидера */
+.leader-panel {
+    display: flex;
+    /* Для расположения аватара и информации рядом */
+    align-items: center;
+    /* Для вертикального выравнивания элементов */
+    background-color: black;
+    /* Черный фон панели */
+    color: white;
+    /* Белый цвет текста по умолчанию */
+    border-radius: 10px;
+    /* Скругление углов */
+    border: 2px solid white;
+    /* Белая обводка */
+    padding: 10px;
+    /* Отступы внутри панели */
+}
+
+/* Стили для блока аватара */
+.leader-avatar-frame {
+    position: relative;
+    /* Для позиционирования рамки относительно блока */
+    width: 80px;
+    /* Ширина рамки, можно настроить */
+    height: 80px;
+    /* Высота рамки, можно настроить, должна быть квадратной */
+    margin-right: 10px;
+    /* Отступ справа от аватара до информационной части */
+}
+
+/* Стили для изображения аватара */
+.leader-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    /* Делает аватар круглым */
+    object-fit: cover;
+    /* Обрезает изображение аватара под круглую форму */
+    position: absolute;
+    /* Абсолютное позиционирование внутри .leader-avatar-frame */
+    top: 0;
+    left: 0;
+}
+
+/* Стили для рамки вокруг аватара */
+.leader-frame {
+    width: 270%;
+    height: auto;
+    position: absolute;
+    top: -77px;
+    left: -68px;
+    pointer-events: none;
+    /* Чтобы рамка не мешала кликам по аватару, если это нужно */
+}
+
+/* Стили для информационной части (имя, ID, очки) */
+.leader-info {
+    display: flex;
+    flex-direction: column;
+    margin-top: -10px;
+}
+
+/* Стили для имени лидера */
+.leader-name {
+    font-size: 1.2em;
+    /* Размер шрифта больше, чем у ID и очков */
+    font-weight: bold;
+    /* Жирное начертание */
+    margin-bottom: 5px;
+    /* Отступ снизу, чтобы отделить от ID и очков */
+    white-space: nowrap;
+    /* Предотвращает перенос имени на новую строку, если оно слишком длинное */
+    overflow: hidden;
+    /* Скрывает переполнение, если имя не помещается */
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+    /* Добавляет многоточие в конце обрезанного имени */
+}
+
+/* Стили для ID лидера */
+.leader-id,
+.leader-score {
+    font-size: 0.9em;
+    /* Размер шрифта меньше, чем у имени */
+    margin-bottom: 3px;
+    margin-top: 0px;
+    /* Небольшой отступ снизу */
+}

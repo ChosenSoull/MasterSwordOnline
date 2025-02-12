@@ -52,6 +52,9 @@ try {
         case 'getAvatar':
             getAvatar($conn, $data);
             break;
+        case 'liders':
+            loadLiders($conn);
+            break;
         default:
             throw new Exception('Invalid action: ' . $action);
     }
@@ -640,4 +643,71 @@ function getAvatar($conn, $data) {
     $stmt->close();
 }
 
+function loadLiders($conn) {
+    header("Content-Type: application/json");
+
+    $last_update = getLastUpdateTime($conn);
+    if (!$last_update || (time() - strtotime($last_update) > 600)) {
+        createLiders($conn);
+    }
+    
+    $result = $conn->query("SELECT username, avatar, user_id, current_count 
+                          FROM liders 
+                          ORDER BY current_count DESC");
+    
+    $liders = [];
+    while ($row = $result->fetch_assoc()) {
+        $liders[] = [
+            'username' => $row['username'],
+            'user_id' => $row['user_id'],
+            'current_count' => $row['current_count'],
+            'avatar' => $row['avatar'] // Отправляем как есть
+        ];
+    }
+    
+    echo json_encode($liders);
+}
+
+function getLastUpdateTime($conn) {
+    $result = $conn->query("SELECT MAX(updated_at) as last_time FROM liders"); // updated_at должно быть в таблице
+    if (!$result) {
+        return null;
+    }
+    $row = $result->fetch_assoc();
+    return $row['last_time'] ?? null;
+}
+
+function createLiders($conn) {
+    $conn->query("TRUNCATE TABLE liders");
+    
+    $result = $conn->query("SELECT id, username, avatar, current_count 
+                          FROM users 
+                          ORDER BY current_count DESC 
+                          LIMIT 50");
+    
+    $stmt = $conn->prepare("INSERT INTO liders (username, avatar, user_id, current_count) 
+                          VALUES (?, ?, ?, ?)");
+
+    while ($row = $result->fetch_assoc()) {
+        $avatarPath = $row['avatar'];
+        $avatarData = '';
+        
+        if (file_exists($avatarPath)) {
+            $avatarData = base64_encode(file_get_contents($avatarPath));
+        } else {
+            // Логирование ошибки и использование дефолтного аватара
+            error_log("Avatar not found: " . $avatarPath);
+            $avatarData = base64_encode(file_get_contents("assets/textures/public/default.png"));
+        }
+
+        $stmt->bind_param("ssii", 
+            $row['username'],
+            $avatarData,
+            $row['id'],
+            $row['current_count']
+        );
+        $stmt->execute();
+    }
+    $stmt->close();
+}
 ?>

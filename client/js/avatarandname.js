@@ -182,11 +182,6 @@ async function validateName(name) {
 }
 
 async function DescriptionValidate(description) {
-    if (description.length < 3) {
-        showError("Описание должно быть не короче 3 символов");
-        return false;
-    }
-    
     if (description.length > 100) {
         showError("Описание должно быть не длиннее 100 символов");
         return false;
