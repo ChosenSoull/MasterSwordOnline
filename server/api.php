@@ -49,6 +49,9 @@ try {
         case 'loadProfile':
             loadProfile($conn);
             break;
+        case 'getAvatar':
+            getAvatar($conn, $data);
+            break;
         default:
             throw new Exception('Invalid action: ' . $action);
     }
@@ -605,6 +608,33 @@ function loadProfile($conn)
     } finally {
         $conn->close();
     }
+}
+
+function getAvatar($conn, $data) {
+    $loginkey = $data['loginkey'];
+
+    // Находим путь к аватару
+    $stmt = $conn->prepare("SELECT avatar FROM users WHERE loginkey = ?");
+    $stmt->bind_param("s", $loginkey);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $avatarPath = $row['avatar'];
+
+        if (file_exists($avatarPath)) {
+            // Читаем файл и отправляем его содержимое в формате Base64
+            $avatarData = base64_encode(file_get_contents($avatarPath));
+            echo json_encode(['status' => 'success', 'avatar' => $avatarData]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Avatar not found']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'User not found']);
+    }
+
+    $stmt->close();
 }
 
 ?>
