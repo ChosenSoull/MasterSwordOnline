@@ -11,10 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $dbConfig = [
-    'host' => '',
-    'dbname' => '',
-    'user' => '',
-    'pass' => ''
+    'host' => 'sql308.infinityfree.com',
+    'dbname' => 'if0_37982919_gamedatabase',
+    'user' => 'if0_37982919',
+    'pass' => 'xhal0pApmhvY'
 ];
 
 if (isset($_GET['action']) && $_GET['action'] === 'check_ddns') {
@@ -645,49 +645,28 @@ function getAvatar($conn, $data) {
 
 function loadLiders($conn) {
     header("Content-Type: application/json");
-
-    $last_update = getLastUpdateTime($conn);
-    if (!$last_update || (time() - strtotime($last_update) > 600)) {
-        createLiders($conn);
+    
+    $cacheFile = 'cache/liders.json';
+    $cacheTime = 600; // 10 минут
+    
+    if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTime)) {
+        echo file_get_contents($cacheFile);
+        return;
     }
     
-    $result = $conn->query("SELECT username, avatar, user_id, current_count 
-                          FROM liders 
-                          ORDER BY current_count DESC");
-    
-    $liders = [];
-    while ($row = $result->fetch_assoc()) {
-        $liders[] = [
-            'username' => $row['username'],
-            'user_id' => $row['user_id'],
-            'current_count' => $row['current_count'],
-            'avatar' => $row['avatar'] // Отправляем как есть
-        ];
-    }
-    
-    echo json_encode($liders);
-}
-
-function getLastUpdateTime($conn) {
-    $result = $conn->query("SELECT MAX(updated_at) as last_time FROM liders"); // updated_at должно быть в таблице
-    if (!$result) {
-        return null;
-    }
-    $row = $result->fetch_assoc();
-    return $row['last_time'] ?? null;
+    createLiders($conn);
+    echo file_get_contents($cacheFile);
 }
 
 function createLiders($conn) {
-    $conn->query("TRUNCATE TABLE liders");
+    $cacheFile = 'cache/liders.json';
     
     $result = $conn->query("SELECT id, username, avatar, current_count 
                           FROM users 
                           ORDER BY current_count DESC 
                           LIMIT 50");
     
-    $stmt = $conn->prepare("INSERT INTO liders (username, avatar, user_id, current_count) 
-                          VALUES (?, ?, ?, ?)");
-
+    $liders = [];
     while ($row = $result->fetch_assoc()) {
         $avatarPath = $row['avatar'];
         $avatarData = '';
@@ -700,14 +679,14 @@ function createLiders($conn) {
             $avatarData = base64_encode(file_get_contents("assets/textures/public/default.png"));
         }
 
-        $stmt->bind_param("ssii", 
-            $row['username'],
-            $avatarData,
-            $row['id'],
-            $row['current_count']
-        );
-        $stmt->execute();
+        $liders[] = [
+            'username' => $row['username'],
+            'user_id' => $row['id'],
+            'current_count' => $row['current_count'],
+            'avatar' => $avatarData
+        ];
     }
-    $stmt->close();
+    
+    file_put_contents($cacheFile, json_encode($liders)); // Запись кеша в файл
 }
 ?>
