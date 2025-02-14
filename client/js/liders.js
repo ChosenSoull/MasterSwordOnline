@@ -1,19 +1,24 @@
+document.addEventListener("DOMContentLoaded", async function () {
+    await loadLeaders(); // Загружаем данные
+    const observer = lozad(".lazy-leader", {
+        loaded: function (el) {
+            const leaderData = JSON.parse(el.dataset.leader);
+            const leaderElement = createLeaderElement(leaderData, el.dataset.index);
+            el.replaceWith(leaderElement); // Заменяем контейнер готовым элементом
+        }
+    });
+    observer.observe();
+});
+
 async function loadLeaders() {
     try {
         const response = await fetch('api.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'liders'
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'liders' })
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
         const leadersSection = document.querySelector("#leaders-section .panel-content");
@@ -24,22 +29,42 @@ async function loadLeaders() {
             return;
         }
 
-        data.forEach(leader => {
-            const leaderBlock = createLeaderElement(leader);
-            leadersSection.appendChild(leaderBlock);
+        // Создаем "пустые" контейнеры с data-leader и data-index
+        data.forEach((leader, index) => {
+            const placeholder = document.createElement("div");
+            placeholder.className = "lazy-leader lozad";
+            placeholder.dataset.leader = JSON.stringify(leader);
+            placeholder.dataset.index = index + 1; // Добавляем номер
+            
+            leadersSection.appendChild(placeholder);
         });
+
     } catch (error) {
         console.error("Ошибка загрузки лидеров:", error);
         displayErrorMessage(error.message);
     }
 }
 
-function createLeaderElement(leader) {
+function createLeaderElement(leader, index) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "leader-wrapper";
+
+    // Создаем div для нумерации
+    const numberDiv = document.createElement("div");
+    numberDiv.className = "leader-number";
+    numberDiv.textContent = index;
+
+    // Основной блок лидера
     const leaderBlock = document.createElement("div");
     leaderBlock.className = "leader-panel";
     leaderBlock.appendChild(createAvatarSection(leader));
     leaderBlock.appendChild(createInfoSection(leader));
-    return leaderBlock;
+
+    // Оборачиваем номер и блок в контейнер
+    wrapper.appendChild(numberDiv);
+    wrapper.appendChild(leaderBlock);
+
+    return wrapper;
 }
 
 function createAvatarSection(leader) {
@@ -47,10 +72,10 @@ function createAvatarSection(leader) {
     avatarFrame.className = "leader-avatar-frame";
     const avatarImg = document.createElement("img");
     avatarImg.className = "leader-avatar";
-    avatarImg.src = getAvatarDataURL(leader.avatar);
+    avatarImg.dataset.src = getAvatarDataURL(leader.avatar); // Отложенная загрузка
     const frameImg = document.createElement("img");
     frameImg.className = "leader-frame";
-    frameImg.src = "assets/textures/public/progress/6.png";
+    frameImg.dataset.src = "assets/textures/public/progress/6.png"; // Отложенная загрузка
     avatarFrame.append(avatarImg, frameImg);
     return avatarFrame;
 }
