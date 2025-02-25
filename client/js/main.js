@@ -952,12 +952,6 @@ function stopMusic() {
     }
 }
 
-loadingMusicButton.addEventListener('click', () => {
-    musicEnabled = true;
-    playMusic();
-    loadingScreen.classList.add('hidden');
-})
-
 window.addEventListener('load', () => {
     const loadingBar = document.querySelector('.loading-bar');
     loadingBar.style.width = '100%';
